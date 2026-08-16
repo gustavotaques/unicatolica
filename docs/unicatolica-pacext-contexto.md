@@ -7,7 +7,7 @@ curso: Engenharia de Software
 disciplina: PAC Extensionista
 fase: 5º semestre — 2026/1
 cliente: Centro Universitário Católica de Santa Catarina
-orientador: Prof. Dr. Claudinei Dias
+orientador: Prof. Edson Vaz Lopes
 equipe:
   - Gustavo Vinicius Taques
   - João Pedro Angélico
