@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Direção: Editorial Modern</title>
+<style>
+/*
+  RACIONAL: Meio-termo entre as outras duas direções — mantém um registro editorial (serifada nos
+  títulos, evocando o "portal de notícias" que inspirou o protótipo original) mas em versão leve:
+  fundo creme claro, grid assimétrico com respiro generoso, sem ticker nem nav de categorias densos.
+  Pensado para quem quer manter uma leitura "séria/institucional" no título das seções mas com a
+  leveza visual pedida pelo usuário. Cor institucional (bordô) aparece só em texto/traço; laranja é
+  o único acento de ação.
+
+  Cores:
+  --bg: #FBF7F0
+  --surface: #FFFFFF
+  --border: #E8DFCF
+  --ink: #2A2420
+  --ink-soft: #8A7F6E
+  --maroon: #7A1F2B  (títulos de seção, links)
+  --orange: #E8752E (CTA)
+  --green-ok: #4C7A5A
+  Tipografia: títulos em serif (Georgia/Times), corpo em sans-serif do sistema.
+*/
+html,body{margin:0;padding:0;background:#EDE7DA;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:#2A2420;}
+.serif{font-family:Georgia,"Times New Roman",serif;}
+.page{max-width:1180px;margin:32px auto;}
+.browser{border-radius:10px;overflow:hidden;box-shadow:0 18px 44px rgba(42,36,32,.14);margin-bottom:48px;}
+.chrome{background:#F4EFE4;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #E8DFCF;}
+.dot{width:10px;height:10px;border-radius:50%;background:#D9CFBB;}
+.url{margin-left:12px;background:#fff;border:1px solid #E8DFCF;border-radius:6px;padding:4px 12px;font-size:12px;color:#8A7F6E;flex:1;max-width:320px;}
+
+.app{display:grid;grid-template-columns:200px 1fr 250px;background:#FBF7F0;min-height:660px;}
+.nav{padding:24px 18px;border-right:1px solid #E8DFCF;}
+.brand{font-family:Georgia,serif;font-size:19px;font-weight:700;color:#7A1F2B;margin-bottom:26px;letter-spacing:-.01em;}
+.nav-section{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#8A7F6E;margin:20px 0 10px;}
+.nav-item{padding:7px 0;font-size:13.5px;color:#4A4038;border-bottom:1px solid transparent;}
+.nav-item.active{color:#7A1F2B;font-weight:600;border-bottom:2px solid #E8752E;padding-bottom:6px;}
+
+.main{padding:30px 34px;}
+.topbar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:26px;border-bottom:1px solid #E8DFCF;padding-bottom:18px;}
+.masthead{font-family:Georgia,serif;font-size:26px;font-weight:700;letter-spacing:-.01em;}
+.masthead span{display:block;font-family:-apple-system,sans-serif;font-size:11.5px;color:#8A7F6E;font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-top:4px;}
+.avatar{width:38px;height:38px;border-radius:50%;background:#7A1F2B;border:2px solid #fff;box-shadow:0 0 0 1px #E8DFCF;}
+
+.notice{border-left:3px solid #E8752E;background:#FBF7F0;padding:12px 16px;margin-bottom:20px;}
+.notice b{font-family:Georgia,serif;font-size:13px;color:#7A1F2B;}
+.notice p{margin:3px 0 0;font-size:13px;color:#5A5048;}
+
+.poll{background:#FFFDF8;border:1px solid #E8DFCF;border-radius:6px;padding:20px;margin-bottom:22px;}
+.poll-tag{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#E8752E;margin-bottom:8px;}
+.poll-q{font-family:Georgia,serif;font-size:17px;font-weight:700;margin-bottom:14px;}
+.poll-bar{background:#F4EFE4;height:30px;margin-bottom:8px;position:relative;overflow:hidden;}
+.poll-fill{background:#F2C79E;height:100%;}
+.poll-label{position:absolute;left:12px;top:7px;font-size:12.5px;font-weight:600;}
+.poll-wait{font-size:11.5px;color:#8A7F6E;margin-top:8px;font-style:italic;}
+
+.card{padding:20px 0;border-bottom:1px solid #E8DFCF;display:grid;grid-template-columns:1fr 120px;gap:20px;}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.card-avatar{width:30px;height:30px;border-radius:50%;background:#D9CFBB;}
+.card-meta b{font-size:13px;display:block;}
+.card-meta span{font-size:11px;color:#8A7F6E;}
+.kicker{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.kicker.course{color:#7A1F2B;}
+.kicker.open{color:#E8752E;}
+.card-title{font-family:Georgia,serif;font-size:16px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+.card-body{font-size:13px;line-height:1.6;color:#5A5048;}
+.card-actions{margin-top:10px;font-size:11.5px;color:#8A7F6E;display:flex;gap:16px;}
+.card-thumb{background:#E8DFCF;border-radius:4px;height:100px;}
+
+.side{padding:30px 18px;background:#F4EFE4;}
+.side h4{font-family:Georgia,serif;font-size:14px;color:#7A1F2B;margin-bottom:16px;font-weight:700;}
+.comm{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.comm-icon{width:32px;height:32px;border-radius:5px;background:#E8DFCF;flex-shrink:0;}
+.comm b{font-size:12.5px;display:block;}
+.comm span{font-size:10.5px;color:#8A7F6E;}
+.btn-join{margin-left:auto;font-size:10.5px;background:#E8752E;color:#fff;padding:4px 10px;border-radius:3px;font-weight:600;}
+.btn-member{margin-left:auto;font-size:10px;color:#4C7A5A;font-weight:700;}
+
+.comm-header{background:#7A1F2B;padding:32px;color:#F4EFE4;position:relative;}
+.comm-title{font-family:Georgia,serif;font-size:24px;font-weight:700;}
+.comm-sub{font-size:12px;opacity:.8;margin-top:4px;}
+.comm-badge{position:absolute;top:32px;right:32px;border:1px solid rgba(244,239,228,.4);padding:5px 12px;border-radius:3px;font-size:10.5px;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="browser">
+    <div class="chrome"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">unicatolica.app/home</div></div>
+    <div class="app">
+      <div class="nav">
+        <div class="brand">UniCatólica</div>
+        <div class="nav-item active">Início</div>
+        <div class="nav-item">Buscar</div>
+        <div class="nav-item">Mensagens</div>
+        <div class="nav-item">Notificações</div>
+        <div class="nav-section">Suas comunidades</div>
+        <div class="nav-item">Engenharia de Software</div>
+        <div class="nav-item">Atlética de Eng. Software</div>
+      </div>
+
+      <div class="main">
+        <div class="topbar">
+          <div class="masthead">Boa tarde, Julia<span>Engenharia de Software · 1º Semestre</span></div>
+          <div class="avatar"></div>
+        </div>
+
+        <div class="notice">
+          <b>Aviso institucional</b>
+          <p>Recesso acadêmico entre 20 e 24/10 — sem aulas em todos os cursos do campus.</p>
+        </div>
+
+        <div class="poll">
+          <div class="poll-tag">Enquete da universidade</div>
+          <div class="poll-q">Qual horário você prefere para a Semana de Integração?</div>
+          <div class="poll-bar"><div class="poll-fill" style="width:62%"></div><div class="poll-label">Manhã</div></div>
+          <div class="poll-bar"><div class="poll-fill" style="width:24%;background:#F4EFE4"></div><div class="poll-label">Tarde</div></div>
+          <div class="poll-wait">3 votos registrados — resultado exibido a partir do 5º voto</div>
+        </div>
+
+        <div class="card">
+          <div>
+            <div class="card-head"><div class="card-avatar"></div><div class="card-meta"><b>Rafael Nunes</b><span>Eng. de Software · há 2h</span></div></div>
+            <div class="kicker course">Comunidade de curso</div>
+            <div class="card-title">Lista extra de recursão antes da prova de Estrutura de Dados</div>
+            <div class="card-body">O professor passou material complementar pra quem quiser praticar. Deixei o link nos materiais da comunidade.</div>
+            <div class="card-actions"><span>♥ 14</span><span>💬 6 comentários</span><span>↗ compartilhar</span></div>
+          </div>
+          <div class="card-thumb"></div>
+        </div>
+
+        <div class="card">
+          <div>
+            <div class="card-head"><div class="card-avatar"></div><div class="card-meta"><b>Atlética Eng. Software</b><span>há 5h</span></div></div>
+            <div class="kicker open">Comunidade aberta</div>
+            <div class="card-title">Inscrições abertas para o campeonato interclasses de vôlei</div>
+            <div class="card-body">Times de até 8 pessoas, qualquer curso pode participar.</div>
+            <div class="card-actions"><span>♥ 31</span><span>💬 12 comentários</span><span>↗ compartilhar</span></div>
+          </div>
+          <div class="card-thumb"></div>
+        </div>
+      </div>
+
+      <div class="side">
+        <h4>Comunidades em alta</h4>
+        <div class="comm"><div class="comm-icon"></div><div><b>Direito</b><span>412 membros</span></div><div class="btn-member">Membro</div></div>
+        <div class="comm"><div class="comm-icon"></div><div><b>Atlética ES</b><span>89 membros</span></div><div class="btn-join">Participar</div></div>
+        <div class="comm"><div class="comm-icon"></div><div><b>Administração</b><span>301 membros</span></div><div class="btn-join">Participar</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary screen: community view -->
+  <div class="browser">
+    <div class="chrome"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">unicatolica.app/comunidade/engenharia-de-software</div></div>
+    <div class="comm-header">
+      <div class="comm-title">Engenharia de Software</div>
+      <div class="comm-sub">Comunidade de curso · associação automática · 268 membros</div>
+      <div class="comm-badge">Você é membro</div>
+    </div>
+    <div style="padding:28px 34px;background:#FBF7F0;">
+      <div class="card" style="grid-template-columns:1fr;border-bottom:none;padding-top:0;">
+        <div>
+          <div class="card-head"><div class="card-avatar"></div><div class="card-meta"><b>Julia Fontana</b><span>há 12min</span></div></div>
+          <div class="card-body" style="font-size:14px;">Alguém mais vai fazer o plantão de dúvidas de Cálculo hoje às 18h?</div>
+          <div class="card-actions"><span>♥ 2</span><span>💬 1 comentário</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
