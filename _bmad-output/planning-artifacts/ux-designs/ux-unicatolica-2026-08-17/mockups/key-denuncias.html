@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Key Screen: Denúncias</title>
+<style>
+/*
+  Ilustra EXPERIENCE.md → Component Patterns: "Item de fila de moderação" (conteúdo + motivo
+  visíveis, identidade do denunciante nunca exibida, RF77.1; ações Ocultar/Remover/Restringir/
+  Escalonar). Interaction Primitives: lista + painel de detalhe, não modal. State Patterns:
+  "Conteúdo oculto" (esmaecido + Restaurar) vs "Conteúdo removido" (some da lista, só auditoria)
+  — mostrados como segunda seção, conforme key-screens.md. Persona: Rafael (moderador, UJ-2).
+  Tokens de DESIGN.md (Campus Clean).
+*/
+html,body{margin:0;padding:0;background:#E9E9E4;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;color:#1C1C1A;}
+.page{max-width:1180px;margin:32px auto;}
+.browser{border-radius:14px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.12);background:#fff;margin-bottom:28px;}
+.chrome{background:#F1F1EE;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #E2E2DD;}
+.dot{width:10px;height:10px;border-radius:50%;background:#DADAD5;}
+.url{margin-left:12px;background:#fff;border:1px solid #E2E2DD;border-radius:6px;padding:4px 12px;font-size:12px;color:#8A8A85;flex:1;max-width:360px;}
+
+.app{display:grid;grid-template-columns:220px 300px 1fr;background:#FAFAF8;min-height:660px;}
+.nav{background:#FAFAF8;border-right:1px solid #EAEAE6;padding:20px 16px;}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:28px;}
+.brand-mark{width:26px;height:26px;border-radius:6px;background:#7A1F2B;}
+.brand-name{font-size:14px;font-weight:600;}
+.nav-section{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#A2A29C;margin:18px 0 8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13.5px;color:#4A4A46;margin-bottom:2px;}
+.nav-item.active{background:#FDEEE6;color:#EA6A2E;font-weight:600;}
+.nav-item .count{margin-left:auto;background:#7A1F2B;color:#fff;font-size:10.5px;font-weight:700;border-radius:20px;padding:1px 7px;}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:#D8D8D2;}
+.nav-dot.course{background:#7A1F2B;}
+
+.queue{border-right:1px solid #EAEAE6;padding:22px 0;}
+.queue h4{font-size:13px;font-weight:700;margin:0 22px 14px;}
+.q-item{padding:12px 22px;border-left:3px solid transparent;cursor:pointer;}
+.q-item.sel{background:#FFF9F0;border-left-color:#EA6A2E;}
+.q-item .q-comm{font-size:10.5px;font-weight:700;color:#7A1F2B;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;}
+.q-item .q-excerpt{font-size:12.5px;color:#4A4A46;line-height:1.4;margin-bottom:4px;}
+.q-item .q-time{font-size:11px;color:#A2A29C;}
+
+.detail{padding:28px 32px;}
+.d-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.d-title{font-size:17px;font-weight:700;}
+.d-comm{font-size:11.5px;color:#A2A29C;margin-top:2px;}
+
+.privacy-note{display:flex;align-items:center;gap:8px;background:#F7F6F2;border-radius:8px;padding:9px 13px;font-size:12px;color:#6B6B66;margin-bottom:18px;}
+
+.content-card{background:#fff;border:1px solid #EAEAE6;border-radius:12px;padding:16px;margin-bottom:16px;}
+.content-card .who{font-size:12.5px;font-weight:600;margin-bottom:6px;}
+.content-card .txt{font-size:13.5px;line-height:1.55;color:#33332F;}
+
+.reason-block{margin-bottom:24px;}
+.reason-label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#A2A29C;margin-bottom:5px;}
+.reason-text{font-size:13.5px;color:#1C1C1A;font-weight:600;}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:20px;}
+.btn.hide{background:#F1F1EE;color:#4A4A46;}
+.btn.remove{background:#F5E4E6;color:#7A1F2B;}
+.btn.restrict{background:#F1F1EE;color:#4A4A46;}
+.btn.escalate{background:#EA6A2E;color:#fff;}
+
+.states-section{padding:0 8px;}
+.states-title{font-size:13px;font-weight:700;color:#4A4A46;margin-bottom:14px;}
+.states-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.state-col .alt-label{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.03em;color:#EA6A2E;background:#FDEEE6;border-radius:5px;padding:2px 7px;margin-bottom:10px;font-family:ui-monospace,Menlo,Consolas,monospace;}
+
+.mini-card{background:#fff;border:1px solid #EAEAE6;border-radius:12px;padding:16px;}
+.mini-card.hidden-state{opacity:.45;filter:grayscale(40%);position:relative;}
+.mini-card .mh{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.mini-avatar{width:26px;height:26px;border-radius:50%;background:#D8D8D2;}
+.mini-card b{font-size:12.5px;}
+.mini-card .mt{font-size:12.5px;color:#33332F;margin-bottom:10px;}
+.restore-btn{font-size:11.5px;font-weight:700;color:#EA6A2E;background:#FDEEE6;border-radius:16px;padding:5px 12px;display:inline-block;}
+
+.empty-box{border:1px dashed #D8D8D2;border-radius:12px;padding:20px;text-align:center;color:#A2A29C;font-size:12.5px;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="browser">
+    <div class="chrome"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">unicatolica.app/moderacao/denuncias</div></div>
+    <div class="app">
+      <div class="nav">
+        <div class="brand"><div class="brand-mark"></div><div class="brand-name">UniCatólica</div></div>
+        <div class="nav-item">🏠 Início</div>
+        <div class="nav-item">🔍 Buscar</div>
+        <div class="nav-item">✉️ Mensagens</div>
+        <div class="nav-item">🔔 Notificações</div>
+        <div class="nav-item">📊 Criar enquete</div>
+        <div class="nav-item active">🚩 Denúncias <span class="count">3</span></div>
+        <div class="nav-item">📌 Solicitações de fixação <span class="count">1</span></div>
+        <div class="nav-section">Suas comunidades</div>
+        <div class="nav-item"><span class="nav-dot course"></span> Engenharia de Software</div>
+      </div>
+
+      <div class="queue">
+        <h4>Fila de denúncias</h4>
+        <div class="q-item sel">
+          <div class="q-comm">Engenharia de Software</div>
+          <div class="q-excerpt">"Comentário ofensivo sobre um colega de turma..."</div>
+          <div class="q-time">há 25 min</div>
+        </div>
+        <div class="q-item">
+          <div class="q-comm">Atlética de Eng. Software</div>
+          <div class="q-excerpt">"Postagem com link suspeito no comentário..."</div>
+          <div class="q-time">há 1h</div>
+        </div>
+        <div class="q-item">
+          <div class="q-comm">Engenharia de Software</div>
+          <div class="q-excerpt">"Discussão que fugiu do tema da disciplina..."</div>
+          <div class="q-time">há 3h</div>
+        </div>
+      </div>
+
+      <div class="detail">
+        <div class="d-head">
+          <div><div class="d-title">Denúncia #2201</div><div class="d-comm">Comunidade: Engenharia de Software</div></div>
+        </div>
+
+        <div class="privacy-note">🔒 A identidade de quem denunciou não é compartilhada com você.</div>
+
+        <div class="content-card">
+          <div class="who">Comentário denunciado, de Bruno Kramer</div>
+          <div class="txt">"Só isso mesmo que dá pra esperar de alguém do seu período, nem sei por que ainda tenta."</div>
+        </div>
+
+        <div class="reason-block">
+          <div class="reason-label">Motivo da denúncia</div>
+          <div class="reason-text">Discurso ofensivo direcionado a um colega</div>
+        </div>
+
+        <div class="actions">
+          <div class="btn hide">Ocultar</div>
+          <div class="btn remove">Remover</div>
+          <div class="btn restrict">Restringir usuário</div>
+          <div class="btn escalate">Escalonar para moderador neutro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estados: como o conteúdo aparece depois da decisão -->
+  <div class="states-section">
+    <div class="states-title">Como o conteúdo aparece depois da decisão</div>
+    <div class="states-grid">
+      <div class="state-col">
+        <span class="alt-label">estado · oculto (reversível)</span>
+        <div class="mini-card hidden-state">
+          <div class="mh"><div class="mini-avatar"></div><b>Bruno Kramer</b></div>
+          <div class="mt">"Só isso mesmo que dá pra esperar de alguém do seu período..."</div>
+          <div class="restore-btn">↺ Restaurar</div>
+        </div>
+      </div>
+      <div class="state-col">
+        <span class="alt-label">estado · removido (definitivo)</span>
+        <div class="empty-box">Este conteúdo foi removido.<br>Some da lista para todos — permanece apenas no log de auditoria, fora do feed.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
