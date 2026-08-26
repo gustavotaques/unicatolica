@@ -25,8 +25,16 @@ services:
   backend:
     image: eclipse-temurin:21-jdk
     working_dir: /workspace
-    entrypoint: ['./mvnw']
-    command: ['quarkus:dev', '-Dquarkus.http.host=0.0.0.0']
+    # eclipse-temurin:21-jdk não traz `unzip`; sem ele o mvnw troca silenciosamente para
+    # baixar a distribuição .tar.gz do Maven, mas o checksum fixado em
+    # maven-wrapper.properties é o do .zip — a validação sempre falha. Instala `unzip`
+    # antes de delegar pro mvnw (só na primeira vez por volume, é rápido via apt cache).
+    entrypoint: ['sh', '-c']
+    command:
+      - |
+        set -e
+        command -v unzip >/dev/null || (apt-get update -qq && apt-get install -y -qq --no-install-recommends unzip)
+        exec ./mvnw quarkus:dev -Dquarkus.http.host=0.0.0.0
     volumes:
       - ./backend:/workspace
       - pacext-maven-repo:/root/.m2
