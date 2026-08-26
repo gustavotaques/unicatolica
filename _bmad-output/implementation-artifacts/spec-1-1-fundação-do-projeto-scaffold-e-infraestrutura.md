@@ -57,6 +57,8 @@ Repositório vazio — não há código existente a mapear. Os alvos a criar est
 
 ## Spec Change Log
 
+- **Pós-aprovação (Docker ficou disponível após o step-04):** `docker-compose up` do backend falhava 100% das vezes — `eclipse-temurin:21-jdk` não tem `unzip`, então o `mvnw` baixava silenciosamente o `.tar.gz` do Maven em vez do `.zip`, mas o checksum fixado em `maven-wrapper.properties` era o do `.zip`, então a validação sempre falhava. Corrigido instalando `unzip` antes de delegar pro `mvnw` em `docker-compose.yml` (commit `a25870c`). Após o fix, os três serviços (`db`, `backend`, `frontend`) foram subidos de verdade via `docker-compose up`, com `/q/health` respondendo 200, o filtro JWT retornando 401/404 corretamente, a migração Liquibase criando `log_auditoria`, e o frontend servindo a SPA — nenhum desses três serviços tinha sido executado de fato antes (nem pelo implementador nem pela revisão), só validados por sintaxe.
+
 ## Verification
 
 **Commands:**
