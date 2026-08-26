@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Changelog mestre do Liquibase (AD-9 da Architecture Spine).
+
+    Este arquivo é estável e não é editado a cada PR — só o <includeAll> muda de
+    conteúdo conforme novos changesets são adicionados em subpastas por módulo
+    (db/changelog/{modulo}/*.xml), evitando que dois módulos disputem a mesma linha
+    deste arquivo. Changeset id é sempre prefixado pelo nome do módulo (ex.:
+    "comunidades-002-add-campo"), nunca um contador global compartilhado.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!--
+        O includeAll aponta para a subpasta db/changelog/modulos, nunca para
+        db/changelog em si — se apontasse para a própria pasta que contém este
+        arquivo mestre, o Liquibase acusaria referência circular (o mestre se
+        incluiria a si mesmo). Cada módulo (e a infraestrutura transversal) ganha
+        sua própria subpasta ali dentro: db/changelog/modulos/{modulo}/*.xml.
+    -->
+    <includeAll path="db/changelog/modulos" errorIfMissingOrEmpty="false"/>
+
+</databaseChangeLog>

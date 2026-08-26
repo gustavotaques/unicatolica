@@ -1,0 +1,71 @@
+# Ambiente local reprodutível (AD-7 da Architecture Spine).
+# `docker-compose up` sobe Postgres + Quarkus em dev mode + Angular dev server.
+# Nenhum dev instala Postgres localmente fora deste compose.
+#
+# Uso: cp .env.example .env   (depois ajuste se quiser) e então `docker-compose up`.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-pacext}
+      POSTGRES_USER: ${DB_USER:-pacext}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pacext}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - pacext-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-pacext} -d ${DB_NAME:-pacext}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: eclipse-temurin:21-jdk
+    working_dir: /workspace
+    entrypoint: ['./mvnw']
+    command: ['quarkus:dev', '-Dquarkus.http.host=0.0.0.0']
+    volumes:
+      - ./backend:/workspace
+      - pacext-maven-repo:/root/.m2
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pacext}
+      DB_USER: ${DB_USER:-pacext}
+      DB_PASSWORD: ${DB_PASSWORD:-pacext}
+      JWT_ISSUER: ${JWT_ISSUER:-https://pacext.unicatolica.edu.br}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200}
+    ports:
+      - '8080:8080' # API REST
+      - '5005:5005' # debug remoto (JPDA)
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', "bash -c '</dev/tcp/localhost/8080'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /workspace
+    command: ['sh', '-c', 'npm ci && npm start -- --host 0.0.0.0']
+    volumes:
+      - ./frontend:/workspace
+    environment:
+      NODE_ENV: development
+      API_URL: ${API_URL:-http://localhost:8080}
+    ports:
+      - '4200:4200'
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pacext-db-data:
+  pacext-maven-repo:

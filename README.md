@@ -4,7 +4,7 @@ Rede social acadêmica para o Campus Joinville da CatólicaSC. Conecta os 3.000+
 
 Projeto do **PAC Extensionista** (5º semestre, Engenharia de Software) da CatólicaSC, orientado pelo Prof. Edson Vaz Lopes.
 
-> **Status:** planejamento concluído (PRD, arquitetura, UX e épicos validados) — implementação ainda não iniciada. Entrega da fatia núcleo prevista para **2026-08-29**.
+> **Status:** planejamento concluído (PRD, arquitetura, UX e épicos validados); fundação do projeto (scaffold, CI/CD, contrato OpenAPI base) implementada — Story 1.1. Entrega da fatia núcleo prevista para **2026-08-29**.
 
 ## Stack
 
@@ -33,11 +33,7 @@ unicatolica/
   _bmad-output/            # artefatos de planejamento (PRD, épicos, UX, arquitetura)
 ```
 
-`frontend/`, `backend/`, `openapi.yaml` e `docker-compose.yml` ainda não existem no repositório — a implementação começa após o Sprint Planning.
-
-## Como rodar (planejado)
-
-Ainda não há código de aplicação neste repositório. Quando a implementação começar, o fluxo local será:
+## Como rodar
 
 ```bash
 cp .env.example .env

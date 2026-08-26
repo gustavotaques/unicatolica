@@ -1,0 +1,147 @@
+openapi: 3.1.0
+info:
+  title: PACEXT — API UniCatólica
+  description: >
+    Contrato REST da rede social acadêmica UniCatólica (PACEXT). Fonte de verdade
+    acordada entre frontend e backend antes de qualquer lado implementar um endpoint
+    novo (AD-4 da Architecture Spine) — nenhum lado avança sem que o endpoint exista
+    aqui primeiro.
+  version: '0.1.0'
+
+servers:
+  - url: http://localhost:8080
+    description: Ambiente local (docker-compose, AD-7)
+
+paths: {}
+
+components:
+  schemas:
+    Erro:
+      type: object
+      description: >
+        Envelope de erro padrão (AD-5) — toda resposta de erro de todo endpoint REST
+        segue exatamente esta forma, com o status HTTP mapeado por cenário (401 sem
+        autenticação, 403/404 conforme a existência do recurso deva ou não ficar
+        oculta, 400/422 validação, 409 conflito, 500 erro não tratado).
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: 'Código estável da condição de erro (ex.: "NAO_AUTENTICADO").'
+              examples:
+                - NAO_AUTENTICADO
+            message:
+              type: string
+              description: Mensagem legível para exibição/log.
+              examples:
+                - Autenticação necessária.
+            details:
+              type: string
+              description: 'Detalhes adicionais opcionais (ex.: campo inválido).'
+
+    PageResponse:
+      type: object
+      description: >
+        Envelope de paginação padrão (AD-4) — todo endpoint de listagem referencia
+        este componente via $ref, nunca inventa a própria forma de paginar. Como
+        OpenAPI não tem genéricos, um endpoint concreto compõe o tipo do item com
+        allOf, por exemplo:
+          ComunidadePageResponse:
+            allOf:
+              - $ref: '#/components/schemas/PageResponse'
+              - type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comunidade'
+      required:
+        - content
+        - page
+        - size
+        - totalElements
+        - totalPages
+      properties:
+        content:
+          type: array
+          description: Itens da página atual — cada endpoint concreto especifica o tipo real via allOf.
+          items: {}
+        page:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Número da página atual (0-based).
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          description: Quantidade máxima de itens por página.
+        totalElements:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Total de itens em todas as páginas.
+        totalPages:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Total de páginas disponíveis.
+
+  responses:
+    NaoAutenticado:
+      description: Requisição sem autenticação válida (401).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    SemPermissao:
+      description: Autenticado, mas sem permissão para a ação (403).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    NaoEncontrado:
+      description: Recurso inexistente, ou cuja existência deve ficar oculta (404).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    ErroValidacao:
+      description: Corpo da requisição inválido (400/422).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    Conflito:
+      description: Conflito de estado do recurso (409).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+    ErroInterno:
+      description: Erro não tratado (500).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Erro'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Filtro de segurança JWT global (AD-2) — transporte exclusivamente via header
+        Authorization: Bearer, nunca cookie. Claims fixos: sub (id do usuário) e
+        roles (perfis globais, RF13).
+
+security:
+  - bearerAuth: []

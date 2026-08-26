@@ -1,0 +1,17 @@
+# Segredos e configuração local (AD-7) — nunca commitados, só .env.example
+.env
+.env.*
+!.env.example
+
+# Postgres local (docker-compose)
+pgdata/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
