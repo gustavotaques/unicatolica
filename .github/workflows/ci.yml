@@ -1,0 +1,88 @@
+name: CI
+
+# Gate de merge (AD-8 da Architecture Spine): build + testes automatizados
+# (frontend e backend) + validação do contrato OpenAPI em todo PR. Merge em
+# main exige este workflow verde — sem revisão humana obrigatória (decisão do
+# time, ver Boundaries do spec).
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend — build e testes (Angular)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Rodar testes
+        run: npx ng test --watch=false
+
+      - name: Build de produção
+        run: npx ng build
+
+  backend:
+    name: Backend — build e testes (Quarkus)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: pacext
+          POSTGRES_USER: pacext
+          POSTGRES_PASSWORD: pacext
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pacext -d pacext"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+          cache-dependency-path: backend/pom.xml
+
+      - name: Rodar build + testes (mvnw test)
+        run: ./mvnw --batch-mode test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: pacext
+          DB_USER: pacext
+          DB_PASSWORD: pacext
+
+  contrato-openapi:
+    name: Contrato — valida openapi.yaml
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Lint do contrato (Redocly)
+        run: npx --yes @redocly/cli lint openapi.yaml

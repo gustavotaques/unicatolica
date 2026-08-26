@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Tabela log_auditoria — infraestrutura transversal (AD-11), não pertence a nenhum
+    dos 12 módulos de domínio. Gravada exclusivamente via AuditoriaService.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="infraestrutura-001-create-log-auditoria" author="pacext">
+        <createTable tableName="log_auditoria">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="usuario_id" type="BIGINT"/>
+            <column name="modulo" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="acao" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entidade_afetada" type="VARCHAR(100)"/>
+            <column name="entidade_id" type="BIGINT"/>
+            <column name="detalhes" type="TEXT"/>
+            <column name="criado_em" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="idx_log_auditoria_usuario_id" tableName="log_auditoria">
+            <column name="usuario_id"/>
+        </createIndex>
+        <createIndex indexName="idx_log_auditoria_criado_em" tableName="log_auditoria">
+            <column name="criado_em"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
