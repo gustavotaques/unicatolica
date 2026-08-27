@@ -39,7 +39,7 @@ development_status:
   1-1-fundação-do-projeto-scaffold-e-infraestrutura: review
   1-2-cadastro-de-aluno-com-e-mail-institucional: backlog
   1-3-confirmação-de-e-mail-antes-do-primeiro-login: backlog
-  1-4-login-e-emissão-de-sessão-jwt: backlog
+  1-4-login-e-emissão-de-sessão-jwt: review
   1-5-bloqueio-de-acesso-sem-autenticação-e-restrição-por-perfil: backlog
   1-6-logout-e-invalidação-de-sessão: backlog
   epic-1-retrospective: optional

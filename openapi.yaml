@@ -12,10 +12,52 @@ servers:
   - url: http://localhost:8080
     description: Ambiente local (docker-compose, AD-7)
 
-paths: {}
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      summary: Autentica um usuário e emite uma sessão JWT (RF06/RF07/RF08).
+      tags: [Identidade]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Credenciais válidas — sessão emitida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
 
 components:
   schemas:
+    LoginRequest:
+      type: object
+      required: [email, senha]
+      properties:
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      description: >
+        Token JWT com claims sub (id do usuário) e roles (perfil global) — transportado
+        daqui em diante via header Authorization: Bearer, nunca cookie (AD-2).
+      required: [token]
+      properties:
+        token:
+          type: string
+
     Erro:
       type: object
       description: >
