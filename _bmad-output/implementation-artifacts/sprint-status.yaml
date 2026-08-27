@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 08-26-2026 18:30
-last_updated: 08-26-2026 19:52
+last_updated: 08-27-2026 00:00
 project: unicatolica
 project_key: NOKEY
 tracking_system: file-system
@@ -37,17 +37,17 @@ story_location: _bmad-output/implementation-artifacts
 development_status:
   epic-1: in-progress
   1-1-fundação-do-projeto-scaffold-e-infraestrutura: review
-  1-2-cadastro-de-aluno-com-e-mail-institucional: backlog
-  1-3-confirmação-de-e-mail-antes-do-primeiro-login: backlog
+  1-2-cadastro-de-aluno-com-e-mail-institucional: review
+  1-3-confirmação-de-e-mail-antes-do-primeiro-login: review
   1-4-login-e-emissão-de-sessão-jwt: backlog
   1-5-bloqueio-de-acesso-sem-autenticação-e-restrição-por-perfil: backlog
   1-6-logout-e-invalidação-de-sessão: backlog
   epic-1-retrospective: optional
 
-  epic-2: backlog
+  epic-2: in-progress
   2-1-pré-criação-de-comunidades-de-curso-pelo-administrador: backlog
   2-2-criação-de-comunidade-aberta-por-qualquer-aluno: backlog
-  2-3-auto-join-à-comunidade-de-curso: backlog
+  2-3-auto-join-à-comunidade-de-curso: review
   2-4-ingresso-e-saída-de-comunidade-aberta: backlog
   2-5-listagem-filtro-e-visualização-de-comunidade-não-membro: backlog
   2-6-administração-de-comunidade: backlog

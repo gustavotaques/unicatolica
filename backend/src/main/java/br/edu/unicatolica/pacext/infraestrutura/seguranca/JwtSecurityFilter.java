@@ -42,6 +42,7 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
     private static final Set<String> ALLOWLIST = Set.of(
             "/auth/login",
             "/auth/registro",
+            "/auth/confirmacao-email",
             "/q/health",
             "/q/health/live",
             "/q/health/ready");

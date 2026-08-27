@@ -1,9 +1,10 @@
 /**
- * Módulo de Identidade e Acesso (RF08, RF09, RF13).
+ * Módulo de Identidade e Acesso (RF01–RF13).
  *
- * <p>Pacote reservado pela Architecture Spine (AD-3 — limites de módulo dentro do
- * monólito): cada módulo é dono das próprias tabelas e expõe leitura entre módulos
- * apenas via associação JPA somente-leitura, nunca acesso direto a repositório alheio.
- * Ainda sem história implementada nesta fundação — pacote propositalmente vazio.</p>
+ * <p>Dono da tabela {@code usuario}/{@code usuario_papel} (AD-3 — limites de módulo dentro
+ * do monólito): nenhum outro módulo lê ou escreve nelas diretamente; leitura cross-módulo
+ * é sempre por id simples (sem relação JPA cruzando pacote), nunca acesso a repositório
+ * alheio. Implementa Story 1.2 (cadastro) e Story 1.3 (confirmação de e-mail); Login/JWT
+ * (Story 1.4) e logout (Story 1.6) ainda não implementados.</p>
  */
 package br.edu.unicatolica.pacext.identidade;
