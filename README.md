@@ -46,6 +46,21 @@ docker-compose up
 
 Em produção, frontend e backend são publicados separadamente no Render, com deploy automático a cada merge em `main` com CI verde (build + testes + validação do contrato OpenAPI).
 
+## Fluxo de contribuição
+
+A `main` tem branch protection ativa (AD-8): os 3 checks do CI (`Frontend`, `Backend`, `Contrato — valida openapi.yaml`) precisam estar verdes antes de qualquer coisa entrar na `main` — **sem exceção, nem para admin**. Não existe mais push direto na `main`: um commit novo é sempre rejeitado até rodar CI em outro lugar primeiro. Fluxo:
+
+```bash
+git checkout -b minha-feature
+# ... commits ...
+git push -u origin minha-feature
+gh pr create
+# espera o CI verde, então:
+gh pr merge --squash   # ou merge pela UI do GitHub
+```
+
+Revisão humana **não é obrigatória** para merge (decisão do time, AD-8) — só o CI precisa estar verde.
+
 ## Documentação
 
 | Documento | Conteúdo |
