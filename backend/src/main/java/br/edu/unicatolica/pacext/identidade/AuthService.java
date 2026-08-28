@@ -33,12 +33,22 @@ public class AuthService {
     String issuer;
 
     /**
-     * @throws ApiException 401 (código {@code CREDENCIAL_INVALIDA}) se o e-mail não
-     *         existe, a senha não confere, ou o e-mail ainda não foi confirmado — nunca
-     *         indica qual das três, para não vazar quais e-mails existem na base (RF07).
+     * @throws ApiException 401 {@code CREDENCIAL_INVALIDA} se o e-mail não existe ou a
+     *         senha não confere — mensagem genérica, nunca indica qual das duas, para não
+     *         vazar quais e-mails existem na base (RF07). Ou 401 {@code EMAIL_NAO_CONFIRMADO}
+     *         se a credencial está correta mas o e-mail ainda não foi confirmado — mensagem
+     *         distinta da anterior, com opção de reenvio (RF01.2, Story 1.3). A checagem de
+     *         confirmação só acontece depois de validar a senha, de propósito: senha errada
+     *         sempre cai no CREDENCIAL_INVALIDA genérico, mesmo para e-mail não confirmado —
+     *         senão daria pra enumerar contas pendentes de confirmação testando senhas.
      */
     public String autenticar(String email, String senha) {
-        Usuario usuario = buscarUsuarioValido(email, senha);
+        Usuario usuario = buscarUsuarioComCredencialValida(email, senha);
+
+        if (!usuario.emailConfirmado) {
+            throw ApiException.naoAutenticado("EMAIL_NAO_CONFIRMADO",
+                    "Confirme seu e-mail antes de entrar. Reenviar confirmação", null);
+        }
 
         Set<String> papeis = usuario.papeis.stream().map(Enum::name).collect(Collectors.toSet());
         String token = Jwt.claims()
@@ -51,11 +61,9 @@ public class AuthService {
         return token;
     }
 
-    private Usuario buscarUsuarioValido(String email, String senha) {
+    private Usuario buscarUsuarioComCredencialValida(String email, String senha) {
         Optional<Usuario> usuario = usuarioRepository.buscarPorEmail(email);
-        if (usuario.isEmpty()
-                || !usuario.get().emailConfirmado
-                || !BcryptUtil.matches(senha, usuario.get().senhaHash)) {
+        if (usuario.isEmpty() || !BcryptUtil.matches(senha, usuario.get().senhaHash)) {
             throw ApiException.naoAutenticado("CREDENCIAL_INVALIDA", "E-mail ou senha inválidos.", null);
         }
         return usuario.get();

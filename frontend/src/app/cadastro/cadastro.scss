@@ -114,3 +114,26 @@ button:disabled {
 .cadastro__resumo dd {
   margin: 0;
 }
+
+.botao-secundario {
+  margin-top: 0.85rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid #1e5631;
+  border-radius: 999px;
+  background: transparent;
+  color: #1e5631;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.botao-secundario:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cadastro__reenvio-confirmado {
+  margin: 0.85rem 0 0;
+  font-size: 0.8125rem;
+  color: #1e5631;
+}

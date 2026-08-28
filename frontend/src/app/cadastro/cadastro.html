@@ -18,6 +18,14 @@
           <dt>Status do e-mail</dt>
           <dd>{{ usuario.emailConfirmado ? 'confirmado' : 'não confirmado' }}</dd>
         </dl>
+
+        @if (reenviado()) {
+          <p class="cadastro__reenvio-confirmado">E-mail de confirmação reenviado.</p>
+        } @else {
+          <button type="button" class="botao-secundario" [disabled]="reenviando()" (click)="reenviarConfirmacao()">
+            {{ reenviando() ? 'Reenviando…' : 'Não recebeu? Reenviar confirmação' }}
+          </button>
+        }
       </div>
     }
 

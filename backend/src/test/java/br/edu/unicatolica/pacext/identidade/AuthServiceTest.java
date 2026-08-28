@@ -106,11 +106,30 @@ class AuthServiceTest {
     }
 
     @Test
-    void rejeitaComCredenciaisInvalidasQuandoEmailAindaNaoFoiConfirmado() {
+    void rejeitaComMensagemEspecificaQuandoEmailAindaNaoFoiConfirmado() {
         Usuario usuario = usuarioConfirmado("Senha123!");
         usuario.emailConfirmado = false;
         when(usuarioRepository.buscarPorEmail(usuario.email)).thenReturn(Optional.of(usuario));
 
-        assertThrows(ApiException.class, () -> authService.autenticar(usuario.email, "Senha123!"));
+        ApiException erro = assertThrows(ApiException.class,
+                () -> authService.autenticar(usuario.email, "Senha123!"));
+
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), erro.getStatus());
+        assertEquals("EMAIL_NAO_CONFIRMADO", erro.getCode());
+        assertEquals("Confirme seu e-mail antes de entrar. Reenviar confirmação", erro.getMessage());
+    }
+
+    @Test
+    void rejeitaComMensagemGenericaQuandoSenhaErradaMesmoComEmailNaoConfirmado() {
+        // Senha errada nunca deve revelar que o e-mail existe mas está pendente de
+        // confirmação — sempre a mensagem genérica de credencial inválida (RF07).
+        Usuario usuario = usuarioConfirmado("Senha123!");
+        usuario.emailConfirmado = false;
+        when(usuarioRepository.buscarPorEmail(usuario.email)).thenReturn(Optional.of(usuario));
+
+        ApiException erro = assertThrows(ApiException.class,
+                () -> authService.autenticar(usuario.email, "senha-errada"));
+
+        assertEquals("CREDENCIAL_INVALIDA", erro.getCode());
     }
 }

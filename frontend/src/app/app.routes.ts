@@ -10,4 +10,8 @@ export const routes: Routes = [
     path: 'cadastro',
     loadComponent: () => import('./cadastro/cadastro').then((m) => m.Cadastro),
   },
+  {
+    path: 'confirmar-email',
+    loadComponent: () => import('./confirmar-email/confirmar-email').then((m) => m.ConfirmarEmail),
+  },
 ];

@@ -74,4 +74,26 @@ describe('Cadastro', () => {
     expect(component['erro']()).toBe('Esse e-mail já tem uma conta. Esqueceu a senha?');
     expect(component['sucesso']()).toBeNull();
   });
+
+  it('reenvia a confirmação de e-mail depois de um cadastro bem-sucedido', () => {
+    preencherFormularioValido();
+    component['enviar']();
+    httpMock.expectOne('http://localhost:8080/auth/registro').flush({
+      id: 1,
+      nome: 'Ana Silva',
+      email: 'ana@catolicasc.edu.br',
+      curso: 'Engenharia de Software',
+      emailConfirmado: false,
+      criadoEm: '2026-08-27T00:00:00Z',
+    });
+
+    component['reenviarConfirmacao']();
+
+    const request = httpMock.expectOne('http://localhost:8080/auth/confirmacao-email/reenvio');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ email: 'ana@catolicasc.edu.br' });
+    request.flush(null, { status: 202, statusText: 'Accepted' });
+
+    expect(component['reenviado']()).toBe(true);
+  });
 });

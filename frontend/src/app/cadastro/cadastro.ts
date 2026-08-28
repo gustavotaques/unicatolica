@@ -43,6 +43,8 @@ export class Cadastro {
   protected readonly enviando = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly sucesso = signal<CadastroResponse | null>(null);
+  protected readonly reenviando = signal(false);
+  protected readonly reenviado = signal(false);
 
   protected readonly form = this.formBuilder.nonNullable.group({
     nome: ['', [Validators.required]],
@@ -71,6 +73,28 @@ export class Cadastro {
       error: (resposta: HttpErrorResponse) => {
         this.enviando.set(false);
         this.erro.set(this.mensagemDeErro(resposta));
+      },
+    });
+  }
+
+  /** Tela "Verifique seu e-mail" (Story 1.3) — opção de reenviar a confirmação. */
+  protected reenviarConfirmacao(): void {
+    const usuario = this.sucesso();
+    if (!usuario || this.reenviando()) {
+      return;
+    }
+
+    this.reenviando.set(true);
+    this.http.post(`${API_BASE_URL}/auth/confirmacao-email/reenvio`, { email: usuario.email }).subscribe({
+      next: () => {
+        this.reenviando.set(false);
+        this.reenviado.set(true);
+      },
+      error: () => {
+        // Backend nunca revela se o e-mail existe (evita enumeração) — sempre 202 aqui,
+        // então um erro só acontece por falha de rede/servidor. Mesmo assim não bloqueia
+        // o usuário: ele pode tentar de novo.
+        this.reenviando.set(false);
       },
     });
   }
