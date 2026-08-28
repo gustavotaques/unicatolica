@@ -16,6 +16,7 @@ import br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService;
 import io.smallrye.jwt.auth.principal.DefaultJWTParser;
 import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import io.smallrye.jwt.util.KeyUtils;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Optional;
@@ -26,8 +27,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Testa {@link AuthService} isoladamente (sem Docker/Dev Services, mesmo padrão de
- * {@code JwtSecurityFilterTest}) — repositório mockado via Mockito, chave de assinatura
- * de teste lida diretamente do classpath.
+ * {@code JwtSecurityFilterTest}) — repositório mockado via Mockito, par de chaves gerado
+ * em memória a cada execução (nenhuma chave, de teste ou não, fica commitada no repo).
  */
 class AuthServiceTest {
 
@@ -42,8 +43,9 @@ class AuthServiceTest {
 
     @BeforeAll
     static void carregarChaves() throws Exception {
-        privateKey = KeyUtils.readPrivateKey("privateKey.pem");
-        publicKey = KeyUtils.readPublicKey("publicKey.pem");
+        KeyPair par = KeyUtils.generateKeyPair(2048);
+        privateKey = par.getPrivate();
+        publicKey = par.getPublic();
     }
 
     AuthServiceTest() {

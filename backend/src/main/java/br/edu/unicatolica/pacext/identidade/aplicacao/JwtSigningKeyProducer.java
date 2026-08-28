@@ -8,8 +8,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Produz a {@link PrivateKey} usada por {@link AuthService} para assinar o token de
- * sessão emitido no login — par correspondente à {@code publicKey.pem} que o
- * {@code JwtSecurityFilter} usa para validar (AD-2).
+ * sessão emitido no login — par correspondente à chave pública configurada em
+ * {@code mp.jwt.verify.publickey} que o {@code JwtSecurityFilter} usa para validar (AD-2).
+ *
+ * <p>Lida do conteúdo PEM bruto da variável de ambiente {@code JWT_PRIVATE_KEY} (nunca de
+ * um arquivo commitado — ver {@code .env.example}), para que nenhuma chave privada, real
+ * ou de desenvolvimento, fique versionada no repositório (RNF04/OWASP ASVS).</p>
  *
  * <p>Escopo {@code @Dependent} (padrão, sem anotação) de propósito: um produtor de
  * {@link PrivateKey} em escopo normal (ex.: {@code @ApplicationScoped}) faz o Arc gerar
@@ -19,11 +23,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class JwtSigningKeyProducer {
 
-    @ConfigProperty(name = "pacext.jwt.sign.key.location")
-    String chaveLocation;
+    @ConfigProperty(name = "pacext.jwt.sign.key")
+    String chaveConteudo;
 
     @Produces
     public PrivateKey privateKey() throws Exception {
-        return KeyUtils.readPrivateKey(chaveLocation);
+        return KeyUtils.decodePrivateKey(chaveConteudo);
     }
 }

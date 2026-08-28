@@ -16,6 +16,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Instant;
@@ -27,8 +28,8 @@ import org.mockito.ArgumentCaptor;
 /**
  * Testa {@link JwtSecurityFilter} isoladamente, sem subir o runtime completo do Quarkus
  * (não há Docker disponível para os Dev Services de Postgres neste ambiente) —
- * constrói o {@link io.smallrye.jwt.auth.principal.JWTParser} manualmente com o par de
- * chaves de teste em {@code src/test/resources/} e um {@link ContainerRequestContext}
+ * constrói o {@link io.smallrye.jwt.auth.principal.JWTParser} manualmente com um par de
+ * chaves gerado em memória (nenhuma chave commitada no repo) e um {@link ContainerRequestContext}
  * mockado via Mockito, cobrindo exatamente o contrato da AD-2: allowlist
  * {@code @PermitAll}, exigência de {@code Authorization: Bearer} e das claims
  * {@code sub}/{@code roles}.
@@ -42,8 +43,9 @@ class JwtSecurityFilterTest {
 
     @BeforeAll
     static void setUpParser() throws Exception {
-        privateKey = KeyUtils.readPrivateKey("privateKey.pem");
-        PublicKey publicKey = KeyUtils.readPublicKey("publicKey.pem");
+        KeyPair par = KeyUtils.generateKeyPair(2048);
+        privateKey = par.getPrivate();
+        PublicKey publicKey = par.getPublic();
 
         JWTAuthContextInfo contextInfo = new JWTAuthContextInfo(publicKey, ISSUER);
         contextInfo.setGroupsPath("roles");

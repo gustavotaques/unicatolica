@@ -11,6 +11,7 @@ import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.util.KeyUtils;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Set;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.Test;
  * {@link UsuarioAutenticado#possuiPerfil(String)} como o filtro assume. Sem Docker disponível
  * neste ambiente para os Dev Services de Postgres, este teste fica no mesmo nível
  * "sem runtime" dos demais testes de JWT — sem {@code @QuarkusTest} nem round-trip HTTP.
+ * Par de chaves gerado em memória a cada execução, nenhuma chave commitada no repo.
  */
 class UsuarioAutenticadoTest {
 
@@ -45,8 +47,9 @@ class UsuarioAutenticadoTest {
 
     @BeforeAll
     static void setUpParser() throws Exception {
-        privateKey = KeyUtils.readPrivateKey("privateKey.pem");
-        PublicKey publicKey = KeyUtils.readPublicKey("publicKey.pem");
+        KeyPair par = KeyUtils.generateKeyPair(2048);
+        privateKey = par.getPrivate();
+        PublicKey publicKey = par.getPublic();
 
         JWTAuthContextInfo contextInfo = new JWTAuthContextInfo(publicKey, ISSUER);
         contextInfo.setGroupsPath("roles");

@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# Chaves JWT (AD-2/RNF04) — nunca commitadas, geradas localmente e coladas no .env
+*.pem
+
 # Postgres local (docker-compose)
 pgdata/
 
