@@ -6,6 +6,9 @@
 # Postgres local (docker-compose)
 pgdata/
 
+# Claude Code — config local, não é do projeto
+.claude/
+
 # OS/editor
 .DS_Store
 Thumbs.db

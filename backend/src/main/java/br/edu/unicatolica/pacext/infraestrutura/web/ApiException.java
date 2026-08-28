@@ -26,6 +26,10 @@ public class ApiException extends RuntimeException {
         return new ApiException(422, code, message, details);
     }
 
+    public static ApiException naoAutenticado(String code, String message, String details) {
+        return new ApiException(Response.Status.UNAUTHORIZED.getStatusCode(), code, message, details);
+    }
+
     public static ApiException conflito(String code, String message, String details) {
         return new ApiException(Response.Status.CONFLICT.getStatusCode(), code, message, details);
     }

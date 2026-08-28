@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { API_BASE_URL } from '../core/config/api.config';
 
 /**
  * Envelope de erro padrão da API (AD-5) — espelha `ErroResponse` do backend.
@@ -39,13 +40,6 @@ export class Cadastro {
   private readonly http = inject(HttpClient);
   private readonly formBuilder = inject(FormBuilder);
 
-  /**
-   * [DECISÃO A CONFIRMAR] URL da API hardcoded — o frontend ainda não lê configuração de
-   * ambiente (ver comentário de `API_URL` em `.env.example`); ajustar quando essa leitura
-   * existir.
-   */
-  private readonly apiUrl = 'http://localhost:8080';
-
   protected readonly enviando = signal(false);
   protected readonly erro = signal<string | null>(null);
   protected readonly sucesso = signal<CadastroResponse | null>(null);
@@ -68,7 +62,7 @@ export class Cadastro {
     this.erro.set(null);
     this.sucesso.set(null);
 
-    this.http.post<CadastroResponse>(`${this.apiUrl}/auth/registro`, this.form.getRawValue()).subscribe({
+    this.http.post<CadastroResponse>(`${API_BASE_URL}/auth/registro`, this.form.getRawValue()).subscribe({
       next: (resposta) => {
         this.enviando.set(false);
         this.sucesso.set(resposta);
