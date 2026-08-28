@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   protected readonly form = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
@@ -18,7 +20,12 @@ export class Login {
 
   protected readonly enviando = signal(false);
   protected readonly mensagemErro = signal<string | null>(null);
-  protected readonly logado = signal(false);
+
+  constructor() {
+    if (this.authService.obterToken()) {
+      this.router.navigateByUrl('/feed');
+    }
+  }
 
   protected enviar(): void {
     if (this.form.invalid) {
@@ -33,7 +40,7 @@ export class Login {
     this.authService.login(email!, senha!).subscribe({
       next: () => {
         this.enviando.set(false);
-        this.logado.set(true);
+        this.router.navigateByUrl('/feed');
       },
       error: () => {
         this.enviando.set(false);

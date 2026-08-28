@@ -1,17 +1,13 @@
-@if (logado()) {
-  <p>Login realizado. Token armazenado.</p>
-} @else {
-  <form [formGroup]="form" (ngSubmit)="enviar()">
-    <label for="email">E-mail</label>
-    <input id="email" type="email" formControlName="email" />
+<form [formGroup]="form" (ngSubmit)="enviar()">
+  <label for="email">E-mail</label>
+  <input id="email" type="email" formControlName="email" />
 
-    <label for="senha">Senha</label>
-    <input id="senha" type="password" formControlName="senha" />
+  <label for="senha">Senha</label>
+  <input id="senha" type="password" formControlName="senha" />
 
-    <button type="submit" [disabled]="enviando()">Entrar</button>
+  <button type="submit" [disabled]="enviando()">Entrar</button>
 
-    @if (mensagemErro()) {
-      <p role="alert">{{ mensagemErro() }}</p>
-    }
-  </form>
-}
+  @if (mensagemErro()) {
+    <p role="alert">{{ mensagemErro() }}</p>
+  }
+</form>

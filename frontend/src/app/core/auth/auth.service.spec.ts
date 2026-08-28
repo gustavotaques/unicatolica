@@ -36,4 +36,13 @@ describe('AuthService', () => {
 
     expect(service.obterToken()).toBe('token-fake');
   });
+
+  it('remove o token armazenado ao fazer logout', () => {
+    service.login('aluno@catolicasc.edu.br', 'Senha123!').subscribe();
+    httpMock.expectOne('http://localhost:8080/auth/login').flush({ token: 'token-fake' });
+
+    service.logout();
+
+    expect(service.obterToken()).toBeNull();
+  });
 });
