@@ -18,6 +18,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.Instant;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -133,6 +134,22 @@ class JwtSecurityFilterTest {
     @Test
     void rejeitaTokenInvalido() throws Exception {
         ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer token-invalido");
+
+        filter.filter(requestContext);
+
+        assertAbortedWith401(requestContext);
+    }
+
+    /** Fecha o gap de cobertura citado na spec 1.5: token expirado deve ser 401, não passar. */
+    @Test
+    void rejeitaTokenExpirado() throws Exception {
+        String tokenExpirado = Jwt.claims()
+                .issuer(ISSUER)
+                .subject("42")
+                .groups(Set.of("ALUNO"))
+                .expiresAt(Instant.now().minusSeconds(3600))
+                .sign(privateKey);
+        ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer " + tokenExpirado);
 
         filter.filter(requestContext);
 

@@ -21,3 +21,15 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-1-1-fundação-do-projeto-scaffold-e-infraestrutura.md`
   summary: Substituir/complementar `ApplicationPropertiesJwtConfigTest` (comparação textual de `application.properties`) por um `@QuarkusTest`/`@QuarkusIntegrationTest` real que valide o `JwtSecurityFilter` através do runtime completo do Quarkus com CDI e datasource reais.
   evidence: Nem o ambiente de implementação nem o de revisão desta história tinham Docker disponível para os Dev Services de Postgres; o CI já provisiona um serviço Postgres real e poderia rodar esse teste de integração quando alguém tiver acesso a um ambiente com Docker para autorá-lo com segurança.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-5-bloqueio-de-acesso-sem-autenticação-e-restrição-por-perfil.md`
+  summary: `JwtSecurityFilter` grava `sub`/`roles` em properties do `ContainerRequestContext` (`pacext.usuarioId`, `pacext.roles`) especificamente para leitura downstream, mas o novo `UsuarioAutenticado` (Story 1.5) as ignora e lê o `JsonWebToken` CDI diretamente — reconciliar os dois mecanismos (remover as properties não lidas, ou documentar por que dois caminhos de leitura de identidade convivem) antes que um terceiro módulo escolha um dos dois por acaso.
+  evidence: Revisão adversarial (blind-hunter) apontou as properties como código morto após a Story 1.5; confirmado por busca — nenhum código em `src/main` lê `REQUEST_PROPERTY_USUARIO_ID`/`REQUEST_PROPERTY_ROLES` além do próprio filtro que as escreve.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-5-bloqueio-de-acesso-sem-autenticação-e-restrição-por-perfil.md`
+  summary: Registrar em `log_auditoria` (`AuditoriaService`, AD-11) quando um `MODERADOR` consulta o perfil de outro usuário via `GET /usuarios/{id}`, já que é a primeira ação real de um perfil sobre dados de outro usuário no sistema.
+  evidence: AD-11 cobre "alteração administrativa" como caso de auditoria; leitura de PII por um perfil elevado sobre outro usuário é adjacente, mas a spec 1.5 não pediu esse registro explicitamente — revisão adversarial (blind-hunter) sinalizou a ausência.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-1-5-bloqueio-de-acesso-sem-autenticação-e-restrição-por-perfil.md`
+  summary: Adicionar um `ExceptionMapper`/`ParamConverterProvider` compartilhado para `@PathParam` `Long` malformado (ex. `GET /usuarios/abc`) que devolva 400 no envelope `ErroResponse` padrão, em vez do erro default do RESTEasy Reactive.
+  evidence: `edge-case-hunter` apontou que `GET /usuarios/{id}` com `id` não numérico hoje escapa do envelope `ErroResponse`; é um gap cross-cutting (qualquer endpoint futuro com `Long`/`Integer` no path herda o mesmo problema), não específico desta história.
