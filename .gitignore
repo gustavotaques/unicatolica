@@ -9,6 +9,10 @@ pgdata/
 # Claude Code — config local, não é do projeto
 .claude/
 
+# BMAD — configuração e artefatos locais, não é do projeto
+_bmad/
+_bmad-output/
+
 # OS/editor
 .DS_Store
 Thumbs.db
