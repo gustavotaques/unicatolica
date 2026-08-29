@@ -7,11 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.time.LocalDate;
 
 /**
  * Usuário do módulo Identidade e Acesso (RF05-RF13) — dono exclusivo da tabela
- * {@code usuario} (AD-3). Só o cadastro (Story 1.2, fora do escopo desta história) cria
- * novos registros em produção; esta história (1.4) só lê.
+ * {@code usuario} (AD-3). Cadastro (Story 1.2) cria o registro; confirmação de e-mail
+ * (Story 1.3) e login (Story 1.4) leem/atualizam os campos abaixo.
  */
 @Entity
 @Table(name = "usuario")
@@ -39,6 +40,36 @@ public class Usuario {
     @Column(name = "email_confirmado", nullable = false)
     public boolean emailConfirmado;
 
+    /**
+     * Texto informado no cadastro (Story 1.2, RF24.1) — casado em runtime pelo módulo
+     * Comunidades contra {@code comunidade.nome} onde {@code tipo='CURSO'}. Coluna
+     * adicionada em {@code identidade-003-add-cadastro-fields.xml} (a tabela original,
+     * identidade-001, não a tinha).
+     */
+    @Column(name = "curso", length = 150)
+    public String curso;
+
+    /** Usado para validar idade mínima no cadastro (Story 1.2, RF01.1). */
+    @Column(name = "data_nascimento")
+    public LocalDate dataNascimento;
+
+    @Column(name = "token_confirmacao_email", length = 255)
+    public String tokenConfirmacaoEmail;
+
+    @Column(name = "token_confirmacao_expira_em")
+    public Instant tokenConfirmacaoExpiraEm;
+
+    /**
+     * Logout (Story 1.6, RF10/RF11) — instante a partir do qual tokens são aceitos.
+     * {@code null} significa sem restrição. Atualizado para "agora" a cada logout;
+     * JwtSecurityFilter rejeita tokens com {@code iat} anterior a este valor.
+     */
+    @Column(name = "sessao_valida_desde")
+    public Instant sessaoValidaDesde;
+
     @Column(name = "criado_em", nullable = false)
     public Instant criadoEm;
+
+    @Column(name = "atualizado_em")
+    public Instant atualizadoEm;
 }

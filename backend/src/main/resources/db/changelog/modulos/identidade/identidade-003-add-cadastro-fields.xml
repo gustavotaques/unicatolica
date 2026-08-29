@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Colunas adicionais em usuario para a Story 1.2 (Cadastro) e Story 1.3 (Confirmação de
+    e-mail) — identidade-001 (main) criou a tabela com o mínimo para a Story 1.4 (Login);
+    este changeset estende, nunca edita um changeset já aplicado (AD-9).
+
+    curso/data_nascimento ficam NULLABLE no banco (não NOT NULL) porque a linha semente de
+    identidade-002 foi inserida antes de essas colunas existirem — a obrigatoriedade real
+    para novos cadastros é aplicada na camada de aplicação (CadastroService), não no schema.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="identidade-003-add-cadastro-fields" author="pacext">
+        <addColumn tableName="usuario">
+            <column name="curso" type="VARCHAR(150)"/>
+            <column name="data_nascimento" type="DATE"/>
+            <column name="token_confirmacao_email" type="VARCHAR(255)"/>
+            <column name="token_confirmacao_expira_em" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="atualizado_em" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+        <createIndex indexName="idx_usuario_token_confirmacao_email" tableName="usuario">
+            <column name="token_confirmacao_email"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

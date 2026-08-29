@@ -1,6 +1,8 @@
 package br.edu.unicatolica.pacext.identidade.aplicacao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -9,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import br.edu.unicatolica.pacext.identidade.dominio.CredenciaisInvalidasException;
+import br.edu.unicatolica.pacext.identidade.dominio.EmailNaoConfirmadoException;
 import br.edu.unicatolica.pacext.identidade.dominio.PasswordHasher;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
@@ -19,6 +22,7 @@ import io.smallrye.jwt.util.KeyUtils;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -108,12 +112,44 @@ class AuthServiceTest {
     }
 
     @Test
-    void rejeitaComCredenciaisInvalidasQuandoEmailAindaNaoFoiConfirmado() {
+    void rejeitaComEmailNaoConfirmadoQuandoCredencialEstaCorreta() {
+        Usuario usuario = usuarioConfirmado("Senha123!");
+        usuario.emailConfirmado = false;
+        when(usuarioRepository.buscarPorEmail(usuario.email)).thenReturn(Optional.of(usuario));
+
+        assertThrows(EmailNaoConfirmadoException.class,
+                () -> authService.autenticar(usuario.email, "Senha123!"));
+    }
+
+    @Test
+    void rejeitaComCredenciaisInvalidasQuandoSenhaErradaMesmoComEmailNaoConfirmado() {
+        // Senha errada nunca deve revelar que o e-mail existe mas está pendente de
+        // confirmação — sempre CredenciaisInvalidasException (RF07/anti-enumeração).
         Usuario usuario = usuarioConfirmado("Senha123!");
         usuario.emailConfirmado = false;
         when(usuarioRepository.buscarPorEmail(usuario.email)).thenReturn(Optional.of(usuario));
 
         assertThrows(CredenciaisInvalidasException.class,
-                () -> authService.autenticar(usuario.email, "Senha123!"));
+                () -> authService.autenticar(usuario.email, "senha-errada"));
+    }
+
+    @Test
+    void logoutGravaSessaoValidaDesdeERegistraAuditoria() {
+        Usuario usuario = usuarioConfirmado("Senha123!");
+        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+        Instant antes = Instant.now();
+
+        authService.logout(42L);
+
+        assertNotNull(usuario.sessaoValidaDesde);
+        assertFalse(usuario.sessaoValidaDesde.isBefore(antes));
+        verify(auditoriaService).registrar(eq(42L), eq("identidade"), eq("LOGOUT"), any());
+    }
+
+    @Test
+    void logoutNaoFalhaParaUsuarioInexistente() {
+        when(usuarioRepository.findById(99L)).thenReturn(null);
+
+        authService.logout(99L);
     }
 }

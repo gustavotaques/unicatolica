@@ -1,5 +1,7 @@
 package br.edu.unicatolica.pacext.infraestrutura.seguranca;
 
+import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
+import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
@@ -15,6 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Set;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
@@ -42,6 +45,7 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
     private static final Set<String> ALLOWLIST = Set.of(
             "/auth/login",
             "/auth/registro",
+            "/auth/confirmacao-email",
             "/q/health",
             "/q/health/live",
             "/q/health/ready");
@@ -53,6 +57,9 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
 
     @Inject
     JWTParser jwtParser;
+
+    @Inject
+    UsuarioRepository usuarioRepository;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -92,12 +99,32 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
                 abort(requestContext, "Token não contém a claim obrigatória 'roles'.");
                 return;
             }
+            if (tokenEmitidoAntesDoLogout(usuarioId, jwt)) {
+                abort(requestContext, "Token JWT inválido ou expirado.");
+                return;
+            }
 
             requestContext.setProperty(REQUEST_PROPERTY_USUARIO_ID, usuarioId);
             requestContext.setProperty(REQUEST_PROPERTY_ROLES, roles);
         } catch (ParseException | RuntimeException e) {
             abort(requestContext, "Token JWT inválido ou expirado.");
         }
+    }
+
+    /**
+     * Logout (Story 1.6, RF10/RF11): token continua criptograficamente válido até o
+     * {@code exp} natural, mas deixa de ser aceito se foi emitido ({@code iat}) antes do
+     * último logout do usuário — {@code sessaoValidaDesde} é gravado por
+     * {@code AuthService.logout}. {@code null} nesse campo (usuário nunca deslogou) não
+     * restringe nada.
+     */
+    private boolean tokenEmitidoAntesDoLogout(String usuarioId, JsonWebToken jwt) {
+        Usuario usuario = usuarioRepository.findById(Long.valueOf(usuarioId));
+        if (usuario == null || usuario.sessaoValidaDesde == null) {
+            return false;
+        }
+        Instant emitidoEm = Instant.ofEpochSecond(jwt.getIssuedAtTime());
+        return emitidoEm.isBefore(usuario.sessaoValidaDesde);
     }
 
     /**
