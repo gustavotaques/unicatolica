@@ -34,21 +34,10 @@ Diferença essencial: no MVC o **Model** é uma coisa só (dado + regra + persis
 Exemplo real no projeto (módulo `identidade`):
 ```
 identidade/
-  web/    AuthResource.java, CadastroResource.java, ConfirmacaoEmailResource.java
-  (raiz)  AuthService.java, CadastroService.java, ConfirmacaoEmailService.java,
-          Usuario.java, UsuarioRepository.java
+  web/         AuthResource.java       -> recebe POST /auth/login
+  aplicacao/   AuthService.java        -> valida credenciais, gera JWT
+  dominio/     Usuario.java, UsuarioRepository.java -> entidade + acesso a dado
 ```
-
-`[NOTA]` a primeira versão deste documento (e da Story 1.4) usava subpastas físicas
-`web/`/`aplicacao/`/`dominio/` dentro de cada módulo, espelhando a tabela acima 1:1. Na
-integração com as Stories 1.2/1.3 (mesmo módulo `identidade`), optou-se por achatar
-`aplicacao/`+`dominio/` numa pasta só (a raiz do módulo) — a separação de
-responsabilidade Resource → Service → Repository continua valendo (é por nome de
-classe/convenção, não por pasta física); só o Resource fica isolado em `web/`, por ser a
-única camada que muda de "sabor" (JAX-RS) de propósito. Motivo prático: os módulos desta
-fatia são pequenos o bastante pra 3 subpastas por módulo virarem mais navegação do que
-ajuda. Revisitar se um módulo crescer o suficiente para justificar a separação física de
-novo.
 
 Cada camada só conhece a camada logo abaixo (Resource não fala com Repository direto, sempre passa pelo Service). Isso facilita testar a regra de negócio isolada (mock do Repository) e é o que possibilita a regra AD-3 do projeto (nenhum módulo acessa o Repository de outro módulo — só o dono do módulo pode).
 

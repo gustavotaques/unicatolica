@@ -45,6 +45,12 @@ services:
       DB_USER: ${DB_USER:-pacext}
       DB_PASSWORD: ${DB_PASSWORD:-pacext}
       JWT_ISSUER: ${JWT_ISSUER:-https://pacext.unicatolica.edu.br}
+      # Par de chaves JWT (Story 1.4) — conteúdo PEM bruto via .env, nunca arquivo commitado
+      # (ver .env.example para como gerar um par local). Sem valor aqui, o Quarkus sobe com
+      # uma chave em memória (só dev, log de aviso) — login/validação não funcionam entre
+      # reinícios do container.
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:-}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200}
     ports:
       - '8080:8080' # API REST

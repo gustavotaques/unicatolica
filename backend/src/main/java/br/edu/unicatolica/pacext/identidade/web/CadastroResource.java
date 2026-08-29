@@ -1,7 +1,7 @@
 package br.edu.unicatolica.pacext.identidade.web;
 
-import br.edu.unicatolica.pacext.identidade.CadastroService;
-import br.edu.unicatolica.pacext.identidade.Usuario;
+import br.edu.unicatolica.pacext.identidade.aplicacao.CadastroService;
+import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;

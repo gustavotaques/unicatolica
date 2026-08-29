@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Tabelas usuario e usuario_papel — módulo Identidade (Story 1.2/1.3/1.4).
-    Ver _bmad-output/implementation-artifacts/modelo-dados-semana-1.md para o desenho completo
-    e as decisões marcadas [DECISÃO A CONFIRMAR] (curso como texto solto, papéis em tabela própria).
+    Tabela usuario — módulo Identidade e Acesso (AD-3, RF05-RF13). Dona exclusiva desta
+    tabela; nenhum outro módulo lê/escreve nela diretamente.
 -->
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
@@ -15,44 +14,23 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="nome" type="VARCHAR(150)">
+            <column name="nome" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
-            <column name="email" type="VARCHAR(255)">
+            <column name="email" type="VARCHAR(200)">
                 <constraints nullable="false" unique="true" uniqueConstraintName="uk_usuario_email"/>
             </column>
-            <column name="senha_hash" type="VARCHAR(255)">
+            <column name="senha_hash" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="data_nascimento" type="DATE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="curso" type="VARCHAR(150)">
+            <column name="perfil" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
             <column name="email_confirmado" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
-            <column name="token_confirmacao_email" type="VARCHAR(255)"/>
-            <column name="token_confirmacao_expira_em" type="TIMESTAMP WITH TIME ZONE"/>
             <column name="criado_em" type="TIMESTAMP WITH TIME ZONE">
                 <constraints nullable="false"/>
-            </column>
-            <column name="atualizado_em" type="TIMESTAMP WITH TIME ZONE"/>
-        </createTable>
-        <createIndex indexName="idx_usuario_token_confirmacao_email" tableName="usuario">
-            <column name="token_confirmacao_email"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet id="identidade-001-create-usuario-papel" author="pacext">
-        <createTable tableName="usuario_papel">
-            <column name="usuario_id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" foreignKeyName="fk_usuario_papel_usuario"
-                        references="usuario(id)"/>
-            </column>
-            <column name="papel" type="VARCHAR(30)">
-                <constraints nullable="false" primaryKey="true"/>
             </column>
         </createTable>
     </changeSet>

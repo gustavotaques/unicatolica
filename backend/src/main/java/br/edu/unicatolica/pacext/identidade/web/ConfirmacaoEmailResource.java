@@ -1,6 +1,6 @@
 package br.edu.unicatolica.pacext.identidade.web;
 
-import br.edu.unicatolica.pacext.identidade.ConfirmacaoEmailService;
+import br.edu.unicatolica.pacext.identidade.aplicacao.ConfirmacaoEmailService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;

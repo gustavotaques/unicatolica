@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Usuário semente para teste manual do login (Story 1.4), com o e-mail já confirmado
-    (Story 1.3). Senha em texto puro: "Senha123!". Roda só em contexto "dev"
-    (quarkus.liquibase.contexts, vazio em %prod) — nunca em produção.
-
-    Insert em duas etapas via SQL bruto (CTE) porque o id de usuario é gerado pelo banco
-    (IDENTITY) e usuario_papel precisa dele como FK — Liquibase XML não encadeia
-    <insert> declarativo usando o id gerado do <insert> anterior.
-
-    Hash gerado com io.quarkus.elytron.security.common.BcryptUtil.bcryptHash (o que
-    AuthService usa para conferir a senha) — NÃO reaproveitar hash de outra lib de bcrypt
-    (ex.: at.favre.lib), prefixo diferente ($2b$ vs $2a$) falha em runtime com
-    "ELY08003: Unknown crypt string algorithm" (achado testando este merge ao vivo).
+    Usuário semente para teste manual do login (Story 1.4). O fluxo de cadastro
+    (Story 1.2) e confirmação de e-mail (Story 1.3) ainda não existem no backend —
+    sem este seed não haveria nenhum usuário com email_confirmado=true para testar
+    POST /auth/login de ponta a ponta. Senha em texto puro: "Senha123!".
 -->
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
@@ -20,20 +12,14 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="identidade-002-seed-usuario-teste" author="pacext" context="dev">
-        <sql>
-            WITH novo_usuario AS (
-                INSERT INTO usuario (nome, email, senha_hash, data_nascimento, curso, email_confirmado, criado_em)
-                VALUES ('Aluno Teste', 'aluno.teste@catolicasc.edu.br',
-                        '$2a$10$Mgv/kTo93gBOtjTnTnwofO7rVRR93dmDeMc68IsUN3zZ92uFAsbVO',
-                        '2000-01-01', 'Engenharia de Software', true, now())
-                RETURNING id
-            )
-            INSERT INTO usuario_papel (usuario_id, papel)
-            SELECT id, 'ALUNO' FROM novo_usuario;
-        </sql>
-        <rollback>
-            <sql>DELETE FROM usuario WHERE email = 'aluno.teste@catolicasc.edu.br'</sql>
-        </rollback>
+        <insert tableName="usuario">
+            <column name="nome" value="Aluno Teste"/>
+            <column name="email" value="aluno.teste@catolicasc.edu.br"/>
+            <column name="senha_hash" value="$2b$10$HBRjYZYGl7EqrU1DA9coJ.ugYuaB/mT5uZ9DljMjP8HUrLSc8yRWi"/>
+            <column name="perfil" value="ALUNO"/>
+            <column name="email_confirmado" valueBoolean="true"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
     </changeSet>
 
 </databaseChangeLog>

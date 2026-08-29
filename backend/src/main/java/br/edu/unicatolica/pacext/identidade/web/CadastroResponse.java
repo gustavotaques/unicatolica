@@ -1,6 +1,6 @@
 package br.edu.unicatolica.pacext.identidade.web;
 
-import br.edu.unicatolica.pacext.identidade.Usuario;
+import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import java.time.Instant;
 
 /** Resposta de {@code POST /auth/registro} — nunca inclui senha/hash nem token de confirmação. */

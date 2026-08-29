@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -13,5 +14,10 @@ export const routes: Routes = [
   {
     path: 'confirmar-email',
     loadComponent: () => import('./confirmar-email/confirmar-email').then((m) => m.ConfirmarEmail),
+  },
+  {
+    path: 'feed',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/feed/feed').then((m) => m.Feed),
   },
 ];

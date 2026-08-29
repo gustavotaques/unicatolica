@@ -31,4 +31,8 @@ export class AuthService {
   obterToken(): string | null {
     return localStorage.getItem(TOKEN_STORAGE_KEY);
   }
+
+  logout(): void {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+  }
 }
