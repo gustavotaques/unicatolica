@@ -1,0 +1,6 @@
+# O backend roda dentro de um container Linux via docker-compose (AD-7). Um checkout
+# Windows com core.autocrlf=true (padrão sugerido pelo instalador do Git for Windows)
+# converte o shebang de `mvnw` para CRLF, e o container falha com
+# "sh: exec: ./mvnw: not found" — força LF aqui independente da config local de quem clona.
+/backend/mvnw text eol=lf
+/backend/mvnw.cmd text eol=crlf

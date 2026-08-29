@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Tabelas comunidade e comunidade_membro — módulo Comunidades.
+    Criadas nesta fatia só como alvo do auto-join (Story 2.3/RF24.1); a criação de
+    comunidade em si (Story 2.1 admin / 2.2 aluno) não faz parte deste changeset.
+    Ver _bmad-output/implementation-artifacts/modelo-dados-semana-1.md.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="comunidades-001-create-comunidade" author="pacext">
+        <createTable tableName="comunidade">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="nome" type="VARCHAR(150)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_comunidade_nome"/>
+            </column>
+            <column name="descricao" type="TEXT"/>
+            <column name="tipo" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="criado_por_usuario_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="criado_em" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="atualizado_em" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+        <!-- Liquibase XML não tem changeType nativo addCheckConstraint — CHECK constraint via sql puro. -->
+        <sql>ALTER TABLE comunidade ADD CONSTRAINT ck_comunidade_tipo CHECK (tipo IN ('CURSO', 'ABERTA'))</sql>
+        <rollback>
+            <sql>ALTER TABLE comunidade DROP CONSTRAINT ck_comunidade_tipo</sql>
+        </rollback>
+        <createIndex indexName="idx_comunidade_tipo" tableName="comunidade">
+            <column name="tipo"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="comunidades-001-create-comunidade-membro" author="pacext">
+        <createTable tableName="comunidade_membro">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="comunidade_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_comunidade_membro_comunidade"
+                        references="comunidade(id)"/>
+            </column>
+            <column name="usuario_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="papel_na_comunidade" type="VARCHAR(20)" defaultValue="MEMBRO">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entrou_em" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <sql>ALTER TABLE comunidade_membro ADD CONSTRAINT ck_comunidade_membro_papel
+            CHECK (papel_na_comunidade IN ('ADMINISTRADOR', 'MEMBRO'))
+        </sql>
+        <rollback>
+            <sql>ALTER TABLE comunidade_membro DROP CONSTRAINT ck_comunidade_membro_papel</sql>
+        </rollback>
+        <addUniqueConstraint tableName="comunidade_membro" columnNames="comunidade_id, usuario_id"
+                constraintName="uk_comunidade_membro_comunidade_usuario"/>
+        <createIndex indexName="idx_comunidade_membro_usuario_id" tableName="comunidade_membro">
+            <column name="usuario_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,27 @@
+# Segredos e configuração local (AD-7) — nunca commitados, só .env.example
+.env
+.env.*
+!.env.example
+
+# Chaves JWT (AD-2/RNF04) — nunca commitadas, geradas localmente e coladas no .env
+*.pem
+
+# Postgres local (docker-compose)
+pgdata/
+
+# Claude Code — config local, não é do projeto
+.claude/
+
+# BMAD — configuração e artefatos locais, não é do projeto
+_bmad/
+_bmad-output/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
