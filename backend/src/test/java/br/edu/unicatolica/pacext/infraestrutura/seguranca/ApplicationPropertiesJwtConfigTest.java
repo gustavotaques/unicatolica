@@ -47,8 +47,10 @@ class ApplicationPropertiesJwtConfigTest {
     }
 
     @Test
-    void chavePublicaApontaParaORecursoUsadoPelosTestes() throws IOException {
+    void chavePublicaVemDeVariavelDeAmbienteNuncaDeArquivoCommitado() throws IOException {
         Properties properties = carregarApplicationProperties();
-        assertEquals("publicKey.pem", properties.getProperty("mp.jwt.verify.publickey.location"));
+        assertEquals("${JWT_PUBLIC_KEY:}", properties.getProperty("mp.jwt.verify.publickey"),
+                "a chave pública precisa vir de JWT_PUBLIC_KEY (env var) — nenhuma chave, "
+                        + "de dev ou produção, pode ficar commitada no repo (RNF04/OWASP ASVS).");
     }
 }

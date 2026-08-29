@@ -1,0 +1,4 @@
+# mvnw é um script shell POSIX — precisa de LF mesmo em checkout Windows (AD-7), senão o
+# shebang #!/bin/sh quebra dentro dos containers Linux do docker-compose/CI.
+mvnw text eol=lf
+mvnw.cmd text eol=crlf
