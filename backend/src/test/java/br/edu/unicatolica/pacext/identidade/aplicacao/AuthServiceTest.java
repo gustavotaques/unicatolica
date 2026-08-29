@@ -1,6 +1,8 @@
 package br.edu.unicatolica.pacext.identidade.aplicacao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,6 +22,7 @@ import io.smallrye.jwt.util.KeyUtils;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -128,5 +131,25 @@ class AuthServiceTest {
 
         assertThrows(CredenciaisInvalidasException.class,
                 () -> authService.autenticar(usuario.email, "senha-errada"));
+    }
+
+    @Test
+    void logoutGravaSessaoValidaDesdeERegistraAuditoria() {
+        Usuario usuario = usuarioConfirmado("Senha123!");
+        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+        Instant antes = Instant.now();
+
+        authService.logout(42L);
+
+        assertNotNull(usuario.sessaoValidaDesde);
+        assertFalse(usuario.sessaoValidaDesde.isBefore(antes));
+        verify(auditoriaService).registrar(eq(42L), eq("identidade"), eq("LOGOUT"), any());
+    }
+
+    @Test
+    void logoutNaoFalhaParaUsuarioInexistente() {
+        when(usuarioRepository.findById(99L)).thenReturn(null);
+
+        authService.logout(99L);
     }
 }

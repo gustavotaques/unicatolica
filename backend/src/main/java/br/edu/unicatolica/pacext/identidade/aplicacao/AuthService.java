@@ -9,7 +9,9 @@ import br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.security.PrivateKey;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -62,6 +64,22 @@ public class AuthService {
 
         auditoriaService.registrar(usuario.id, "identidade", "LOGIN", "Login bem-sucedido.");
         return token;
+    }
+
+    /**
+     * Logout (Story 1.6, RF10/RF11): adianta a invalidação do token atual gravando o
+     * instante presente em {@code sessaoValidaDesde} — o JWT ainda expira naturalmente
+     * pelo claim {@code exp}, mas {@link br.edu.unicatolica.pacext.infraestrutura.seguranca.JwtSecurityFilter}
+     * passa a rejeitar qualquer token emitido antes deste instante para este usuário.
+     */
+    @Transactional
+    public void logout(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId);
+        if (usuario == null) {
+            return;
+        }
+        usuario.sessaoValidaDesde = Instant.now();
+        auditoriaService.registrar(usuario.id, "identidade", "LOGOUT", "Logout realizado.");
     }
 
     private Usuario buscarUsuarioComCredencialValida(String email, String senha) {
