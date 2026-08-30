@@ -1,0 +1,9 @@
+// UniCatolica - Campus Clean base visual components (Story 14.2).
+//
+// Barrel for the four design-system primitives consumed by the feature epics
+// (Comunidades, Publicacoes, Enquetes, ...). Each is standalone, `uc-` prefix,
+// and its SCSS consumes only `var(--uc-*)` tokens from Story 14.1.
+export { UcBadge, type UcBadgeVariant } from './badge/badge';
+export { UcButton } from './button/button';
+export { UcCard } from './card/card';
+export { UcMemberIndicator } from './member-indicator/member-indicator';

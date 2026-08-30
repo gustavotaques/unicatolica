@@ -1,0 +1,33 @@
+// UniCatolica - Campus Clean base component (Story 14.2).
+// The one strong-action button style in the system: orange fill, surface text,
+// pill, body size, semibold. Sits directly on a native <button> (attribute
+// selector) so type / disabled / form participation / focus stay native.
+//
+// Colour / size / radius values are var(--uc-*) tokens from Story 14.1.
+// Structural literals only: `border: 0`, the 1px/2px focus outline, and the
+// `.5` disabled opacity. The focus ring and disabled dim are values DESIGN.md
+// omits - composed from --uc-color-maroon + structural literals with no new
+// token, provisional and revisited in Story 14.9 ("Ask First" escalation).
+
+:host {
+  border: 0;
+  border-radius: var(--uc-radius-full);
+  background: var(--uc-color-orange);
+  color: var(--uc-color-surface);
+  padding: var(--uc-space-unit) calc(var(--uc-space-unit) * 4);
+  font-size: var(--uc-font-size-body);
+  font-weight: var(--uc-font-weight-semibold);
+  cursor: pointer;
+}
+
+:host(:focus-visible) {
+  outline: 2px solid var(--uc-color-maroon);
+  outline-offset: 2px;
+}
+
+// `:disabled` pseudo-class (not an attribute selector) so the dim also applies
+// to a button made non-interactive by an ancestor `<fieldset disabled>`.
+:host(:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
