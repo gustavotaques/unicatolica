@@ -8,6 +8,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/identidade/login/login').then((m) => m.Login),
   },
   {
+    path: 'cadastro',
+    loadComponent: () => import('./cadastro/cadastro').then((m) => m.Cadastro),
+  },
+  {
+    path: 'confirmar-email',
+    loadComponent: () => import('./confirmar-email/confirmar-email').then((m) => m.ConfirmarEmail),
+  },
+  {
     path: 'feed',
     canActivate: [authGuard],
     loadComponent: () => import('./features/feed/feed').then((m) => m.Feed),

@@ -1,0 +1,74 @@
+<main class="cadastro">
+  <div class="cadastro__card">
+    <h1>Criar conta — UniCatólica</h1>
+    <p class="cadastro__subtitulo">Cadastro de aluno com e-mail institucional (Story 1.2)</p>
+
+    @if (sucesso(); as usuario) {
+      <div class="aviso aviso--sucesso" role="status">
+        <p>
+          Cadastro realizado! Enviamos um e-mail de confirmação para
+          <strong>{{ usuario.email }}</strong>.
+        </p>
+        <p>Confirme seu e-mail antes de tentar fazer login.</p>
+        <dl class="cadastro__resumo">
+          <dt>Nome</dt>
+          <dd>{{ usuario.nome }}</dd>
+          <dt>Curso</dt>
+          <dd>{{ usuario.curso }}</dd>
+          <dt>Status do e-mail</dt>
+          <dd>{{ usuario.emailConfirmado ? 'confirmado' : 'não confirmado' }}</dd>
+        </dl>
+
+        @if (reenviado()) {
+          <p class="cadastro__reenvio-confirmado">E-mail de confirmação reenviado.</p>
+        } @else {
+          <button type="button" class="botao-secundario" [disabled]="reenviando()" (click)="reenviarConfirmacao()">
+            {{ reenviando() ? 'Reenviando…' : 'Não recebeu? Reenviar confirmação' }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (erro(); as mensagem) {
+      <div class="aviso aviso--erro" role="alert">
+        {{ mensagem }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <label for="nome">Nome completo</label>
+      <input id="nome" type="text" formControlName="nome" autocomplete="name" />
+      @if (form.controls.nome.touched && form.controls.nome.invalid) {
+        <span class="campo-erro">Informe seu nome.</span>
+      }
+
+      <label for="email">E-mail institucional</label>
+      <input id="email" type="email" formControlName="email" autocomplete="email" placeholder="voce@catolicasc.edu.br" />
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <span class="campo-erro">Informe um e-mail institucional válido.</span>
+      }
+
+      <label for="senha">Senha</label>
+      <input id="senha" type="password" formControlName="senha" autocomplete="new-password" />
+      @if (form.controls.senha.touched && form.controls.senha.invalid) {
+        <span class="campo-erro">Informe uma senha.</span>
+      }
+
+      <label for="curso">Curso</label>
+      <input id="curso" type="text" formControlName="curso" placeholder="Engenharia de Software" />
+      @if (form.controls.curso.touched && form.controls.curso.invalid) {
+        <span class="campo-erro">Informe seu curso.</span>
+      }
+
+      <label for="dataNascimento">Data de nascimento</label>
+      <input id="dataNascimento" type="date" formControlName="dataNascimento" />
+      @if (form.controls.dataNascimento.touched && form.controls.dataNascimento.invalid) {
+        <span class="campo-erro">Informe sua data de nascimento.</span>
+      }
+
+      <button type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Enviando…' : 'Cadastrar' }}
+      </button>
+    </form>
+  </div>
+</main>

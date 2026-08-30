@@ -1,0 +1,19 @@
+<main class="confirmacao">
+  <div class="confirmacao__card">
+    @switch (estado()) {
+      @case ('confirmando') {
+        <p>Confirmando seu e-mail…</p>
+      }
+      @case ('confirmado') {
+        <h1>E-mail confirmado!</h1>
+        <p>Sua conta está pronta. Você já pode fazer login.</p>
+        <a routerLink="/login">Ir para o login</a>
+      }
+      @case ('erro') {
+        <h1>Não foi possível confirmar</h1>
+        <p>{{ mensagemErro() }}</p>
+        <a routerLink="/cadastro">Voltar ao cadastro</a>
+      }
+    }
+  </div>
+</main>

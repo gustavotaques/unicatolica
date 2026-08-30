@@ -35,6 +35,76 @@ paths:
         '401':
           $ref: '#/components/responses/NaoAutenticado'
 
+  /auth/registro:
+    post:
+      summary: Cadastro de aluno com e-mail institucional (Story 1.2)
+      description: >
+        Rota pública (allowlist AD-2). Persiste o usuário com status "e-mail não
+        confirmado" — nenhuma sessão é gerada — e dispara o auto-join à comunidade de
+        curso correspondente (RF24.1).
+      operationId: cadastrarAluno
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CadastroRequest'
+      responses:
+        '201':
+          description: Usuário cadastrado, e-mail de confirmação enviado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CadastroResponse'
+        # 409: e-mail já possui conta (RF02). 422: domínio externo ao institucional
+        # (RF01.3), formato de e-mail/senha fora da política (RF03/RF04), ou idade menor
+        # que 18 anos (RF01.1) — o schema Erro.code compartilhado (ver ErroResponse no
+        # backend) distingue os cenários; o response object AD-5 é sempre o mesmo por status.
+        '409':
+          $ref: '#/components/responses/Conflito'
+        '422':
+          $ref: '#/components/responses/ErroValidacao'
+
+  /auth/confirmacao-email/{token}:
+    post:
+      summary: Confirma o e-mail a partir do link recebido (Story 1.3)
+      description: Rota pública (allowlist AD-2). Idempotente para token já confirmado.
+      operationId: confirmarEmail
+      security: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: E-mail confirmado — usuário já pode fazer login.
+        # 404: token inexistente ou já substituído por um reenvio (RF01.2). 422: token expirado.
+        '404':
+          $ref: '#/components/responses/NaoEncontrado'
+        '422':
+          $ref: '#/components/responses/ErroValidacao'
+
+  /auth/confirmacao-email/reenvio:
+    post:
+      summary: Reenvia o e-mail de confirmação (Story 1.3)
+      description: >
+        Rota pública (allowlist AD-2). Sempre responde 202, mesmo para e-mail
+        inexistente ou já confirmado — nunca revela se a conta existe.
+      operationId: reenviarConfirmacaoEmail
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReenvioConfirmacaoRequest'
+      responses:
+        '202':
+          description: Solicitação aceita.
+
   /usuarios/me:
     get:
       operationId: obterUsuarioAutenticado
@@ -100,6 +170,68 @@ components:
       properties:
         token:
           type: string
+
+    CadastroRequest:
+      type: object
+      required:
+        - nome
+        - email
+        - senha
+        - curso
+        - dataNascimento
+      properties:
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+          description: E-mail institucional (RF01.3) — domínio validado no backend.
+        senha:
+          type: string
+          format: password
+        curso:
+          type: string
+          description: >
+            Nome do curso — usado para o auto-join (RF24.1) contra a comunidade de curso
+            pré-criada pelo administrador (Story 2.1).
+        dataNascimento:
+          type: string
+          format: date
+
+    CadastroResponse:
+      type: object
+      required:
+        - id
+        - nome
+        - email
+        - curso
+        - emailConfirmado
+        - criadoEm
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        curso:
+          type: string
+        emailConfirmado:
+          type: boolean
+        criadoEm:
+          type: string
+          format: date-time
+
+    ReenvioConfirmacaoRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
 
     Usuario:
       type: object

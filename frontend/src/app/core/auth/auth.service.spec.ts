@@ -44,5 +44,24 @@ describe('AuthService', () => {
     service.logout();
 
     expect(service.obterToken()).toBeNull();
+    httpMock.expectOne('http://localhost:8080/auth/logout').flush(null);
+  });
+
+  it('envia o token atual como Bearer para POST /auth/logout', () => {
+    service.login('aluno@catolicasc.edu.br', 'Senha123!').subscribe();
+    httpMock.expectOne('http://localhost:8080/auth/login').flush({ token: 'token-fake' });
+
+    service.logout();
+
+    const req = httpMock.expectOne('http://localhost:8080/auth/logout');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer token-fake');
+    req.flush(null);
+  });
+
+  it('nao chama o backend no logout se nao havia token armazenado', () => {
+    service.logout();
+
+    expect(service.obterToken()).toBeNull();
+    httpMock.expectNone('http://localhost:8080/auth/logout');
   });
 });

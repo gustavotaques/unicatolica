@@ -33,6 +33,16 @@ export class AuthService {
   }
 
   logout(): void {
+    const token = this.obterToken();
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    if (token) {
+      // Encerra a sessão no servidor (Story 1.6) — best-effort: mesmo se falhar (ex.: token
+      // já expirado), a sessão local já foi encerrada acima, que é o que importa para o usuário.
+      this.http
+        .post(`${API_BASE_URL}/auth/logout`, null, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .subscribe({ error: () => undefined });
+    }
   }
 }

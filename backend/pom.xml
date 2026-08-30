@@ -49,6 +49,18 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <!-- Envio de e-mail de confirmação de cadastro (RF01.2/Story 1.3). Sem config de host
+                 em application.properties, o Quarkus usa mailbox mock em dev/%test automaticamente
+                 (visível em /q/dev-ui) — SMTP real só é exigido em %prod, ainda não configurado
+                 (ver modelo-dados-semana-1.md / deferred-work.md). -->
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-mailer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-jwt</artifactId>
         </dependency>
         <dependency>
@@ -68,10 +80,13 @@
             <artifactId>quarkus-arc</artifactId>
         </dependency>
         <dependency>
+            <!-- Emissão de token no login (Story 1.4). -->
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-jwt-build</artifactId>
         </dependency>
         <dependency>
+            <!-- Hash de senha (PasswordHasher, RF04/RF06/RF07) — único ponto do módulo Identidade
+                 que gera/confere hash; nenhum outro serviço usa uma lib de bcrypt diferente. -->
             <groupId>at.favre.lib</groupId>
             <artifactId>bcrypt</artifactId>
             <version>0.10.2</version>
