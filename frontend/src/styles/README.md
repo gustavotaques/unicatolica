@@ -44,9 +44,12 @@ token novo entra aqui sem passar pelo `DESIGN.md`.
 
 - Use `.uc-text-*` para um papel de tipografia puro em um template
   (`<span class="uc-text-meta">ha 2 h</span>`).
-- A Story 14.2 introduz classes de componente (badge, botao, card) que compoem
-  os mesmos tokens. Para um componente, use a classe de componente, nao a
-  utilitaria de tipografia.
+- A Story 14.2 introduz os componentes standalone `<uc-badge>`,
+  `button[uc-button]`, `<uc-member-indicator>` e `<uc-card>` em `src/app/ui/`,
+  cujo SCSS compoe os mesmos tokens. Para um componente, use o componente
+  `uc-*`, nao a utilitaria de tipografia. O `button[uc-button]` nao sobrescreve
+  o `type` nativo: em uma acao que nao deve enviar um formulario ao redor, o
+  consumidor precisa passar `type="button"` explicitamente.
 - A Story 14.7 migra as telas ja existentes (Login, Cadastro, Verifique seu
   e-mail) do SCSS por componente com valores hardcoded para consumo de token.
 

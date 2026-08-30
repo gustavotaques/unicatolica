@@ -29,7 +29,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 # - Retrospective appends its action items to action_items; the status view surfaces open ones
 generated: 08-30-2026 13:15
-last_updated: 08-30-2026 14:45
+last_updated: 08-30-2026 20:25
 project: unicatolica
 project_key: KAN
 tracking_system: jira
@@ -124,7 +124,7 @@ development_status:
 
   epic-14: in-progress
   14-1-tokens-de-design-e-tipografia: review
-  14-2-componentes-visuais-base: backlog
+  14-2-componentes-visuais-base: review
   14-3-shell-de-navegação-global: backlog
   14-4-comportamento-responsivo-da-navegação: backlog
   14-5-sistema-de-toast-e-motion-mínimo: backlog
