@@ -14,7 +14,7 @@ inputDocuments:
 
 Este documento decompõe os requisitos do PRD (`prd-unicatolica-2026-08-12/prd.md`), da UX Spine (`DESIGN.md` + `EXPERIENCE.md`) e da Architecture Spine (`ARCHITECTURE-SPINE.md`) em épicos e histórias implementáveis para a UniCatólica — rede social acadêmica do PACEXT.
 
-**Nota de escopo crítica:** a Architecture Spine (AD, seção Deferred) corta o trabalho em duas fatias por causa do prazo de uma semana (entrega até 2026-08-29):
+**Nota de escopo crítica:** a Architecture Spine (AD, seção Deferred) corta o trabalho em duas fatias por causa do prazo de uma semana (entrega até 2026-08-30):
 - **Must-have semana 1:** RF01–RF13 (Identidade/Acesso) + RF21–RF31 (Comunidades) + RF32–RF36 (Publicações), ponta a ponta, deployado.
 - **Stretch semana 1** (só se sobrar tempo): RF14–RF20 (Perfil Acadêmico) + RF37–RF42 (Discussões).
 - **Fora do corte da semana 1:** Filtro de Conteúdo, Materiais, Enquetes, Busca, Notificações, Mensagens, Moderação, Avisos Institucionais (RF43–RF82).
@@ -341,8 +341,9 @@ Usuário denuncia conteúdo impróprio; agente de triagem (blacklist) notifica o
 Administrador da plataforma publica um aviso institucional com escopo obrigatório (geral ou curso específico); aluno vê no dashboard os avisos gerais e os avisos do próprio curso, sem ver avisos de outros cursos.
 **FRs covered:** RF81, RF82
 
-### Epic 14: Fundação Visual e de Experiência (Design System) `[Semana 1 · Must-have]`
+### Epic 14: Fundação Visual e de Experiência (Design System) `[Semana 1 · Must-have parcial]`
 *Épico adicionado no Step 3 para cobrir os UX-DRs transversais (tokens, componentes base, shell de navegação, toast/motion, voz e tom, restilização de telas) que não pertencem a um único módulo de feature — necessário para o corte da semana 1, já que Identidade/Comunidades/Publicações precisam de telas estilizadas para ir ao ar.*
+*Triado em 2026-08-30: 5 histórias no corte da semana 1 (14.1, 14.2, 14.3, 14.5, 14.7) e 4 diferidas (14.4, 14.6, 14.8, 14.9). Ver a nota de triagem na seção do épico — diferir a história não suspende os NFRs/UX-DRs que ela sistematiza.*
 Aplica a identidade "Campus Clean" (tokens de cor/tipografia/espaçamento/forma), a casca de navegação global e os componentes/padrões de comportamento reutilizáveis, para que toda tela construída nos demais épicos herde uma experiência visual e textual consistente desde o primeiro deploy.
 **UX-DRs covered:** UX-DR1, UX-DR2, UX-DR3, UX-DR4, UX-DR5, UX-DR6, UX-DR7, UX-DR8, UX-DR9, UX-DR24, UX-DR26, UX-DR27, UX-DR28
 
@@ -1255,7 +1256,18 @@ Aplica a identidade "Campus Clean" (tokens de cor/tipografia/espaçamento/forma)
 
 **UX-DRs covered:** UX-DR1, UX-DR2, UX-DR3, UX-DR4, UX-DR5, UX-DR6, UX-DR7, UX-DR8, UX-DR9, UX-DR24, UX-DR25, UX-DR26, UX-DR27, UX-DR28
 
+**Triagem de escopo (2026-08-30).** O épico inteiro estava marcado `[Semana 1 · Must-have]`, mas parte dele constrói telas de módulos que a própria Architecture Spine colocou fora do corte. As histórias abaixo foram reclassificadas:
+
+- **No corte da semana 1 (5):** 14.1, 14.2, 14.3, 14.5, 14.7. São as que sustentam as jornadas obrigatórias de Identidade, Comunidades e Publicações.
+- **Diferidas para pós-semana-1 (4):** 14.4, 14.6, 14.8, 14.9.
+
+**A diferir não apaga a obrigação.** Este documento (ver `## FR Coverage Map`) trata NFRs e UX-DRs como critério de aceitação de toda história, em qualquer épico. Portanto RNF02 (responsividade, 14.4), UX-DR24 (voz e tom, 14.6) e RNF06/UX-DR25 (acessibilidade, 14.9) continuam valendo como critério de aceite de cada tela construída no corte da semana 1 — o que foi diferido é a história que os trata de forma sistemática e transversal, não o piso que cada tela precisa cumprir.
+
+**Por que a 14.5 permanece no corte:** os critérios de aceite das Stories 2.3 (auto-join) e 2.4 (ingresso em comunidade aberta), ambas must-have, exigem toast explicitamente (RF24, UX-DR12, UX-DR22). Sem o sistema de toast essas histórias não fecham.
+
 ### Story 14.1: Tokens de design e tipografia
+
+**Prioridade:** Semana 1 · Must-have
 
 As a integrante do time de frontend,
 I want implementar os tokens de cor, tipografia, espaçamento e forma da direção "Campus Clean",
@@ -1269,6 +1281,8 @@ So that toda tela e componente subsequente consuma os mesmos valores, sem hardco
 
 ### Story 14.2: Componentes visuais base
 
+**Prioridade:** Semana 1 · Must-have
+
 As a integrante do time de frontend,
 I want implementar os componentes Badge de comunidade, Botão primário, Indicador de membro e Card genérico,
 So that os épicos de feature (Comunidades, Publicações, Enquetes etc.) reutilizem esses componentes em vez de recriá-los (UX-DR3, UX-DR4, UX-DR5, UX-DR6).
@@ -1280,6 +1294,8 @@ So that os épicos de feature (Comunidades, Publicações, Enquetes etc.) reutil
 **Then** `badge-course`/`badge-open` nunca aparecem juntos no mesmo badge, `button-primary` é o único estilo de ação forte do sistema, `member-indicator` substitui o botão de ação sem fundo, e o Card genérico segue `surface`+`border`+`rounded.md`+`card-padding`
 
 ### Story 14.3: Shell de navegação global
+
+**Prioridade:** Semana 1 · Must-have
 
 As a usuário autenticado,
 I want uma sidebar persistente com os itens de navegação relevantes ao meu papel, e um dropdown de avatar no topo,
@@ -1298,6 +1314,8 @@ So that eu navegue pela plataforma de forma consistente em qualquer tela (UX-DR7
 
 ### Story 14.4: Comportamento responsivo da navegação
 
+**Prioridade:** Pós-semana-1
+
 As a usuário em um navegador mobile,
 I want que a sidebar e o painel de descoberta se adaptem à tela menor,
 So that eu use a plataforma corretamente em qualquer dispositivo (RNF02, UX-DR8).
@@ -1309,6 +1327,8 @@ So that eu use a plataforma corretamente em qualquer dispositivo (RNF02, UX-DR8)
 **Then** a sidebar e o painel de descoberta colapsam para um layout mobile-friendly, preservando o acesso a todos os itens de navegação
 
 ### Story 14.5: Sistema de toast e motion mínimo
+
+**Prioridade:** Semana 1 · Must-have
 
 As a usuário,
 I want ver confirmações leves como toasts não-bloqueantes, com transições rápidas e sutis,
@@ -1326,6 +1346,8 @@ So that eu receba feedback sem interrupção do meu fluxo (UX-DR9, UX-DR26).
 
 ### Story 14.6: Sistema de voz e tom (microcopy)
 
+**Prioridade:** Pós-semana-1
+
 As a integrante do time de produto/frontend,
 I want aplicar consistentemente o tom de voz definido (direto, segunda pessoa, erros que explicam sem culpar) em toda mensagem de sistema,
 So that a experiência textual da plataforma seja coerente (UX-DR24).
@@ -1336,32 +1358,52 @@ So that a experiência textual da plataforma seja coerente (UX-DR24).
 **When** o texto é escrito
 **Then** segue a tabela Do/Don't do EXPERIENCE.md (ex.: "Use seu e-mail institucional para se cadastrar." em vez de "E-mail inválido.")
 
-### Story 14.7: Restilização das telas existentes do Figma
+### Story 14.7: Restilização das telas do corte must-have
+
+**Prioridade:** Semana 1 · Must-have
 
 As a integrante do time de frontend,
-I want restilizar as 6 telas já prototipadas no Figma (Login, Cadastro, Criação de comunidade, Artigo, Perfil, Painel admin) na direção Campus Clean,
+I want restilizar na direção Campus Clean as telas que as jornadas obrigatórias da semana 1 atravessam — Login, Cadastro, Verifique seu e-mail, Criação de comunidade aberta, Artigo (postagem, sem a camada de comentários) e Painel admin restrito à pré-criação de comunidades de curso,
 So that a plataforma abandone a densidade "portal de notícias" do protótipo original sem perder a identidade institucional (UX-DR27).
 
 **Acceptance Criteria:**
 
-**Given** uma tela já existe no Figma original
+**Given** uma tela do corte must-have existe (no Figma original ou já construída em código)
 **When** ela é restilizada
-**Then** usa os tokens da Story 14.1, nunca usa `maroon` como fundo dominante de tela, e reconcilia qualquer divergência registrada em `reconcile-figma-prototype.md`
+**Then** usa os tokens da Story 14.1 e os componentes da Story 14.2, nunca usa `maroon` como fundo dominante de tela, e reconcilia qualquer divergência registrada em `reconcile-figma-prototype.md`
+
+**Given** as telas Login, Cadastro e Verifique seu e-mail já existem em código, construídas antes do Epic 14 com SCSS por componente e sem nenhum token
+**When** elas são restilizadas
+**Then** o SCSS local é substituído por consumo dos tokens, sem valor de cor, fonte ou espaçamento hardcoded
+
+**Given** a tela Painel admin
+**When** ela é restilizada
+**Then** cobre apenas a pré-criação de comunidades de curso (Story 2.1) — publicação de avisos institucionais é Epic 13, fora do corte, e `tela-adm-relatorios` está fora do escopo desta UX por decisão registrada em `reconcile-figma-prototype.md`
+
+**Fora desta história, diferidas para pós-semana-1:** Perfil (Epic 4, stretch), camada de comentários do Artigo (Epic 5, stretch) e a parte de avisos institucionais do Painel admin (Epic 13).
 
 ### Story 14.8: Construção das telas novas sem mockup visual
 
+**Prioridade:** Pós-semana-1
+
 As a integrante do time de frontend,
-I want construir as telas "Verifique seu e-mail", "Busca", "Mensagens" e "Solicitações de fixação" seguindo apenas a spine (sem mockup pronto),
+I want construir as telas "Busca", "Mensagens" e "Solicitações de fixação" seguindo apenas a spine (sem mockup pronto),
 So that essas superfícies existam com a mesma consistência visual das demais (UX-DR28).
 
 **Acceptance Criteria:**
 
-**Given** uma dessas 4 telas ainda não tem mockup visual
+**Given** uma dessas 3 telas ainda não tem mockup visual
 **When** ela é construída
 **Then** segue os tokens (Story 14.1) e os componentes base (Story 14.2)
 **And**, no caso de Solicitações de fixação, segue o mesmo padrão de "Item de fila de moderação" usado em Denúncias
 
+**Diferida porque as três telas pertencem a módulos fora do corte da semana 1:** Busca é Epic 9, Mensagens é Epic 11, Solicitações de fixação é Epic 8/12. Construí-las antes dos módulos que as alimentam produziria casca sem função.
+
+**A tela "Verifique seu e-mail" saiu desta história** e passou para a 14.7: ela é must-have (Story 1.3, entregue) e já existe em código, portanto é restilização, não construção nova.
+
 ### Story 14.9: Piso de acessibilidade (WCAG 2.2 AA)
+
+**Prioridade:** Pós-semana-1
 
 As a usuário que depende de teclado ou leitor de tela,
 I want que todo elemento interativo tenha foco visível, que estados não dependam só de cor, e que confirmações críticas fiquem persistentes na tela,

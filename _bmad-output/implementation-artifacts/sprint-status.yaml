@@ -1,0 +1,194 @@
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when its first story starts (via build's sprint sync)
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates the next story after the previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; the status view surfaces open ones
+generated: 08-30-2026 13:15
+last_updated: 08-30-2026 13:20
+project: unicatolica
+project_key: KAN
+tracking_system: jira
+story_location: _bmad-output/implementation-artifacts
+development_status:
+  epic-1: in-progress
+  1-1-fundação-do-projeto-scaffold-e-infraestrutura: done
+  1-2-cadastro-de-aluno-com-e-mail-institucional: done
+  1-3-confirmação-de-e-mail-antes-do-primeiro-login: done
+  1-4-login-e-emissão-de-sessão-jwt: done
+  1-5-bloqueio-de-acesso-sem-autenticação-e-restrição-por-perfil: done
+  1-6-logout-e-invalidação-de-sessão: in-progress
+  epic-1-retrospective: done
+
+  epic-2: in-progress
+  2-1-pré-criação-de-comunidades-de-curso-pelo-administrador: backlog
+  2-2-criação-de-comunidade-aberta-por-qualquer-aluno: backlog
+  2-3-auto-join-à-comunidade-de-curso: done
+  2-4-ingresso-e-saída-de-comunidade-aberta: backlog
+  2-5-listagem-filtro-e-visualização-de-comunidade-não-membro: backlog
+  2-6-administração-de-comunidade: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-criar-postagem-em-comunidade: backlog
+  3-2-listar-postagens-da-comunidade: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-criar-e-editar-perfil-acadêmico: backlog
+  4-2-consultar-o-próprio-perfil: backlog
+  4-3-notificação-de-onboarding-progressivo: backlog
+  4-4-visualizar-perfil-público-de-outro-usuário: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-comentar-em-postagem: backlog
+  5-2-responder-comentário-com-encadeamento: backlog
+  5-3-editar-e-excluir-o-próprio-conteúdo: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-filtrar-postagens-por-curso-disciplina-e-tipo: backlog
+  6-2-persistência-da-filtragem-aplicada: backlog
+  epic-6-retrospective: optional
+
+  epic-7: backlog
+  7-1-anexar-arquivo-a-uma-postagem: backlog
+  7-2-anexar-link-a-uma-postagem: backlog
+  7-3-acessar-material-anexado: backlog
+  epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-criar-enquete-em-comunidade: backlog
+  8-2-solicitar-e-decidir-fixação-na-homepage: backlog
+  8-3-votar-em-enquete-de-comunidade: backlog
+  8-4-votar-em-enquete-fixada-da-universidade: backlog
+  8-5-consultar-resultados-da-enquete: backlog
+  8-6-encerrar-enquete: backlog
+  epic-8-retrospective: optional
+
+  epic-9: backlog
+  9-1-buscar-por-texto-com-filtros-combinados-e-paginação: backlog
+  epic-9-retrospective: optional
+
+  epic-10: backlog
+  10-1-gerar-notificações-de-resposta-menção-e-convite-enquete: backlog
+  10-2-marcar-como-lida-e-listar-notificações: backlog
+  epic-10-retrospective: optional
+
+  epic-11: backlog
+  11-1-enviar-e-receber-mensagens-privadas: backlog
+  11-2-listar-conversas: backlog
+  11-3-grupos-privados: backlog
+  epic-11-retrospective: optional
+
+  epic-12: backlog
+  12-1-denunciar-conteúdo: backlog
+  12-2-triagem-automática-por-agente-de-ia: backlog
+  12-3-triagem-prévia-de-enquete-pelo-agente: backlog
+  12-4-moderador-visualiza-denúncias-sem-identidade-do-denunciante: backlog
+  12-5-ocultar-e-restaurar-conteúdo: backlog
+  12-6-remover-conteúdo-definitivamente: backlog
+  12-7-restringir-usuário: backlog
+  12-8-escalonar-denúncia-a-moderador-neutro: backlog
+  epic-12-retrospective: optional
+
+  epic-13: backlog
+  13-1-publicar-aviso-institucional: backlog
+  13-2-exibir-avisos-institucionais-no-dashboard: backlog
+  epic-13-retrospective: optional
+
+  epic-14: backlog
+  14-1-tokens-de-design-e-tipografia: backlog
+  14-2-componentes-visuais-base: backlog
+  14-3-shell-de-navegação-global: backlog
+  14-4-comportamento-responsivo-da-navegação: backlog
+  14-5-sistema-de-toast-e-motion-mínimo: backlog
+  14-6-sistema-de-voz-e-tom-microcopy: backlog
+  14-7-restilização-das-telas-do-corte-must-have: backlog
+  14-8-construção-das-telas-novas-sem-mockup-visual: backlog
+  14-9-piso-de-acessibilidade-wcag-2-2-aa: backlog
+  epic-14-retrospective: optional
+action_items:
+  - epic: 1
+    action: "A-01 Corrigir truncamento de iat no logout (AuthService.java:81) e cobrir
+      com teste na fronteira de sub-segundo. Defeito F-01 confirmado empiricamente:
+      re-login no mesmo segundo do logout retorna 401."
+    owner: "Taques"
+    status: open
+  - epic: 1
+    action: "A-02 Documentar POST /auth/logout no openapi.yaml. Endpoint implementado
+      e consumido pelo frontend, ausente do contrato, viola AD-4."
+    owner: "Taques"
+    status: open
+  - epic: 1
+    action: "A-04 Restaurar artefatos perdidos no PR #5: epic-1-context.md, deferred-work.md
+      e spec-1-1-*.md via git show '59b37db^:<caminho>'. sprint-status.yaml ja foi
+      regenerado."
+    owner: "Taques"
+    status: open
+  - epic: 1
+    action: "A-06 Implementar rate limiting em /auth/login e /auth/registro antes
+      de qualquer deploy. RNF04/OWASP ASVS, rastreado no deferred-work.md perdido."
+    owner: "Taques"
+    status: open
+  - epic: 1
+    action: "A-08 Adicionar teste de contrato em runtime (rest-assured + validador
+      de JSON Schema) para os endpoints da semana 1. Exigido literalmente pela AD-4,
+      nunca construido."
+    owner: "Taques"
+    status: open
+  - epic: 1
+    action: "A-09 Adicionar ArchUnit ao CI, falhando o build quando um modulo importar
+      Repository de outro. Exigido pela AD-3, nunca construido."
+    owner: "Taques"
+    status: open
+  - epic: 1
+    action: "A-10 Remover o texto '(Story 1.2)' de cadastro.html:4 e revisar microcopy
+      contra a tabela Do/Don't do EXPERIENCE.md. Viola UX-DR24."
+    owner: "Taques"
+    status: open
+  - epic: 1
+    action: "A-11 Ligar erros de campo por aria-describedby + aria-invalid no cadastro;
+      adicionar <main> e <h1> na tela de login. Viola UX-DR25."
+    owner: "Taques"
+    status: open
+  - epic: 14
+    action: "Triagem do Epic 14 aplicada em 2026-08-30. Corte da semana 1: 14.1, 14.2, 14.3, 14.5, 14.7. Diferidas: 14.4, 14.6, 14.8, 14.9. A 14.5 permaneceu no corte porque os ACs das Stories 2.3 e 2.4 exigem toast (RF24, UX-DR12, UX-DR22). Escopo de 14.7 e 14.8 reescrito em epics.md e nos cards KAN-35 e KAN-36."
+    owner: "Taques"
+    status: done
+  - epic: 14
+    action: "Diferir 14.4, 14.6 e 14.9 nao suspende RNF02, UX-DR24, RNF06 e UX-DR25: o FR Coverage Map trata NFRs e UX-DRs como criterio de aceite de toda historia. Cada tela construida no corte da semana 1 continua devendo responsividade, voz/tom e piso de acessibilidade."
+    owner: "Taques"
+    status: open
+  - epic: 14
+    action: "Tela Inicio nao tem historia que a construa. E destino de navegacao em
+      UX-DR7, recebe o toast de auto-join em UX-DR22, exibe avisos na Story 13.2,
+      e existe como stub em feed.html. UX-DR27 cobre 6 outras telas e UX-DR28 cobre
+      4 outras. Decidir se vira historia nova no Epic 14."
+    owner: "Taques"
+    status: open
