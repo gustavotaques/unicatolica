@@ -1,15 +1,12 @@
 package br.edu.unicatolica.pacext.infraestrutura.seguranca;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
-import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import io.smallrye.jwt.auth.principal.DefaultJWTParser;
 import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import io.smallrye.jwt.build.Jwt;
@@ -23,8 +20,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Set;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -35,7 +32,8 @@ import org.mockito.ArgumentCaptor;
  * chaves gerado em memória (nenhuma chave commitada no repo) e um {@link ContainerRequestContext}
  * mockado via Mockito, cobrindo exatamente o contrato da AD-2: allowlist
  * {@code @PermitAll}, exigência de {@code Authorization: Bearer} e das claims
- * {@code sub}/{@code roles}.
+ * {@code sub}/{@code roles}. A checagem de logout (Story 1.6) não é deste filtro — ver
+ * {@link SessaoPosLogoutFilterTest}.
  */
 class JwtSecurityFilterTest {
 
@@ -55,13 +53,6 @@ class JwtSecurityFilterTest {
 
         filter = new JwtSecurityFilter();
         filter.jwtParser = new DefaultJWTParser(contextInfo);
-    }
-
-    /** Sem restrição de logout por padrão — cada teste que precisar sobrescreve o mock. */
-    @BeforeEach
-    void resetUsuarioRepository() {
-        filter.usuarioRepository = mock(UsuarioRepository.class);
-        when(filter.usuarioRepository.findById(any())).thenReturn(null);
     }
 
     private ContainerRequestContext mockContext(String path, String method, String authorizationHeader) {
@@ -182,7 +173,7 @@ class JwtSecurityFilterTest {
     }
 
     @Test
-    void aceitaTokenValidoComSubERoles() throws Exception {
+    void aceitaTokenValidoComSubERolesEGuardaEmitidoEm() throws Exception {
         String token = validToken("42", Set.of("ALUNO"));
         ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer " + token);
 
@@ -191,43 +182,14 @@ class JwtSecurityFilterTest {
         verify(requestContext, never()).abortWith(any());
         verify(requestContext).setProperty(JwtSecurityFilter.REQUEST_PROPERTY_USUARIO_ID, "42");
         verify(requestContext).setProperty(JwtSecurityFilter.REQUEST_PROPERTY_ROLES, Set.of("ALUNO"));
-    }
-
-    /** Fecha o critério de aceite da Story 1.6: token emitido antes do logout deve virar 401. */
-    @Test
-    void rejeitaTokenEmitidoAntesDoLogout() throws Exception {
-        String token = validToken("42", Set.of("ALUNO"));
-        Usuario usuario = new Usuario();
-        usuario.id = 42L;
-        usuario.sessaoValidaDesde = Instant.now().plusSeconds(60);
-        when(filter.usuarioRepository.findById(42L)).thenReturn(usuario);
-        ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer " + token);
-
-        filter.filter(requestContext);
-
-        assertAbortedWith401(requestContext);
-    }
-
-    /** Logout de OUTRO usuário não pode afetar um token ainda válido do usuário atual. */
-    @Test
-    void aceitaTokenEmitidoAposLogoutDoProprioUsuario() throws Exception {
-        String token = validToken("42", Set.of("ALUNO"));
-        Usuario usuario = new Usuario();
-        usuario.id = 42L;
-        usuario.sessaoValidaDesde = Instant.now().minusSeconds(60);
-        when(filter.usuarioRepository.findById(42L)).thenReturn(usuario);
-        ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer " + token);
-
-        filter.filter(requestContext);
-
-        verify(requestContext, never()).abortWith(any());
+        verify(requestContext).setProperty(eq(JwtSecurityFilter.REQUEST_PROPERTY_EMITIDO_EM), any());
     }
 
     @SuppressWarnings("unchecked")
     private void assertAbortedWith401(ContainerRequestContext requestContext) {
         ArgumentCaptor<Response> captor = ArgumentCaptor.forClass(Response.class);
         verify(requestContext).abortWith(captor.capture());
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), captor.getValue().getStatus());
-        assertFalse(captor.getValue().getEntity() == null);
+        Assertions.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), captor.getValue().getStatus());
+        Assertions.assertFalse(captor.getValue().getEntity() == null);
     }
 }

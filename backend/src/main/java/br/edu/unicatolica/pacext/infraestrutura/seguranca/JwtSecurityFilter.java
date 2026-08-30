@@ -1,7 +1,5 @@
 package br.edu.unicatolica.pacext.infraestrutura.seguranca;
 
-import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
-import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
@@ -17,24 +15,35 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Set;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 /**
  * Filtro de segurança JWT global (AD-2 da Architecture Spine).
  *
- * <p>É o único ponto do backend que valida autenticação — intercepta toda requisição
- * antes dela alcançar qualquer módulo de domínio, exceto os caminhos da allowlist
- * {@code @PermitAll} abaixo, que vive só aqui, nunca espalhada por módulo. Transporte
- * exclusivamente via header {@code Authorization: Bearer} — nunca cookie. Claims fixos
- * exigidos no token: {@code sub} (id do usuário) e {@code roles} (perfis globais, RF13);
- * nenhum módulo inventa nome de claim próprio.</p>
+ * <p>É o único ponto do backend que valida a estrutura/assinatura do token — intercepta
+ * toda requisição antes dela alcançar qualquer módulo de domínio, exceto os caminhos da
+ * allowlist {@code @PermitAll} abaixo, que vive só aqui, nunca espalhada por módulo.
+ * Transporte exclusivamente via header {@code Authorization: Bearer} — nunca cookie.
+ * Claims fixos exigidos no token: {@code sub} (id do usuário) e {@code roles} (perfis
+ * globais, RF13); nenhum módulo inventa nome de claim próprio.</p>
  *
  * <p>Autorização fina por perfil (RF13) é responsabilidade de cada módulo consumidor,
  * não deste filtro — aqui só se garante que o token existe, é válido e carrega as duas
  * claims obrigatórias, disponibilizando-as via propriedades da requisição para uso
- * downstream ({@link #REQUEST_PROPERTY_USUARIO_ID} e {@link #REQUEST_PROPERTY_ROLES}).</p>
+ * downstream ({@link #REQUEST_PROPERTY_USUARIO_ID}, {@link #REQUEST_PROPERTY_ROLES} e
+ * {@link #REQUEST_PROPERTY_EMITIDO_EM}).</p>
+ *
+ * <p><b>Por que a checagem de logout (Story 1.6) não mora aqui:</b> este filtro é
+ * {@code @PreMatching}, então roda sempre na I/O thread do Vert.x (Quarkus REST), antes
+ * do roteamento decidir se o recurso alvo é bloqueante. Uma consulta ao banco (JDBC,
+ * bloqueante) feita daqui derruba a requisição com
+ * {@code BlockingOperationNotAllowedException} — descoberto ao validar esta Home ao vivo
+ * via Docker, nenhum teste Mockito pega isso porque não passa pelo dispatch reativo real.
+ * A checagem de {@code sessaoValidaDesde} fica em {@link SessaoPosLogoutFilter}, um filtro
+ * comum (pós-roteamento), que herda o modo de despacho do recurso alvo — todos os nossos
+ * recursos são bloqueantes (Hibernate ORM clássico), então esse filtro já roda numa worker
+ * thread, onde a consulta é segura.</p>
  */
 @Provider
 @PreMatching
@@ -52,14 +61,13 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
 
     public static final String REQUEST_PROPERTY_USUARIO_ID = "pacext.usuarioId";
     public static final String REQUEST_PROPERTY_ROLES = "pacext.roles";
+    /** Epoch seconds do claim {@code iat} — consumido por {@link SessaoPosLogoutFilter}. */
+    public static final String REQUEST_PROPERTY_EMITIDO_EM = "pacext.emitidoEm";
 
     private static final String BEARER_PREFIX = "Bearer ";
 
     @Inject
     JWTParser jwtParser;
-
-    @Inject
-    UsuarioRepository usuarioRepository;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -99,32 +107,13 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
                 abort(requestContext, "Token não contém a claim obrigatória 'roles'.");
                 return;
             }
-            if (tokenEmitidoAntesDoLogout(usuarioId, jwt)) {
-                abort(requestContext, "Token JWT inválido ou expirado.");
-                return;
-            }
 
             requestContext.setProperty(REQUEST_PROPERTY_USUARIO_ID, usuarioId);
             requestContext.setProperty(REQUEST_PROPERTY_ROLES, roles);
+            requestContext.setProperty(REQUEST_PROPERTY_EMITIDO_EM, jwt.getIssuedAtTime());
         } catch (ParseException | RuntimeException e) {
             abort(requestContext, "Token JWT inválido ou expirado.");
         }
-    }
-
-    /**
-     * Logout (Story 1.6, RF10/RF11): token continua criptograficamente válido até o
-     * {@code exp} natural, mas deixa de ser aceito se foi emitido ({@code iat}) antes do
-     * último logout do usuário — {@code sessaoValidaDesde} é gravado por
-     * {@code AuthService.logout}. {@code null} nesse campo (usuário nunca deslogou) não
-     * restringe nada.
-     */
-    private boolean tokenEmitidoAntesDoLogout(String usuarioId, JsonWebToken jwt) {
-        Usuario usuario = usuarioRepository.findById(Long.valueOf(usuarioId));
-        if (usuario == null || usuario.sessaoValidaDesde == null) {
-            return false;
-        }
-        Instant emitidoEm = Instant.ofEpochSecond(jwt.getIssuedAtTime());
-        return emitidoEm.isBefore(usuario.sessaoValidaDesde);
     }
 
     /**
