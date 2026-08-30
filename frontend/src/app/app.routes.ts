@@ -20,4 +20,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/feed/feed').then((m) => m.Feed),
   },
+  {
+    path: 'comunidades',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/comunidades/comunidades-lista/comunidades-lista').then((m) => m.ComunidadesLista),
+  },
 ];

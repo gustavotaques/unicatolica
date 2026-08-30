@@ -1,0 +1,64 @@
+<div class="lista">
+  <header class="lista__cabecalho">
+    <a routerLink="/feed" class="lista__voltar">&larr; Voltar pra Home</a>
+    <h1>Descobrir comunidades</h1>
+  </header>
+
+  <form class="lista__filtros" (ngSubmit)="aplicarFiltro(tipoSelecionado.value, nomeDigitado.value)">
+    <input #nomeDigitado type="text" placeholder="Buscar por nome…" [value]="filtroNome()" />
+    <select #tipoSelecionado [value]="filtroTipo()">
+      <option value="">Todos os tipos</option>
+      <option value="CURSO">Comunidade de curso</option>
+      <option value="ABERTA">Comunidade aberta</option>
+    </select>
+    <button type="submit">Filtrar</button>
+  </form>
+
+  @if (carregando()) {
+    <p class="lista__estado">Carregando comunidades…</p>
+  } @else if (erro(); as mensagem) {
+    <div class="lista__estado lista__estado--erro" role="alert">{{ mensagem }}</div>
+  } @else if (pagina(); as resultado) {
+    <div class="lista__grade">
+      @for (comunidade of resultado.content; track comunidade.id) {
+        <div class="lista__card">
+          <div class="lista__card-topo">
+            <b>{{ comunidade.nome }}</b>
+            <span class="lista__chip" [class.lista__chip--curso]="comunidade.tipo === 'CURSO'">
+              {{ comunidade.tipo === 'CURSO' ? 'Comunidade de curso' : 'Comunidade aberta' }}
+            </span>
+          </div>
+          @if (comunidade.descricao) {
+            <p class="lista__descricao">{{ comunidade.descricao }}</p>
+          }
+
+          @if (comunidade.tipo === 'ABERTA') {
+            @if (souMembro(comunidade)) {
+              <button type="button" class="lista__botao lista__botao--sair" [disabled]="processandoId() === comunidade.id" (click)="sair(comunidade)">
+                {{ processandoId() === comunidade.id ? 'Saindo…' : 'Sair' }}
+              </button>
+            } @else {
+              <button type="button" class="lista__botao lista__botao--participar" [disabled]="processandoId() === comunidade.id" (click)="ingressar(comunidade)">
+                {{ processandoId() === comunidade.id ? 'Entrando…' : 'Participar' }}
+              </button>
+            }
+          } @else if (souMembro(comunidade)) {
+            <span class="lista__membro">Você é membro (associação automática do seu curso)</span>
+          }
+        </div>
+      } @empty {
+        <p class="lista__estado">Nenhuma comunidade encontrada com esse filtro.</p>
+      }
+    </div>
+
+    @if (resultado.totalPages > 1) {
+      <div class="lista__paginacao">
+        <button type="button" [disabled]="resultado.page === 0" (click)="irParaPagina(resultado.page - 1)">&larr; Anterior</button>
+        <span>Página {{ resultado.page + 1 }} de {{ resultado.totalPages }}</span>
+        <button type="button" [disabled]="resultado.page + 1 >= resultado.totalPages" (click)="irParaPagina(resultado.page + 1)">
+          Próxima &rarr;
+        </button>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,168 @@
+/* Mesmos tokens "Campus Clean" de features/feed/feed.scss — ver comentário lá sobre por
+ * que ainda são locais ao componente (Epic 14, Design System, não existe ainda). */
+:host {
+  --lista-bg: #fafaf8;
+  --lista-border: #eaeae6;
+  --lista-ink: #1c1c1a;
+  --lista-ink-soft: #6b6b66;
+  --lista-maroon: #7a1f2b;
+  --lista-orange: #ea6a2e;
+
+  display: block;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  color: var(--lista-ink);
+  background: var(--lista-bg);
+  min-height: 100dvh;
+}
+
+.lista {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 28px 32px;
+}
+
+.lista__cabecalho h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 8px 0 20px;
+}
+
+.lista__voltar {
+  font-size: 13px;
+  color: var(--lista-ink-soft);
+  text-decoration: none;
+}
+
+.lista__filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.lista__filtros input,
+.lista__filtros select {
+  border: 1px solid var(--lista-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.lista__filtros input {
+  flex: 1;
+}
+
+.lista__filtros button {
+  border: none;
+  background: var(--lista-maroon);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.lista__estado {
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--lista-ink-soft);
+}
+
+.lista__estado--erro {
+  color: #b3261e;
+}
+
+.lista__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.lista__card {
+  background: #fff;
+  border: 1px solid var(--lista-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.lista__card-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lista__chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #fdeee6;
+  color: var(--lista-orange);
+}
+
+.lista__chip--curso {
+  background: #f5e4e6;
+  color: var(--lista-maroon);
+}
+
+.lista__descricao {
+  font-size: 12.5px;
+  color: var(--lista-ink-soft);
+  margin: 0 0 12px;
+}
+
+.lista__botao {
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lista__botao:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.lista__botao--participar {
+  background: var(--lista-orange);
+  color: #fff;
+}
+
+.lista__botao--sair {
+  background: none;
+  border: 1px solid var(--lista-border);
+  color: var(--lista-ink-soft);
+}
+
+.lista__membro {
+  font-size: 11.5px;
+  color: #3a7d5c;
+  font-weight: 600;
+}
+
+.lista__paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  font-size: 13px;
+}
+
+.lista__paginacao button {
+  border: 1px solid var(--lista-border);
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.lista__paginacao button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

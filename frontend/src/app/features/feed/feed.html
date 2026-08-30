@@ -1,3 +1,69 @@
-<h1>Início</h1>
-<p>Feed principal em construção.</p>
-<button type="button" (click)="sair()">Sair</button>
+@if (carregando()) {
+  <p class="home__estado">Carregando sua Home…</p>
+} @else if (erro(); as mensagem) {
+  <div class="home__estado home__estado--erro" role="alert">{{ mensagem }}</div>
+} @else {
+  <div class="home">
+    <aside class="home__nav">
+      <div class="home__marca">
+        <span class="home__marca-icone"></span>
+        <span class="home__marca-nome">UniCatólica</span>
+      </div>
+
+      <span class="home__nav-item home__nav-item--ativo">🏠 Início</span>
+      <span class="home__nav-item home__nav-item--desabilitado" title="Em breve">🔍 Buscar</span>
+      <span class="home__nav-item home__nav-item--desabilitado" title="Em breve">✉️ Mensagens</span>
+      <span class="home__nav-item home__nav-item--desabilitado" title="Em breve">🔔 Notificações</span>
+
+      <div class="home__nav-secao">Suas comunidades</div>
+      @for (comunidade of minhasComunidades(); track comunidade.id) {
+        <div class="home__nav-item">
+          <span class="home__ponto" [class.home__ponto--curso]="comunidade.tipo === 'CURSO'"></span>
+          {{ comunidade.nome }}
+        </div>
+      } @empty {
+        <p class="home__nav-vazio">Você ainda não faz parte de nenhuma comunidade.</p>
+      }
+      <a class="home__nav-item home__nav-item--descobrir" routerLink="/comunidades">+ Descobrir comunidades</a>
+    </aside>
+
+    <main class="home__principal">
+      <div class="home__topo">
+        <div class="home__saudacao">
+          Olá, {{ usuario()?.nome }}
+          @if (usuario()?.curso; as curso) {
+            <span>{{ curso }}</span>
+          }
+        </div>
+        <div class="home__avatar">{{ iniciais() }}</div>
+      </div>
+
+      <div class="home__aviso">
+        <p><strong>Publicações chegam em breve.</strong></p>
+        <p>Por enquanto, participe das comunidades do seu curso e descubra outras abertas ao lado.</p>
+      </div>
+
+      <button type="button" class="home__sair" (click)="sair()">Sair</button>
+    </main>
+
+    <aside class="home__lateral">
+      <h4>Descubra comunidades</h4>
+      @for (comunidade of descobrir(); track comunidade.id) {
+        <div class="home__comunidade">
+          <span class="home__comunidade-icone"></span>
+          <b class="home__comunidade-nome">{{ comunidade.nome }}</b>
+          <button
+            type="button"
+            class="home__participar"
+            [disabled]="ingressandoId() === comunidade.id"
+            (click)="ingressar(comunidade)"
+          >
+            {{ ingressandoId() === comunidade.id ? 'Entrando…' : 'Participar' }}
+          </button>
+        </div>
+      } @empty {
+        <p class="home__nav-vazio">Nenhuma comunidade nova pra descobrir agora.</p>
+      }
+    </aside>
+  </div>
+}

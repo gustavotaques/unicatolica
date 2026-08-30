@@ -32,17 +32,23 @@ export class AuthService {
     return localStorage.getItem(TOKEN_STORAGE_KEY);
   }
 
-  logout(): void {
+  /**
+   * Header `Authorization` pronto pra passar em `{ headers }` de qualquer chamada
+   * autenticada — ainda não existe um `HttpInterceptor` global (AD-7 não decidiu isso
+   * ainda), então cada serviço que fala com endpoint autenticado usa isto explicitamente.
+   */
+  obterCabecalhoAutorizacao(): Record<string, string> {
     const token = this.obterToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
+  logout(): void {
+    const headers = this.obterCabecalhoAutorizacao();
     localStorage.removeItem(TOKEN_STORAGE_KEY);
-    if (token) {
+    if (headers['Authorization']) {
       // Encerra a sessão no servidor (Story 1.6) — best-effort: mesmo se falhar (ex.: token
       // já expirado), a sessão local já foi encerrada acima, que é o que importa para o usuário.
-      this.http
-        .post(`${API_BASE_URL}/auth/logout`, null, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .subscribe({ error: () => undefined });
+      this.http.post(`${API_BASE_URL}/auth/logout`, null, { headers }).subscribe({ error: () => undefined });
     }
   }
 }
