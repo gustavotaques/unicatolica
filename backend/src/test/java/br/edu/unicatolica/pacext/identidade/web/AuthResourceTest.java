@@ -3,11 +3,13 @@ package br.edu.unicatolica.pacext.identidade.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import br.edu.unicatolica.pacext.identidade.aplicacao.AuthService;
 import br.edu.unicatolica.pacext.identidade.dominio.CredenciaisInvalidasException;
 import br.edu.unicatolica.pacext.identidade.dominio.EmailNaoConfirmadoException;
+import br.edu.unicatolica.pacext.identidade.infraestrutura.UsuarioAutenticado;
 import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
@@ -20,10 +22,12 @@ import org.mockito.Mockito;
 class AuthResourceTest {
 
     private final AuthService authService = mock(AuthService.class);
+    private final UsuarioAutenticado usuarioAutenticado = mock(UsuarioAutenticado.class);
     private final AuthResource resource = new AuthResource();
 
     AuthResourceTest() {
         resource.authService = authService;
+        resource.usuarioAutenticado = usuarioAutenticado;
     }
 
     @Test
@@ -61,5 +65,15 @@ class AuthResourceTest {
         ErroResponse corpo = (ErroResponse) response.getEntity();
         assertEquals("EMAIL_NAO_CONFIRMADO", corpo.error().code());
         assertEquals("Confirme seu e-mail antes de entrar. Reenviar confirmação", corpo.error().message());
+    }
+
+    @Test
+    void retorna204NoContentAoDeslogarUsuarioAutenticado() {
+        when(usuarioAutenticado.id()).thenReturn(42L);
+
+        Response response = resource.logout();
+
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        verify(authService).logout(42L);
     }
 }

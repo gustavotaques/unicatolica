@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Coluna para a Story 1.6 (Logout e invalidação de sessão). O JWT emitido pelo login
+    (Story 1.4) é stateless por natureza — expira sozinho pelo claim `exp`, mas nada
+    invalida um token antes disso. Este timestamp guarda, por usuário, o instante a
+    partir do qual tokens são aceitos: no logout ele é atualizado para "agora", e
+    JwtSecurityFilter passa a rejeitar qualquer token cujo `iat` seja anterior a esse
+    valor. NULL significa "sem restrição" (usuário nunca deslogou explicitamente).
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="identidade-004-add-sessao-valida-desde" author="pacext">
+        <addColumn tableName="usuario">
+            <column name="sessao_valida_desde" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

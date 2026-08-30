@@ -59,6 +59,14 @@ public class Usuario {
     @Column(name = "token_confirmacao_expira_em")
     public Instant tokenConfirmacaoExpiraEm;
 
+    /**
+     * Logout (Story 1.6, RF10/RF11) — instante a partir do qual tokens são aceitos.
+     * {@code null} significa sem restrição. Atualizado para "agora" a cada logout;
+     * JwtSecurityFilter rejeita tokens com {@code iat} anterior a este valor.
+     */
+    @Column(name = "sessao_valida_desde")
+    public Instant sessaoValidaDesde;
+
     @Column(name = "criado_em", nullable = false)
     public Instant criadoEm;
 
