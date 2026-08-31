@@ -7,3 +7,5 @@ export { UcBadge, type UcBadgeVariant } from './badge/badge';
 export { UcButton } from './button/button';
 export { UcCard } from './card/card';
 export { UcMemberIndicator } from './member-indicator/member-indicator';
+export { ToastService, type ToastItem } from './toast/toast.service';
+export { UcToastHost } from './toast/toast-host';

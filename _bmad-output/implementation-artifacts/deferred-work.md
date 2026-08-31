@@ -37,3 +37,11 @@ Surfaced during build but out of scope for the originating spec. Append-only.
 - source_spec: `_bmad-output/implementation-artifacts/spec-14-3-shell-de-navegacao-global.md`
   summary: Give app.routes.ts a `**` wildcard/404 route and a `{ path: '', pathMatch: 'full', redirectTo: 'feed' }` index under the shell parent.
   evidence: Story 14.3 review (blind-hunter + edge-case-hunter, both loops) noted the route restructure left no catch-all and no shell index. Harmless now (the only shell child is `/feed`, and `/` is claimed by the leading `redirectTo: 'login'`), but an unknown URL produces a router error rather than a friendly redirect, and a shell-prefixed URL with no matching child would render an empty outlet. Best added when the second authenticated screen lands.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-14-5-sistema-de-toast-e-motion-minimo.md`
+  summary: Decide how a future "critical confirmation" toast (e.g. voto registrado) satisfies WCAG 2.2.1 Timing Adjustable, since ToastService's fixed 4s auto-dismiss has no pause-on-hover/focus.
+  evidence: Story 14.5 review (blind-hunter) flagged the fixed timer as a Timing Adjustable risk. EXPERIENCE.md's own mitigation is that critical confirmations must also persist in screen state, not rely on the toast alone (e.g. the poll's result bar, not just the toast) - that persistence is each future consumer story's (2.3/2.4/8.x) responsibility, not something toast.service.ts itself can guarantee.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-14-5-sistema-de-toast-e-motion-minimo.md`
+  summary: Extract a shared checkmark-icon component instead of duplicating the same inline `<svg>` in both member-indicator.html and toast-host.html.
+  evidence: Story 14.5 review (blind-hunter) noted the toast's checkmark markup is hand-copied from Story 14.2's member-indicator with no single source of truth. Story 14.3 already flagged "a real icon set/SVG icon system" as an Ask-First item deferred at that time; worth revisiting once a third icon appears.
