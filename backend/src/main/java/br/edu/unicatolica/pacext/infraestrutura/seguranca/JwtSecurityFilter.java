@@ -1,7 +1,5 @@
 package br.edu.unicatolica.pacext.infraestrutura.seguranca;
 
-import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
-import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
@@ -20,6 +18,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Set;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
 
 /**
  * Filtro de segurança JWT global (AD-2 da Architecture Spine).
@@ -35,11 +34,19 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
  * não deste filtro — aqui só se garante que o token existe, é válido e carrega as duas
  * claims obrigatórias, disponibilizando-as via propriedades da requisição para uso
  * downstream ({@link #REQUEST_PROPERTY_USUARIO_ID} e {@link #REQUEST_PROPERTY_ROLES}).</p>
+ *
+ * <p>A checagem de sessão invalidada por logout (Story 1.6, RF10/RF11) NÃO mora aqui —
+ * vive em {@link SessaoInvalidadaFilter}, um filtro comum (não {@code @PreMatching}). Um
+ * filtro {@code @PreMatching} roda sempre na thread de I/O do Vert.x, e essa checagem
+ * consulta o banco (bloqueante); mover para um filtro pós-roteamento com {@code @Blocking}
+ * foi a correção do defeito D1 (que derrubava toda rota autenticada com 401).</p>
  */
 @Provider
 @PreMatching
 @Priority(Priorities.AUTHENTICATION)
 public class JwtSecurityFilter implements ContainerRequestFilter {
+
+    private static final Logger LOG = Logger.getLogger(JwtSecurityFilter.class);
 
     /** Allowlist única de endpoints públicos — não pertence a nenhum módulo (AD-2). */
     private static final Set<String> ALLOWLIST = Set.of(
@@ -52,14 +59,13 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
 
     public static final String REQUEST_PROPERTY_USUARIO_ID = "pacext.usuarioId";
     public static final String REQUEST_PROPERTY_ROLES = "pacext.roles";
+    /** Consumida por {@link SessaoInvalidadaFilter} para checar invalidação por logout. */
+    public static final String REQUEST_PROPERTY_EMITIDO_EM = "pacext.emitidoEm";
 
     private static final String BEARER_PREFIX = "Bearer ";
 
     @Inject
     JWTParser jwtParser;
-
-    @Inject
-    UsuarioRepository usuarioRepository;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -99,32 +105,18 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
                 abort(requestContext, "Token não contém a claim obrigatória 'roles'.");
                 return;
             }
-            if (tokenEmitidoAntesDoLogout(usuarioId, jwt)) {
-                abort(requestContext, "Token JWT inválido ou expirado.");
-                return;
-            }
 
             requestContext.setProperty(REQUEST_PROPERTY_USUARIO_ID, usuarioId);
             requestContext.setProperty(REQUEST_PROPERTY_ROLES, roles);
+            requestContext.setProperty(REQUEST_PROPERTY_EMITIDO_EM, Instant.ofEpochSecond(jwt.getIssuedAtTime()));
         } catch (ParseException | RuntimeException e) {
+            // WARN, não ERROR: este catch também cobre token genuinamente inválido/expirado
+            // (tráfego normal), não só falha de infraestrutura — mas precisa logar, senão
+            // uma falha real (ex.: consulta bloqueante rejeitada na thread de I/O) fica
+            // disfarçada de "token inválido" sem nenhum rastro (defeito D1).
+            LOG.warn("Falha ao validar token JWT.", e);
             abort(requestContext, "Token JWT inválido ou expirado.");
         }
-    }
-
-    /**
-     * Logout (Story 1.6, RF10/RF11): token continua criptograficamente válido até o
-     * {@code exp} natural, mas deixa de ser aceito se foi emitido ({@code iat}) antes do
-     * último logout do usuário — {@code sessaoValidaDesde} é gravado por
-     * {@code AuthService.logout}. {@code null} nesse campo (usuário nunca deslogou) não
-     * restringe nada.
-     */
-    private boolean tokenEmitidoAntesDoLogout(String usuarioId, JsonWebToken jwt) {
-        Usuario usuario = usuarioRepository.findById(Long.valueOf(usuarioId));
-        if (usuario == null || usuario.sessaoValidaDesde == null) {
-            return false;
-        }
-        Instant emitidoEm = Instant.ofEpochSecond(jwt.getIssuedAtTime());
-        return emitidoEm.isBefore(usuario.sessaoValidaDesde);
     }
 
     /**

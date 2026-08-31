@@ -105,6 +105,23 @@ paths:
         '202':
           description: Solicitação aceita.
 
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: Encerra a sessão do usuário autenticado (Story 1.6, RF10/RF11).
+      tags: [Identidade]
+      description: >
+        Exige token válido (não entra na allowlist do JwtSecurityFilter, AD-2) para
+        saber qual usuário deslogar. Invalida imediatamente toda sessão emitida
+        (claim iat) até o momento do logout (RF11) — requisições subsequentes com o
+        mesmo token, mesmo antes do exp natural, são rejeitadas com 401. Idempotente:
+        chamar de novo com um token já invalidado também responde 401, nunca erro.
+      responses:
+        '204':
+          description: Sessão invalidada.
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
   /usuarios/me:
     get:
       operationId: obterUsuarioAutenticado
