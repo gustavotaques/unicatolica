@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { UcToastHost } from './ui/toast/toast-host';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, UcToastHost],
   selector: 'app-root',
   templateUrl: './app.html',
 })

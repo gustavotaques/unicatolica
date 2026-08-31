@@ -1,0 +1,83 @@
+// Toast host (Story 14.5).
+//
+// Fixed bottom-right stack, mounted once in app.html so it never competes
+// with the topbar avatar dropdown (top-right, shell.scss) or the sidebar
+// (left). Each toast is a card-like surface - surface bg + 1px border +
+// radius-md + the same diffuse shadow dropdowns use - with a green-ok
+// checkmark icon (member-indicator's "positive confirmation" language) and
+// its own entrance-only fade/slide animation.
+//
+// 150ms ease-out matches the duration shell.scss's dropdown fade already
+// established (shell.scss:141, "Story 14.5 owns motion") so the app has one
+// consistent motion value. No exit animation: an item disappears immediately
+// when ToastService removes it from the array, same as the dropdown's own
+// close behaviour.
+//
+// Every colour/spacing/radius/shadow value is a var(--uc-*) token; only the
+// svg's own viewBox/path/stroke-width numbers and the 1px border are
+// literal (same allowance every existing ui/ component uses).
+
+:host {
+  display: block;
+}
+
+.uc-toast-host {
+  position: fixed;
+  right: var(--uc-space-page-margin);
+  bottom: var(--uc-space-page-margin);
+  // Placeholder stacking value: sufficient today because no other overlay
+  // exists yet. Revisit if/when a modal or dialog is introduced - it is not
+  // backed by any structural precedent elsewhere in the app.
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: calc(var(--uc-space-unit) * 2);
+  // Fixed cap (not viewport-relative - vh isn't an allowed token unit here)
+  // so a long queue scrolls internally instead of pushing older toasts off
+  // a short/mobile viewport (RNF02).
+  max-height: calc(var(--uc-space-unit) * 120);
+  overflow-y: auto;
+  pointer-events: none; // empty wrapper never blocks clicks
+}
+
+.uc-toast-host__item {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--uc-space-unit) * 2);
+  padding: calc(var(--uc-space-unit) * 3) calc(var(--uc-space-unit) * 4);
+  max-width: calc(var(--uc-space-unit) * 90);
+  overflow-wrap: anywhere;
+  background: var(--uc-color-surface);
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-md);
+  box-shadow: var(--uc-shadow-overlay);
+  color: var(--uc-color-ink);
+  font-size: var(--uc-font-size-body);
+  pointer-events: auto;
+  animation: uc-toast-fade-slide 150ms ease-out;
+}
+
+@keyframes uc-toast-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--uc-space-unit) * 3));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uc-toast-host__item {
+    animation: none;
+  }
+}
+
+.uc-toast-host__icon {
+  width: var(--uc-font-size-body);
+  height: var(--uc-font-size-body);
+  flex: none;
+  color: var(--uc-color-green-ok);
+}
