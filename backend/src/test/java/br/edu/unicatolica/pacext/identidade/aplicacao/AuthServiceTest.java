@@ -16,6 +16,7 @@ import br.edu.unicatolica.pacext.identidade.dominio.PasswordHasher;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.jwt.auth.principal.DefaultJWTParser;
 import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import io.smallrye.jwt.util.KeyUtils;
@@ -23,6 +24,8 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -82,6 +85,28 @@ class AuthServiceTest {
         JsonWebToken jwt = new DefaultJWTParser(contextInfo).parse(token);
         assertEquals("42", jwt.getSubject());
         assertEquals(Set.of("ALUNO"), jwt.getGroups());
+    }
+
+    /**
+     * Defeito D3: {@code jwt.getGroups()} passa mesmo se o token carregar a claim padrão
+     * {@code groups} em vez de uma claim literalmente chamada {@code roles} — a AD-2
+     * promete {@code roles} por nome ("Claims fixos no token: sub [...] e roles"), e
+     * {@code smallrye.jwt.path.groups=roles} só funciona hoje por coincidência (fallback
+     * silencioso do SmallRye para {@code groups} quando o path configurado não resolve).
+     * Este teste lê o payload cru do token (sem passar por {@code getGroups()}, que
+     * mascara o problema) para provar a claim certa está presente por nome.
+     */
+    @Test
+    void tokenEmitidoTemClaimRolesLiteralNaoApenasGroups() throws Exception {
+        Usuario usuario = usuarioConfirmado("Senha123!");
+        when(usuarioRepository.buscarPorEmail(usuario.email)).thenReturn(Optional.of(usuario));
+
+        String token = authService.autenticar(usuario.email, "Senha123!");
+
+        String[] partes = token.split("\\.");
+        String payloadJson = new String(Base64.getUrlDecoder().decode(partes[1]));
+        Map<?, ?> payload = new ObjectMapper().readValue(payloadJson, Map.class);
+        assertEquals(java.util.List.of("ALUNO"), payload.get("roles"));
     }
 
     @Test

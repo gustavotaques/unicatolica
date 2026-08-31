@@ -68,7 +68,7 @@ class JwtSecurityFilterTest {
         return Jwt.claims()
                 .issuer(ISSUER)
                 .subject(subject)
-                .groups(roles)
+                .claim("roles", roles)
                 .sign(privateKey);
     }
 
@@ -148,7 +148,7 @@ class JwtSecurityFilterTest {
         String tokenExpirado = Jwt.claims()
                 .issuer(ISSUER)
                 .subject("42")
-                .groups(Set.of("ALUNO"))
+                .claim("roles", Set.of("ALUNO"))
                 .expiresAt(Instant.now().minusSeconds(3600))
                 .sign(privateKey);
         ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer " + tokenExpirado);
