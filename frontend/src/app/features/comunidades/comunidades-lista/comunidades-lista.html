@@ -1,8 +1,5 @@
 <div class="lista">
-  <header class="lista__cabecalho">
-    <a routerLink="/feed" class="lista__voltar">&larr; Voltar pra Home</a>
-    <h1>Descobrir comunidades</h1>
-  </header>
+  <h1>Descobrir comunidades</h1>
 
   <form class="lista__filtros" (ngSubmit)="aplicarFiltro(tipoSelecionado.value, nomeDigitado.value)">
     <input #nomeDigitado type="text" placeholder="Buscar por nome…" [value]="filtroNome()" />
@@ -11,7 +8,7 @@
       <option value="CURSO">Comunidade de curso</option>
       <option value="ABERTA">Comunidade aberta</option>
     </select>
-    <button type="submit">Filtrar</button>
+    <button type="submit" uc-button>Filtrar</button>
   </form>
 
   @if (carregando()) {
@@ -21,12 +18,12 @@
   } @else if (pagina(); as resultado) {
     <div class="lista__grade">
       @for (comunidade of resultado.content; track comunidade.id) {
-        <div class="lista__card">
+        <uc-card class="lista__card">
           <div class="lista__card-topo">
             <b>{{ comunidade.nome }}</b>
-            <span class="lista__chip" [class.lista__chip--curso]="comunidade.tipo === 'CURSO'">
+            <uc-badge [variant]="comunidade.tipo === 'CURSO' ? 'course' : 'open'">
               {{ comunidade.tipo === 'CURSO' ? 'Comunidade de curso' : 'Comunidade aberta' }}
-            </span>
+            </uc-badge>
           </div>
           @if (comunidade.descricao) {
             <p class="lista__descricao">{{ comunidade.descricao }}</p>
@@ -34,18 +31,18 @@
 
           @if (comunidade.tipo === 'ABERTA') {
             @if (souMembro(comunidade)) {
-              <button type="button" class="lista__botao lista__botao--sair" [disabled]="processandoId() === comunidade.id" (click)="sair(comunidade)">
+              <button type="button" class="lista__botao-sair" [disabled]="processandoId() === comunidade.id" (click)="sair(comunidade)">
                 {{ processandoId() === comunidade.id ? 'Saindo…' : 'Sair' }}
               </button>
             } @else {
-              <button type="button" class="lista__botao lista__botao--participar" [disabled]="processandoId() === comunidade.id" (click)="ingressar(comunidade)">
+              <button type="button" uc-button class="lista__botao-participar" [disabled]="processandoId() === comunidade.id" (click)="ingressar(comunidade)">
                 {{ processandoId() === comunidade.id ? 'Entrando…' : 'Participar' }}
               </button>
             }
           } @else if (souMembro(comunidade)) {
-            <span class="lista__membro">Você é membro (associação automática do seu curso)</span>
+            <uc-member-indicator label="Membro (associação automática do seu curso)" />
           }
-        </div>
+        </uc-card>
       } @empty {
         <p class="lista__estado">Nenhuma comunidade encontrada com esse filtro.</p>
       }

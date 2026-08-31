@@ -14,6 +14,16 @@ export interface LoginResponse {
 
 const TOKEN_STORAGE_KEY = 'pacext.token';
 
+/**
+ * Nome da claim do JWT que carrega os perfis globais do usuário.
+ *
+ * O backend configura `smallrye.jwt.path.groups=roles` (application.properties),
+ * então o token emitido carrega o perfil sob `roles` - nunca `groups`. Esta
+ * constante é a única fonte da verdade compartilhada entre `AuthService` e o
+ * seu spec, para que os dois não divirjam.
+ */
+export const JWT_ROLES_CLAIM = 'roles';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   constructor(private readonly http: HttpClient) {}
@@ -49,6 +59,63 @@ export class AuthService {
       // Encerra a sessão no servidor (Story 1.6) — best-effort: mesmo se falhar (ex.: token
       // já expirado), a sessão local já foi encerrada acima, que é o que importa para o usuário.
       this.http.post(`${API_BASE_URL}/auth/logout`, null, { headers }).subscribe({ error: () => undefined });
+    }
+  }
+
+  /**
+   * Perfis globais do usuário autenticado, lidos da claim `JWT_ROLES_CLAIM` do
+   * token. Decodificação apenas do payload (sem verificar assinatura: o guard e o
+   * backend já garantem autenticação). Qualquer falha degrada para `[]`, então um
+   * token adulterado só consegue esconder itens privilegiados, nunca revelá-los.
+   */
+  perfis(): string[] {
+    const payload = this.decodificarPayloadJwt();
+    const claim = payload?.[JWT_ROLES_CLAIM];
+    if (typeof claim === 'string') {
+      return [claim];
+    }
+    return Array.isArray(claim)
+      ? claim.filter((valor): valor is string => typeof valor === 'string')
+      : [];
+  }
+
+  possuiPerfil(perfil: string): boolean {
+    return this.perfis().includes(perfil);
+  }
+
+  /**
+   * Decodifica só o segmento de payload do JWT armazenado. Base64url -> base64,
+   * decodificação UTF-8-safe (para claims com caracteres multibyte não quebrarem
+   * o `JSON.parse`) e parse. Retorna `null` em qualquer erro.
+   */
+  private decodificarPayloadJwt(): Record<string, unknown> | null {
+    try {
+      const token = this.obterToken();
+      if (!token) {
+        return null;
+      }
+
+      const segmento = token.split('.')[1];
+      if (!segmento) {
+        return null;
+      }
+
+      const base64 = segmento.replace(/-/g, '+').replace(/_/g, '/');
+      const preenchido = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+      const binario = atob(preenchido);
+      const bytes = Uint8Array.from(binario, (caractere) => caractere.charCodeAt(0));
+      const json = new TextDecoder().decode(bytes);
+      const payload = JSON.parse(json) as unknown;
+
+      if (Array.isArray(payload)) {
+        return null;
+      }
+
+      return payload !== null && typeof payload === 'object'
+        ? (payload as Record<string, unknown>)
+        : null;
+    } catch {
+      return null;
     }
   }
 }

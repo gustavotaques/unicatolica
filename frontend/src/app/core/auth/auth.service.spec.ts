@@ -1,7 +1,21 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { AuthService } from './auth.service';
+import { AuthService, JWT_ROLES_CLAIM } from './auth.service';
+
+/** Base64url de uma string UTF-8 (sem padding), como um JWT real. */
+function base64url(texto: string): string {
+  const bytes = new TextEncoder().encode(texto);
+  let binario = '';
+  bytes.forEach((byte) => (binario += String.fromCharCode(byte)));
+  return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+/** Monta um JWT `header.payload.assinatura` com o payload informado. */
+function jwtComPayload(payload: Record<string, unknown>): string {
+  const header = base64url(JSON.stringify({ alg: 'none', typ: 'JWT' }));
+  return `${header}.${base64url(JSON.stringify(payload))}.assinatura-ignorada`;
+}
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -63,5 +77,81 @@ describe('AuthService', () => {
 
     expect(service.obterToken()).toBeNull();
     httpMock.expectNone('http://localhost:8080/auth/logout');
+  });
+
+  describe('perfis() / possuiPerfil()', () => {
+    it('a constante do nome da claim vale "roles" (contrato com o backend)', () => {
+      expect(JWT_ROLES_CLAIM).toBe('roles');
+    });
+
+    it('le a claim escrita com a string literal "roles" (nao via a constante importada)', () => {
+      const header = base64url(JSON.stringify({ alg: 'none' }));
+      const payload = base64url('{"sub":"u1","roles":["MODERADOR"]}');
+      localStorage.setItem('pacext.token', `${header}.${payload}.assinatura-ignorada`);
+
+      expect(service.perfis()).toEqual(['MODERADOR']);
+    });
+
+    it('le a claim de perfis (roles) de um token com forma real do backend', () => {
+      localStorage.setItem(
+        'pacext.token',
+        jwtComPayload({ sub: 'aluno-1', [JWT_ROLES_CLAIM]: ['MODERADOR'] }),
+      );
+
+      expect(service.perfis()).toEqual(['MODERADOR']);
+      expect(service.possuiPerfil('MODERADOR')).toBe(true);
+      expect(service.possuiPerfil('ADMINISTRADOR')).toBe(false);
+    });
+
+    it('retorna [] quando a claim de perfis esta ausente', () => {
+      localStorage.setItem('pacext.token', jwtComPayload({ sub: 'aluno-1' }));
+
+      expect(service.perfis()).toEqual([]);
+      expect(service.possuiPerfil('MODERADOR')).toBe(false);
+    });
+
+    it('retorna [] para um token malformado', () => {
+      localStorage.setItem('pacext.token', 'isto-nao-e-um-jwt');
+
+      expect(service.perfis()).toEqual([]);
+    });
+
+    it('retorna [] quando nao ha token armazenado', () => {
+      expect(service.perfis()).toEqual([]);
+    });
+
+    it('decodifica payload com caracteres multibyte sem lancar', () => {
+      localStorage.setItem(
+        'pacext.token',
+        jwtComPayload({ nome: 'Ação Coração 日本語', [JWT_ROLES_CLAIM]: ['ALUNO'] }),
+      );
+
+      expect(service.perfis()).toEqual(['ALUNO']);
+    });
+
+    it('ignora valores nao-string dentro da claim de perfis', () => {
+      localStorage.setItem(
+        'pacext.token',
+        jwtComPayload({ [JWT_ROLES_CLAIM]: ['ALUNO', 42, null, 'MODERADOR'] }),
+      );
+
+      expect(service.perfis()).toEqual(['ALUNO', 'MODERADOR']);
+    });
+
+    it('trata uma claim de perfil escalar (string) como lista de um item', () => {
+      localStorage.setItem('pacext.token', jwtComPayload({ [JWT_ROLES_CLAIM]: 'ADMINISTRADOR' }));
+
+      expect(service.perfis()).toEqual(['ADMINISTRADOR']);
+      expect(service.possuiPerfil('ADMINISTRADOR')).toBe(true);
+    });
+
+    it('retorna [] quando o payload decodificado e um array (nao um objeto de claims)', () => {
+      localStorage.setItem(
+        'pacext.token',
+        jwtComPayload(['MODERADOR', 'ADMINISTRADOR'] as unknown as Record<string, unknown>),
+      );
+
+      expect(service.perfis()).toEqual([]);
+    });
   });
 });

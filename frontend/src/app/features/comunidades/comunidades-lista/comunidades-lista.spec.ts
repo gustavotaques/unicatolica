@@ -50,13 +50,13 @@ describe('ComunidadesLista', () => {
 
   it('entra numa comunidade aberta e atualiza o estado sem recarregar tudo', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    const botao = compiled.querySelector('.lista__botao--participar') as HTMLButtonElement;
+    const botao = compiled.querySelector('.lista__botao-participar') as HTMLButtonElement;
 
     botao.click();
 
     httpMock.expectOne(`${API_BASE_URL}/comunidades/2/membros`).flush(null);
     fixture.detectChanges();
 
-    expect(compiled.querySelector('.lista__botao--sair')).toBeTruthy();
+    expect(compiled.querySelector('.lista__botao-sair')).toBeTruthy();
   });
 });

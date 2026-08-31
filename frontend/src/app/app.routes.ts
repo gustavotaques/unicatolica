@@ -16,14 +16,23 @@ export const routes: Routes = [
     loadComponent: () => import('./confirmar-email/confirmar-email').then((m) => m.ConfirmarEmail),
   },
   {
-    path: 'feed',
+    // Casca de navegação global: layout de rota-filha sob um parent `path: ''`.
+    // `canActivate` gate um acesso direto ao path do parent; `canActivateChild`
+    // gate cada rota autenticada aninhada.
+    path: '',
+    loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
     canActivate: [authGuard],
-    loadComponent: () => import('./features/feed/feed').then((m) => m.Feed),
-  },
-  {
-    path: 'comunidades',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/comunidades/comunidades-lista/comunidades-lista').then((m) => m.ComunidadesLista),
+    canActivateChild: [authGuard],
+    children: [
+      {
+        path: 'feed',
+        loadComponent: () => import('./features/feed/feed').then((m) => m.Feed),
+      },
+      {
+        path: 'comunidades',
+        loadComponent: () =>
+          import('./features/comunidades/comunidades-lista/comunidades-lista').then((m) => m.ComunidadesLista),
+      },
+    ],
   },
 ];

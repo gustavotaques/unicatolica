@@ -1,15 +1,17 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
-import { vi } from 'vitest';
+import { provideRouter } from '@angular/router';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { Feed } from './feed';
 
+/**
+ * Logout não é mais responsabilidade desta tela — ver {@code Shell.sair()} e
+ * `layout/shell/shell.spec.ts`. Este componente só carrega e mostra dado da Home.
+ */
 describe('Feed', () => {
   let fixture: ComponentFixture<Feed>;
   let component: Feed;
-  let router: Router;
   let httpMock: HttpTestingController;
 
   beforeEach(async () => {
@@ -22,7 +24,6 @@ describe('Feed', () => {
     httpMock = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(Feed);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
     fixture.detectChanges();
 
     // Carregamento inicial da Home (constructor do componente): usuário, "minhas
@@ -45,21 +46,15 @@ describe('Feed', () => {
     httpMock.verify();
   });
 
-  it('cria o componente', () => {
+  it('cria o componente e mostra a saudação com nome e curso', () => {
     expect(component).toBeTruthy();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Julia Fontana');
+    expect(compiled.textContent).toContain('Engenharia de Software');
   });
 
-  it('remove o token e navega para /login ao clicar em Sair', () => {
-    const navigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+  it('mostra estado vazio quando não há comunidades pra descobrir', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-
-    (compiled.querySelector('.home__sair') as HTMLButtonElement).click();
-
-    expect(localStorage.getItem('pacext.token')).toBeNull();
-    expect(navigateSpy).toHaveBeenCalledWith('/login');
-
-    // Logout dispara POST /auth/logout (Story 1.6, best-effort) — precisa ser respondido
-    // pra não sobrar requisição pendente no httpMock.verify() do afterEach.
-    httpMock.expectOne(`${API_BASE_URL}/auth/logout`).flush(null);
+    expect(compiled.textContent).toContain('Nenhuma comunidade nova pra descobrir agora');
   });
 });

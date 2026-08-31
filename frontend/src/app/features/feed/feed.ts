@@ -1,30 +1,32 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { AuthService } from '../../core/auth/auth.service';
 import { Comunidade, ComunidadesService } from '../../core/comunidades/comunidades.service';
 import { Usuario, UsuarioService } from '../../core/usuario/usuario.service';
+import { UcBadge, UcButton, UcCard } from '../../ui';
 
 /**
- * Home — modelo visual "Telas-Chave UniCatólica" (direção Campus Clean, ver
- * docs/modelo-epico-2-comunidades.md e a home-comunidade.html do bmad). Só mostra o que
- * já é real: saudação (RF12), "Suas comunidades" e descoberta de comunidades abertas
- * (Epic 2). O feed de publicações do mockup é fabricado (Publicações é outro Épico,
- * ainda sem backend) — por isso vira um aviso "em breve" em vez de posts inventados.
- * Tokens de cor do Campus Clean ficam locais deste componente (feed.scss): Epic 14
- * (Design System compartilhado) ainda não existe.
+ * Home — renderiza dentro do `<router-outlet>` do `Shell` (`layout/shell/`), que já
+ * cobre navegação global e o menu de conta/logout (Story 14.3) — este componente só
+ * preenche o conteúdo. Modelo visual "Telas-Chave UniCatólica" (ver
+ * docs/modelo-epico-2-comunidades.md e a home-comunidade.html do bmad), reconstruído
+ * sobre os primitivos oficiais do Design System (Story 14.2: `uc-card`, `uc-badge`,
+ * `uc-button`, `uc-member-indicator`) depois que eles aterrissaram na main.
+ *
+ * Só mostra o que já é real: saudação (RF12), "Suas comunidades" e descoberta de
+ * comunidades abertas (Epic 2). O feed de publicações do mockup é fabricado
+ * (Publicações é outro Épico, ainda sem backend) — por isso vira um aviso "em breve"
+ * em vez de posts inventados.
  */
 @Component({
   selector: 'app-feed',
-  imports: [RouterLink],
+  imports: [RouterLink, UcBadge, UcButton, UcCard],
   templateUrl: './feed.html',
   styleUrl: './feed.scss',
 })
 export class Feed {
-  private readonly authService = inject(AuthService);
   private readonly usuarioService = inject(UsuarioService);
   private readonly comunidadesService = inject(ComunidadesService);
-  private readonly router = inject(Router);
 
   protected readonly carregando = signal(true);
   protected readonly erro = signal<string | null>(null);
@@ -90,10 +92,5 @@ export class Feed {
         this.carregar();
       },
     });
-  }
-
-  protected sair(): void {
-    this.authService.logout();
-    this.router.navigateByUrl('/login');
   }
 }

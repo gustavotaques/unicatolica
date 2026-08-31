@@ -20,4 +20,11 @@ describe('App', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
+
+  it('renders <uc-toast-host /> so toasts work on every route', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('uc-toast-host')).not.toBeNull();
+  });
 });

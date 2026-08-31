@@ -1,71 +1,40 @@
-/* Mesmos tokens "Campus Clean" de features/feed/feed.scss — ver comentário lá sobre por
- * que ainda são locais ao componente (Epic 14, Design System, não existe ainda). */
+// Usa os tokens globais --uc-* (Story 14.1) — nada de paleta local aqui.
 :host {
-  --lista-bg: #fafaf8;
-  --lista-border: #eaeae6;
-  --lista-ink: #1c1c1a;
-  --lista-ink-soft: #6b6b66;
-  --lista-maroon: #7a1f2b;
-  --lista-orange: #ea6a2e;
-
   display: block;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  color: var(--lista-ink);
-  background: var(--lista-bg);
-  min-height: 100dvh;
 }
 
 .lista {
   max-width: 960px;
-  margin: 0 auto;
-  padding: 28px 32px;
 }
 
-.lista__cabecalho h1 {
-  font-size: 22px;
-  font-weight: 600;
-  margin: 8px 0 20px;
-}
-
-.lista__voltar {
-  font-size: 13px;
-  color: var(--lista-ink-soft);
-  text-decoration: none;
+.lista h1 {
+  font-size: var(--uc-font-size-greeting);
+  font-weight: var(--uc-font-weight-semibold);
+  margin: 0 0 var(--uc-space-section-gap);
 }
 
 .lista__filtros {
   display: flex;
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: var(--uc-space-section-gap);
 }
 
 .lista__filtros input,
 .lista__filtros select {
-  border: 1px solid var(--lista-border);
-  border-radius: 8px;
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-default);
   padding: 8px 12px;
-  font-size: 13px;
+  font-size: var(--uc-font-size-body);
 }
 
 .lista__filtros input {
   flex: 1;
 }
 
-.lista__filtros button {
-  border: none;
-  background: var(--lista-maroon);
-  color: #fff;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
 .lista__estado {
   padding: 2rem 0;
   text-align: center;
-  color: var(--lista-ink-soft);
+  color: var(--uc-color-ink-soft);
 }
 
 .lista__estado--erro {
@@ -79,10 +48,7 @@
 }
 
 .lista__card {
-  background: #fff;
-  border: 1px solid var(--lista-border);
-  border-radius: 12px;
-  padding: 16px;
+  display: block;
 }
 
 .lista__card-topo {
@@ -93,56 +59,25 @@
   margin-bottom: 8px;
 }
 
-.lista__chip {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-weight: 600;
-  white-space: nowrap;
-  background: #fdeee6;
-  color: var(--lista-orange);
-}
-
-.lista__chip--curso {
-  background: #f5e4e6;
-  color: var(--lista-maroon);
-}
-
 .lista__descricao {
-  font-size: 12.5px;
-  color: var(--lista-ink-soft);
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-soft);
   margin: 0 0 12px;
 }
 
-.lista__botao {
-  border: none;
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
+.lista__botao-sair {
+  border: 1px solid var(--uc-color-border);
+  background: none;
+  border-radius: var(--uc-radius-full);
+  padding: var(--uc-space-unit) calc(var(--uc-space-unit) * 4);
+  font-size: var(--uc-font-size-body);
+  color: var(--uc-color-ink-soft);
   cursor: pointer;
 }
 
-.lista__botao:disabled {
+.lista__botao-sair:disabled {
   opacity: 0.6;
-  cursor: default;
-}
-
-.lista__botao--participar {
-  background: var(--lista-orange);
-  color: #fff;
-}
-
-.lista__botao--sair {
-  background: none;
-  border: 1px solid var(--lista-border);
-  color: var(--lista-ink-soft);
-}
-
-.lista__membro {
-  font-size: 11.5px;
-  color: #3a7d5c;
-  font-weight: 600;
+  cursor: not-allowed;
 }
 
 .lista__paginacao {
@@ -150,14 +85,14 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin-top: 24px;
-  font-size: 13px;
+  margin-top: var(--uc-space-section-gap);
+  font-size: var(--uc-font-size-body);
 }
 
 .lista__paginacao button {
-  border: 1px solid var(--lista-border);
-  background: #fff;
-  border-radius: 8px;
+  border: 1px solid var(--uc-color-border);
+  background: var(--uc-color-surface);
+  border-radius: var(--uc-radius-default);
   padding: 6px 12px;
   cursor: pointer;
 }

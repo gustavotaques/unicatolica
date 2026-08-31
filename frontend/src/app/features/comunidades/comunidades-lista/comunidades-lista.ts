@@ -1,19 +1,20 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Comunidade, ComunidadesService, Pagina } from '../../../core/comunidades/comunidades.service';
+import { UcBadge, UcButton, UcCard, UcMemberIndicator } from '../../../ui';
 
 const TAMANHO_PAGINA = 12;
 
 /**
- * "Descobrir comunidades" (Story 2.5, RF27/RF28) — lista/filtra todas as comunidades e
+ * "Descobrir comunidades" (Story 2.5, RF27/RF28) — renderiza dentro do `Shell`
+ * (`layout/shell/`), que já cobre navegação global. Lista/filtra todas as comunidades e
  * permite entrar/sair das abertas (Story 2.4). `GET /comunidades` nunca informa
  * `souMembro` (é sempre null na listagem — só o detalhe de uma comunidade preenche),
  * então o estado de "já é membro" é calculado aqui cruzando com `GET /comunidades/minhas`.
  */
 @Component({
   selector: 'app-comunidades-lista',
-  imports: [RouterLink],
+  imports: [UcBadge, UcButton, UcCard, UcMemberIndicator],
   templateUrl: './comunidades-lista.html',
   styleUrl: './comunidades-lista.scss',
 })

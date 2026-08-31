@@ -1,1 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+/* UniCatolica - Campus Clean global stylesheet.
+ * Story 14.1 ships the token layer and type-role utilities only.
+ * No global element styles, body restyle or CSS reset here - that is Story 14.7.
+ * styles.scss stays the single build entry point; partials load via @use. */
+@use './styles/tokens';
+@use './styles/typography';

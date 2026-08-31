@@ -1,0 +1,11 @@
+// UniCatolica - Campus Clean base component (Story 14.2).
+// Generic content card: surface fill, 1px border (never shadow), md radius,
+// standard card padding. Every value is a var(--uc-*) token from Story 14.1.
+
+:host {
+  display: block;
+  background: var(--uc-color-surface);
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-md);
+  padding: var(--uc-space-card-padding);
+}
