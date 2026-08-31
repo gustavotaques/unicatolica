@@ -1,0 +1,89 @@
+<!--
+  Casca de navegação global (Story 14.3).
+  A <nav> é ela própria o landmark da sidebar - não um <nav> dentro de <aside>
+  (que seria anunciado como landmark complementar, não de navegação).
+-->
+<nav class="shell__sidebar" aria-label="Navegação principal">
+  <div class="shell__brand">
+    <span class="shell__brand-mark" aria-hidden="true"></span>
+    <span class="shell__brand-name">UniCatólica</span>
+  </div>
+
+  <ul class="shell__nav-list">
+    @for (item of navItens; track item.label) {
+      @if (!item.privileged || ehPrivilegiado()) {
+        <li>
+          @if (item.path) {
+            <a
+              class="shell__nav-item"
+              [routerLink]="item.path"
+              routerLinkActive="shell__nav-item--active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              #rla="routerLinkActive"
+              [attr.aria-current]="rla.isActive ? 'page' : null"
+              >{{ item.label }}</a
+            >
+          } @else {
+            <span class="shell__nav-item shell__nav-item--inert" aria-disabled="true">{{
+              item.label
+            }}</span>
+          }
+        </li>
+      }
+    }
+  </ul>
+</nav>
+
+<header class="shell__topbar">
+  <div class="shell__avatar-area">
+    <button
+      #avatar
+      type="button"
+      class="shell__avatar"
+      aria-label="Menu da conta"
+      aria-haspopup="menu"
+      aria-controls="shell-menu"
+      [attr.aria-expanded]="menuAberto() ? 'true' : 'false'"
+      (click)="alternarMenu($event)"
+    >
+      <span class="shell__avatar-face" aria-hidden="true"></span>
+    </button>
+
+    @if (menuAberto()) {
+      <div
+        id="shell-menu"
+        class="shell__menu"
+        role="menu"
+        aria-label="Conta"
+        (click)="$event.stopPropagation()"
+        (focusout)="aoSairFoco($event)"
+      >
+        <button
+          type="button"
+          class="shell__menu-item"
+          role="menuitem"
+          aria-disabled="true"
+          (click)="fecharMenu()"
+        >
+          Perfil
+        </button>
+        <button
+          type="button"
+          class="shell__menu-item"
+          role="menuitem"
+          aria-disabled="true"
+          (click)="fecharMenu()"
+        >
+          Configurações
+        </button>
+        <button type="button" class="shell__menu-item" role="menuitem" (click)="sair()">
+          Sair
+        </button>
+      </div>
+    }
+  </div>
+</header>
+
+<main class="shell__main">
+  <router-outlet />
+</main>

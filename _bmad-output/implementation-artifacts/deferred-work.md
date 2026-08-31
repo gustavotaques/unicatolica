@@ -25,3 +25,15 @@ Surfaced during build but out of scope for the originating spec. Append-only.
 - source_spec: `_bmad-output/implementation-artifacts/spec-14-2-componentes-visuais-base.md`
   summary: Audit the badge-open colour pair (orange text #EA6A2E on orange-tint #FDEEE6) for WCAG 1.4.3 contrast and decide whether badge state needs an icon or shape cue, not just text + colour.
   evidence: Story 14.2 review (blind-hunter) flagged low contrast for `badge-open` and that course/open differ only by text colour. The badge always carries a text label (course name / "Comunidade aberta"), so meaning is not colour-alone, and the colour pair is specified verbatim in DESIGN.md `components.badge-open`. Resolving it is a DESIGN.md-level change or a Story 14.9 (accessibility floor) finding, not a 14.2 change.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-14-3-shell-de-navegacao-global.md`
+  summary: Full ARIA menu-button keyboard model for the avatar dropdown (focus first item on open; ArrowUp/Down/Home/End/type-ahead; Tab semantics).
+  evidence: Story 14.3 review (all three lenses, twice) flagged that `role="menu"` / `role="menuitem"` ships without the APG keyboard interaction model. The spec deliberately scoped this to "focus-return-to-trigger only", naming Story 14.9 (accessibility floor). The 3-item menu is usable today (buttons are Tab-reachable, Escape closes and restores focus); the full model belongs to 14.9.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-14-3-shell-de-navegacao-global.md`
+  summary: Add a "skip to content" link and a focusable `<main id tabindex="-1">` target to the navigation shell.
+  evidence: Story 14.3 review (blind-hunter, both loops) noted a persistent-nav shell should let keyboard users bypass the sidebar. Out of scope for 14.3 (which does not touch the accessibility floor); Story 14.9 owns WCAG 2.2 AA for every cut screen, and the shell is where the skip link lives.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-14-3-shell-de-navegacao-global.md`
+  summary: Give app.routes.ts a `**` wildcard/404 route and a `{ path: '', pathMatch: 'full', redirectTo: 'feed' }` index under the shell parent.
+  evidence: Story 14.3 review (blind-hunter + edge-case-hunter, both loops) noted the route restructure left no catch-all and no shell index. Harmless now (the only shell child is `/feed`, and `/` is claimed by the leading `redirectTo: 'login'`), but an unknown URL produces a router error rather than a friendly redirect, and a shell-prefixed URL with no matching child would render an empty outlet. Best added when the second authenticated screen lands.

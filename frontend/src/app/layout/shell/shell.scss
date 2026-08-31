@@ -1,0 +1,192 @@
+// Global navigation shell (Story 14.3).
+//
+// Token-only styling: every colour / font / spacing / radius / shadow is a
+// var(--uc-*) token from Story 14.1. The only raw literals are the structural
+// dimensions DESIGN.md writes as "~" and explicitly defers (sidebar width,
+// topbar height, dropdown min-width), plus 1px/2px borders & outlines, 0, and
+// unitless weights / z-index - all flagged inline below.
+//
+// Right-hand discovery panel and responsive collapse are out of scope
+// (Story 14.4). No new --uc-* token is introduced here.
+
+:host {
+  display: grid;
+  // ~220px sidebar (DESIGN.md "Layout & Spacing", deferred) + fluid main.
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh; // fallback for browsers without dvh
+  min-height: 100dvh;
+  background: var(--uc-color-bg);
+  color: var(--uc-color-ink);
+  font-family: var(--uc-font-family-base);
+  font-size: var(--uc-font-size-body);
+  line-height: var(--uc-line-height-body);
+}
+
+// -- Sidebar: the <nav> landmark itself ---------------------------------
+.shell__sidebar {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh; // fallback for browsers without dvh
+  height: 100dvh;
+  overflow-y: auto;
+  padding: var(--uc-space-section-gap) var(--uc-space-card-padding);
+  background: var(--uc-color-bg);
+  border-right: 1px solid var(--uc-color-border);
+}
+
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--uc-space-unit) * 2);
+  margin-bottom: calc(var(--uc-space-unit) * 7);
+}
+
+.shell__brand-mark {
+  width: calc(var(--uc-space-unit) * 6);
+  height: calc(var(--uc-space-unit) * 6);
+  border-radius: var(--uc-radius-sm);
+  background: var(--uc-color-maroon);
+}
+
+.shell__brand-name {
+  font-size: var(--uc-font-size-body);
+  font-weight: var(--uc-font-weight-semibold);
+}
+
+.shell__nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shell__nav-item {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--uc-space-unit) * 2) calc(var(--uc-space-unit) * 2.5);
+  margin-bottom: calc(var(--uc-space-unit) / 2);
+  border-radius: var(--uc-radius-default);
+  color: var(--uc-color-ink-soft);
+  font-size: var(--uc-font-size-body);
+  font-weight: var(--uc-font-weight-regular);
+  text-decoration: none;
+}
+
+// Active route ("Início" today) - orange-tint bg + orange text + semibold,
+// straight from mockups/home-comunidade.html.
+.shell__nav-item--active {
+  background: var(--uc-color-orange-tint);
+  color: var(--uc-color-orange);
+  font-weight: var(--uc-font-weight-semibold);
+}
+
+// Routeless items: visible (full IA from day one) but inert.
+.shell__nav-item--inert {
+  color: var(--uc-color-ink-faint);
+  cursor: default;
+}
+
+// -- Topbar ------------------------------------------------------------
+.shell__topbar {
+  grid-column: 2;
+  grid-row: 1;
+  position: sticky;
+  top: 0;
+  z-index: 1; // above scrolled main content
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 64px; // ~ topbar height (DESIGN.md, deferred)
+  padding: 0 var(--uc-space-page-margin);
+  background: var(--uc-color-bg);
+  border-bottom: 1px solid var(--uc-color-border);
+}
+
+.shell__avatar-area {
+  position: relative;
+}
+
+.shell__avatar {
+  display: block;
+  width: calc(var(--uc-space-unit) * 9);
+  height: calc(var(--uc-space-unit) * 9);
+  padding: 0;
+  border: 0;
+  border-radius: var(--uc-radius-full);
+  background: transparent;
+  cursor: pointer;
+}
+
+.shell__avatar-face {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--uc-radius-full);
+  background: var(--uc-color-maroon);
+}
+
+// -- Avatar dropdown -------------------------------------------------
+.shell__menu {
+  position: absolute;
+  top: calc(100% + var(--uc-space-unit));
+  right: 0;
+  min-width: 200px; // ~ dropdown min-width (DESIGN.md, deferred)
+  padding: calc(var(--uc-space-unit) / 2);
+  background: var(--uc-color-surface);
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-md);
+  box-shadow: var(--uc-shadow-overlay);
+  animation: shell-menu-fade 150ms ease-out; // single fade - Story 14.5 owns motion
+}
+
+@keyframes shell-menu-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell__menu {
+    animation: none;
+  }
+}
+
+.shell__menu-item {
+  display: block;
+  width: 100%;
+  padding: calc(var(--uc-space-unit) * 2) calc(var(--uc-space-unit) * 3);
+  border: 0;
+  border-radius: var(--uc-radius-sm);
+  background: transparent;
+  color: var(--uc-color-ink);
+  font: inherit;
+  font-size: var(--uc-font-size-body);
+  text-align: left;
+  cursor: pointer;
+}
+
+.shell__menu-item:hover {
+  background: var(--uc-color-orange-tint);
+}
+
+// -- Main content --------------------------------------------------
+.shell__main {
+  grid-column: 2;
+  grid-row: 2;
+  padding: calc(var(--uc-space-unit) * 7) var(--uc-space-page-margin);
+  background: var(--uc-color-bg);
+}
+
+// -- Focus ring (matches ui/button/button.scss) -------------------
+.shell__nav-item:focus-visible,
+.shell__avatar:focus-visible,
+.shell__menu-item:focus-visible {
+  outline: 2px solid var(--uc-color-maroon);
+  outline-offset: 2px;
+}
