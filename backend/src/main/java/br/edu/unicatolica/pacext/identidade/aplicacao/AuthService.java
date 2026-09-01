@@ -78,9 +78,12 @@ public class AuthService {
      * passa a rejeitar qualquer token emitido antes deste instante para este usuário.
      *
      * <p>Truncado para segundos porque o claim {@code iat} do JWT (NumericDate) só tem essa
-     * precisão — sem truncar, um login feito no mesmo segundo de relógio de um logout
-     * anterior gerava um token com {@code iat} "antes" deste instante sub-segundo, e
-     * {@code SessaoInvalidadaFilter} rejeitava por engano uma sessão recém-criada.</p>
+     * precisão — sem truncar, {@code sessaoValidaDesde} carregaria uma precisão sub-segundo
+     * que nenhum {@code iat} jamais poderia igualar ou superar, tornando a comparação em
+     * {@code SessaoInvalidadaFilter} inconsistente. Com os dois truncados ao mesmo grão, um
+     * token cujo {@code iat} coincide com este instante foi necessariamente emitido antes do
+     * logout (ou durante) e é corretamente invalidado — ver o comentário de
+     * {@code SessaoInvalidadaFilter} sobre por que a comparação usa {@code <=}.</p>
      */
     @Transactional
     public void logout(Long usuarioId) {

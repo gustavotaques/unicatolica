@@ -97,13 +97,14 @@ class SessaoInvalidadaFilterTest {
     }
 
     /**
-     * Corrida de mesmo segundo: o claim {@code iat} do JWT só tem precisão de segundo, e
-     * {@code AuthService.logout} agora trunca {@code sessaoValidaDesde} para o mesmo grão
-     * (ver {@code AuthServiceTest}). Um login feito no mesmo segundo de relógio de um
-     * logout anterior não pode ser rejeitado por engano.
+     * Corrida de mesmo segundo: o claim {@code iat} do JWT e {@code sessaoValidaDesde} (ver
+     * {@code AuthService.logout} / {@code AuthServiceTest}) só têm precisão de segundo. Um
+     * token cujo {@code iat} truncado coincide com o instante do logout foi necessariamente
+     * emitido antes dele, então precisa ser rejeitado (comparação usa {@code <=}, não
+     * {@code <}) para que o logout invalide o token imediatamente (RF10/RF11).
      */
     @Test
-    void aceitaTokenEmitidoNoMesmoSegundoDoLogout() {
+    void rejeitaTokenEmitidoNoMesmoSegundoDoLogout() {
         Instant mesmoSegundo = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
         Usuario usuario = new Usuario();
         usuario.id = 42L;
@@ -113,6 +114,9 @@ class SessaoInvalidadaFilterTest {
 
         filter.filter(requestContext);
 
-        verify(requestContext, never()).abortWith(any());
+        ArgumentCaptor<Response> captor = ArgumentCaptor.forClass(Response.class);
+        verify(requestContext).abortWith(captor.capture());
+        org.junit.jupiter.api.Assertions.assertEquals(
+                Response.Status.UNAUTHORIZED.getStatusCode(), captor.getValue().getStatus());
     }
 }
