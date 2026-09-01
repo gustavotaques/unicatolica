@@ -48,11 +48,13 @@ export class AuthService {
     if (token) {
       // Encerra a sessão no servidor (Story 1.6) — best-effort: mesmo se falhar (ex.: token
       // já expirado), a sessão local já foi encerrada acima, que é o que importa para o usuário.
+      // A falha é logada (não silenciada) para não esconder um problema real de quem
+      // estiver testando/depurando (defeito D8) — só não bloqueia o logout local.
       this.http
         .post(`${API_BASE_URL}/auth/logout`, null, {
           headers: { Authorization: `Bearer ${token}` },
         })
-        .subscribe({ error: () => undefined });
+        .subscribe({ error: (erro) => console.error('Falha ao encerrar sessão no servidor.', erro) });
     }
   }
 
