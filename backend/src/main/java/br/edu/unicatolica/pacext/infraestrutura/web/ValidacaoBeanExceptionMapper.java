@@ -39,12 +39,19 @@ public class ValidacaoBeanExceptionMapper implements ExceptionMapper<ConstraintV
      * violação em parâmetro de método JAX-RS inclui o nome do método e do parâmetro (ex.:
      * {@code registrar.request.email}), detalhe interno de implementação que não pode
      * vazar pro cliente (defeito D6).
+     *
+     * <p>Nós sem nome (violação de classe/cross-parameter) são ignorados no laço — sem
+     * essa checagem, {@code node.getName()} retorna {@code null} para esses casos e o
+     * método devolvia {@code null} em vez do último nome válido, gerando "null: mensagem"
+     * na resposta ao cliente.</p>
      */
     private String nomeDoCampo(Path path) {
         String nome = null;
         for (Path.Node node : path) {
-            nome = node.getName();
+            if (node.getName() != null) {
+                nome = node.getName();
+            }
         }
-        return nome;
+        return nome != null ? nome : "validacao";
     }
 }

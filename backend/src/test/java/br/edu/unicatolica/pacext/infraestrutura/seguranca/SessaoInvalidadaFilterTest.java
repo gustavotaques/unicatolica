@@ -95,4 +95,24 @@ class SessaoInvalidadaFilterTest {
 
         verify(requestContext, never()).abortWith(any());
     }
+
+    /**
+     * Corrida de mesmo segundo: o claim {@code iat} do JWT só tem precisão de segundo, e
+     * {@code AuthService.logout} agora trunca {@code sessaoValidaDesde} para o mesmo grão
+     * (ver {@code AuthServiceTest}). Um login feito no mesmo segundo de relógio de um
+     * logout anterior não pode ser rejeitado por engano.
+     */
+    @Test
+    void aceitaTokenEmitidoNoMesmoSegundoDoLogout() {
+        Instant mesmoSegundo = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
+        Usuario usuario = new Usuario();
+        usuario.id = 42L;
+        usuario.sessaoValidaDesde = mesmoSegundo;
+        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+        ContainerRequestContext requestContext = mockContext("42", mesmoSegundo);
+
+        filter.filter(requestContext);
+
+        verify(requestContext, never()).abortWith(any());
+    }
 }

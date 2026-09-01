@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.security.PrivateKey;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -75,6 +76,11 @@ public class AuthService {
      * instante presente em {@code sessaoValidaDesde} — o JWT ainda expira naturalmente
      * pelo claim {@code exp}, mas {@link br.edu.unicatolica.pacext.infraestrutura.seguranca.JwtSecurityFilter}
      * passa a rejeitar qualquer token emitido antes deste instante para este usuário.
+     *
+     * <p>Truncado para segundos porque o claim {@code iat} do JWT (NumericDate) só tem essa
+     * precisão — sem truncar, um login feito no mesmo segundo de relógio de um logout
+     * anterior gerava um token com {@code iat} "antes" deste instante sub-segundo, e
+     * {@code SessaoInvalidadaFilter} rejeitava por engano uma sessão recém-criada.</p>
      */
     @Transactional
     public void logout(Long usuarioId) {
@@ -82,7 +88,7 @@ public class AuthService {
         if (usuario == null) {
             return;
         }
-        usuario.sessaoValidaDesde = Instant.now();
+        usuario.sessaoValidaDesde = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         auditoriaService.registrar(usuario.id, "identidade", "LOGOUT", "Logout realizado.");
     }
 

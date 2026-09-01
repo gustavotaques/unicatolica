@@ -162,13 +162,28 @@ class AuthServiceTest {
     void logoutGravaSessaoValidaDesdeERegistraAuditoria() {
         Usuario usuario = usuarioConfirmado("Senha123!");
         when(usuarioRepository.findById(42L)).thenReturn(usuario);
-        Instant antes = Instant.now();
+        Instant antes = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
 
         authService.logout(42L);
 
         assertNotNull(usuario.sessaoValidaDesde);
         assertFalse(usuario.sessaoValidaDesde.isBefore(antes));
         verify(auditoriaService).registrar(eq(42L), eq("identidade"), eq("LOGOUT"), any());
+    }
+
+    @Test
+    void logoutTruncaSessaoValidaDesdeParaSegundosParaCasarComPrecisaoDoIat() {
+        // O claim `iat` do JWT (NumericDate) só tem precisão de segundo. Sem truncar
+        // sessaoValidaDesde do mesmo jeito, um login no mesmo segundo de um logout
+        // anterior gerava um iat "antes" do sessaoValidaDesde sub-segundo, e
+        // SessaoInvalidadaFilter rejeitava por engano uma sessão recém-criada.
+        Usuario usuario = usuarioConfirmado("Senha123!");
+        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+
+        authService.logout(42L);
+
+        assertEquals(usuario.sessaoValidaDesde,
+                usuario.sessaoValidaDesde.truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
     }
 
     @Test
