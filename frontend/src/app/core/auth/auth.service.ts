@@ -42,6 +42,17 @@ export class AuthService {
     return localStorage.getItem(TOKEN_STORAGE_KEY);
   }
 
+  /**
+   * Header `Authorization` pronto pra passar em `{ headers }` de qualquer chamada
+   * autenticada — ainda não existe um `HttpInterceptor` global (AD-7 não decidiu isso
+   * ainda), então cada serviço que fala com endpoint autenticado usa isto explicitamente
+   * (ver `ComunidadesService`/`UsuarioService`, Épico 2).
+   */
+  obterCabecalhoAutorizacao(): Record<string, string> {
+    const token = this.obterToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
   logout(): void {
     const token = this.obterToken();
     localStorage.removeItem(TOKEN_STORAGE_KEY);

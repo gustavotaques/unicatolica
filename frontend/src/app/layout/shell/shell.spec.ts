@@ -1,5 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { readFileSync } from 'node:fs';
@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { vi } from 'vitest';
 import { AuthService, JWT_ROLES_CLAIM } from '../../core/auth/auth.service';
+import { API_BASE_URL } from '../../core/config/api.config';
 import { Shell } from './shell';
 
 const TOKEN_KEY = 'pacext.token';
@@ -116,6 +117,40 @@ describe('Shell', () => {
     }
   });
 
+  it('mostra as comunidades do usuário sob "Suas comunidades" (Epic 2)', async () => {
+    const f = await montar(tokenComPerfis(['ALUNO']));
+    const httpMock = TestBed.inject(HttpTestingController);
+
+    httpMock.expectOne(`${API_BASE_URL}/comunidades/minhas`).flush([
+      {
+        id: 1,
+        nome: 'Engenharia de Software',
+        descricao: null,
+        tipo: 'CURSO',
+        souMembro: true,
+        criadoEm: '2026-01-01T00:00:00Z',
+      },
+      { id: 2, nome: 'Clube de Xadrez', descricao: null, tipo: 'ABERTA', souMembro: true, criadoEm: '2026-01-02T00:00:00Z' },
+    ]);
+    f.detectChanges();
+
+    const itens = [...f.nativeElement.querySelectorAll('.shell__comunidade-item')].map((el) =>
+      (el.textContent ?? '').trim(),
+    );
+    expect(itens).toEqual(['Engenharia de Software', 'Clube de Xadrez']);
+  });
+
+  it('sem comunidades: mostra o estado vazio sob "Suas comunidades"', async () => {
+    const f = await montar(tokenComPerfis(['ALUNO']));
+    const httpMock = TestBed.inject(HttpTestingController);
+
+    httpMock.expectOne(`${API_BASE_URL}/comunidades/minhas`).flush([]);
+    f.detectChanges();
+
+    const vazio = f.nativeElement.querySelector('.shell__comunidade-item--vazio');
+    expect((vazio?.textContent ?? '').trim()).toBe('Você ainda não faz parte de nenhuma');
+  });
+
   it('aluno: dropdown expõe Perfil, Configurações e Sair', async () => {
     const f = await montar(tokenComPerfis(['ALUNO']));
     abrirMenu(f);
@@ -166,13 +201,17 @@ describe('Shell', () => {
     expect(buscar.tabIndex).toBeLessThan(0);
   });
 
-  it('"Início" é o único link e recebe aria-current="page" quando /feed está ativa', async () => {
+  it('"Início" recebe aria-current="page" quando /feed está ativa (Descobrir comunidades não)', async () => {
     const f = await montar(tokenComPerfis(['ALUNO']));
 
+    // "Início" e "Descobrir comunidades" (Épico 2) são os dois itens com rota hoje —
+    // os outros continuam inertes (<span>), então isto não volta a ser 1 sozinho.
     const links = [...f.nativeElement.querySelectorAll('a.shell__nav-item')];
-    expect(links).toHaveLength(1);
-    const inicio = links[0] as HTMLAnchorElement;
-    expect((inicio.textContent ?? '').trim()).toBe('Início');
+    expect(links).toHaveLength(2);
+    const inicio = links.find((el) => (el.textContent ?? '').trim() === 'Início') as HTMLAnchorElement;
+    const descobrir = links.find((el) => (el.textContent ?? '').trim() === 'Descobrir comunidades') as HTMLAnchorElement;
+    expect(inicio).toBeTruthy();
+    expect(descobrir).toBeTruthy();
     expect(inicio.getAttribute('aria-current')).toBeNull();
 
     await TestBed.inject(Router).navigateByUrl('/feed');
@@ -180,6 +219,7 @@ describe('Shell', () => {
 
     expect(inicio.getAttribute('aria-current')).toBe('page');
     expect(inicio.classList.contains('shell__nav-item--active')).toBe(true);
+    expect(descobrir.getAttribute('aria-current')).toBeNull();
   });
 
   it('clicar no avatar abre o dropdown e marca aria-expanded="true"', async () => {

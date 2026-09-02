@@ -1,0 +1,83 @@
+// Mesmos tokens --uc-* (Story 14.1) usados em feed.scss/comunidades-lista.scss.
+:host {
+  display: block;
+}
+
+.detalhe__estado {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--uc-color-ink-soft);
+}
+
+.detalhe__estado--erro {
+  color: #b3261e;
+}
+
+.detalhe {
+  max-width: 720px;
+  // Header sangra até a borda do <main> do Shell (padding negativo cancela o do
+  // Shell) — mesmo efeito "banner cheio" do mockup home-comunidade.html.
+  margin: calc(var(--uc-space-unit) * -7) 0 0 calc(var(--uc-space-unit) * -8);
+  width: calc(100% + calc(var(--uc-space-unit) * 8));
+}
+
+.detalhe__cabecalho {
+  position: relative;
+  background: var(--uc-color-maroon);
+  color: var(--uc-color-surface);
+  padding: var(--uc-space-page-margin);
+  margin-bottom: var(--uc-space-section-gap);
+}
+
+.detalhe__cabecalho h1 {
+  margin: 0 0 calc(var(--uc-space-unit) / 2);
+  font-size: var(--uc-font-size-greeting);
+  font-weight: var(--uc-font-weight-semibold);
+}
+
+.detalhe__subtitulo {
+  margin: 0;
+  font-size: var(--uc-font-size-meta);
+  opacity: 0.85;
+}
+
+.detalhe__acao {
+  position: absolute;
+  top: var(--uc-space-page-margin);
+  right: var(--uc-space-page-margin);
+}
+
+// uc-member-indicator é pensado pra fundo claro (texto --uc-color-green-ok) —
+// aqui o fundo é o bordô do cabeçalho, então força texto claro só neste contexto.
+.detalhe__acao uc-member-indicator {
+  color: var(--uc-color-surface);
+}
+
+.detalhe__botao-sair {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--uc-color-surface);
+  border-radius: var(--uc-radius-full);
+  padding: var(--uc-space-unit) calc(var(--uc-space-unit) * 4);
+  font-size: var(--uc-font-size-body);
+  cursor: pointer;
+}
+
+.detalhe__botao-sair:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detalhe__aviso {
+  margin: 0 var(--uc-space-page-margin);
+}
+
+.detalhe__aviso p {
+  margin: 0 0 4px;
+  font-size: var(--uc-font-size-body);
+  color: var(--uc-color-ink-soft);
+}
+
+.detalhe__aviso p:last-child {
+  margin-bottom: 0;
+}

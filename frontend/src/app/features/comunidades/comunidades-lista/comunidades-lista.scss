@@ -1,0 +1,113 @@
+// Usa os tokens globais --uc-* (Story 14.1) — nada de paleta local aqui.
+:host {
+  display: block;
+}
+
+.lista {
+  max-width: 960px;
+}
+
+.lista h1 {
+  font-size: var(--uc-font-size-greeting);
+  font-weight: var(--uc-font-weight-semibold);
+  margin: 0 0 var(--uc-space-section-gap);
+}
+
+.lista__filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: var(--uc-space-section-gap);
+}
+
+.lista__filtros input,
+.lista__filtros select {
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-default);
+  padding: 8px 12px;
+  font-size: var(--uc-font-size-body);
+}
+
+.lista__filtros input {
+  flex: 1;
+}
+
+.lista__estado {
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--uc-color-ink-soft);
+}
+
+.lista__estado--erro {
+  color: #b3261e;
+}
+
+.lista__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.lista__card {
+  display: block;
+}
+
+.lista__card-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.lista__nome {
+  font-weight: 700;
+  color: var(--lista-ink);
+  text-decoration: none;
+}
+
+.lista__nome:hover {
+  text-decoration: underline;
+}
+
+.lista__descricao {
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-soft);
+  margin: 0 0 12px;
+}
+
+.lista__botao-sair {
+  border: 1px solid var(--uc-color-border);
+  background: none;
+  border-radius: var(--uc-radius-full);
+  padding: var(--uc-space-unit) calc(var(--uc-space-unit) * 4);
+  font-size: var(--uc-font-size-body);
+  color: var(--uc-color-ink-soft);
+  cursor: pointer;
+}
+
+.lista__botao-sair:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lista__paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: var(--uc-space-section-gap);
+  font-size: var(--uc-font-size-body);
+}
+
+.lista__paginacao button {
+  border: 1px solid var(--uc-color-border);
+  background: var(--uc-color-surface);
+  border-radius: var(--uc-radius-default);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.lista__paginacao button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

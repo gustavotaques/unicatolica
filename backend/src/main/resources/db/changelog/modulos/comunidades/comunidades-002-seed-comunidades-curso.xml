@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Seed das comunidades de curso (Story 2.1, RF21.2) — pré-criação pelo administrador da
+    plataforma. Protótipo desta fatia: insere direto via migration, sem o papel
+    ADMINISTRADOR de plataforma existir ainda em Identidade (bloqueado — ver
+    docs/modelo-epico-2-comunidades.md). criado_por_usuario_id=0 é um valor reservado
+    ("sistema/seed"), documentado aqui, não um usuário real — revisitar quando o endpoint
+    real de criação por admin existir.
+
+    Uma comunidade por curso (não por curso+modalidade) — decisão registrada em
+    docs/modelo-epico-2-comunidades.md. Nomes precisam bater exatamente (case-insensitive,
+    ver ComunidadeRepository.buscarPorTipoENome) com o texto que o aluno digita em
+    "curso" no cadastro (Story 1.2) para o auto-join (Story 2.3) funcionar.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="comunidades-002-seed-comunidades-curso" author="pacext">
+        <insert tableName="comunidade">
+            <column name="nome" value="Administração"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Análise e Desenvolvimento de Sistemas"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Arquitetura e Urbanismo"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Biomedicina"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Ciência da Computação"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Ciências Contábeis"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Ciências Econômicas"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Design"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Direito"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Educação Física"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Enfermagem"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Engenharia Civil"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Engenharia de Produção"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Engenharia de Software"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Fisioterapia"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Gestão da Produção Industrial"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Gestão da Tecnologia da Informação"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Gestão de Recursos Humanos"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Gestão Financeira"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Logística"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Nutrição"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Pedagogia"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Processos Gerenciais"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Psicologia"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Serviço Social"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+        <insert tableName="comunidade">
+            <column name="nome" value="Teologia"/>
+            <column name="tipo" value="CURSO"/>
+            <column name="criado_por_usuario_id" valueNumeric="0"/>
+            <column name="criado_em" valueComputed="now()"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
