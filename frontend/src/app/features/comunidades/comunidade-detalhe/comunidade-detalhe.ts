@@ -56,7 +56,7 @@ export class ComunidadeDetalhe {
     }
 
     this.processando.set(true);
-    this.comunidadesService.ingressar(comunidade.id).subscribe({
+    this.comunidadesService.ingressar(comunidade.id, comunidade.nome).subscribe({
       next: () => {
         this.processando.set(false);
         this.comunidade.set({ ...comunidade, souMembro: true });

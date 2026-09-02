@@ -94,7 +94,7 @@ export class ComunidadesLista {
     }
 
     this.processandoId.set(comunidade.id);
-    this.comunidadesService.ingressar(comunidade.id).subscribe({
+    this.comunidadesService.ingressar(comunidade.id, comunidade.nome).subscribe({
       next: () => this.processandoId.set(null),
       error: () => this.processandoId.set(null),
     });

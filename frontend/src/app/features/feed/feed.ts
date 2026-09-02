@@ -3,7 +3,10 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Comunidade, ComunidadesService } from '../../core/comunidades/comunidades.service';
 import { Usuario, UsuarioService } from '../../core/usuario/usuario.service';
-import { UcBadge, UcButton, UcCard } from '../../ui';
+import { ToastService, UcBadge, UcButton, UcCard } from '../../ui';
+
+/** Prefixo da chave de localStorage que marca "já mostrei o toast de auto-join desta comunidade". */
+const CHAVE_TOAST_AUTOJOIN = 'pacext.autojoin-toast.';
 
 /**
  * Home — renderiza dentro do `<router-outlet>` do `Shell` (`layout/shell/`), que já
@@ -27,6 +30,7 @@ import { UcBadge, UcButton, UcCard } from '../../ui';
 export class Feed {
   private readonly usuarioService = inject(UsuarioService);
   private readonly comunidadesService = inject(ComunidadesService);
+  private readonly toastService = inject(ToastService);
 
   protected readonly carregando = signal(true);
   protected readonly erro = signal<string | null>(null);
@@ -63,6 +67,7 @@ export class Feed {
         const idsQueJaSouMembro = new Set(minhas.map((comunidade) => comunidade.id));
         this.usuario.set(usuario);
         this.descobrir.set(abertas.content.filter((comunidade) => !idsQueJaSouMembro.has(comunidade.id)));
+        this.mostrarToastAutoJoinSeNecessario(minhas);
         this.carregando.set(false);
       },
       error: () => {
@@ -72,6 +77,35 @@ export class Feed {
     });
   }
 
+  /**
+   * Story 2.3 (RF24.1) — "na minha próxima visita ao Início, vejo um toast único
+   * 'Você já faz parte de {comunidade do curso} 🎓'". O auto-join acontece no
+   * cadastro, no backend — o frontend não tem como saber "isso acabou de
+   * acontecer", então usa localStorage pra mostrar uma vez só, na primeira vez que
+   * a Home carrega com essa comunidade já na lista (nunca mais depois disso, nem
+   * que o usuário limpe cache de outro jeito — best-effort, não é garantia forte).
+   */
+  private mostrarToastAutoJoinSeNecessario(minhas: Comunidade[]): void {
+    const comunidadeDeCurso = minhas.find((comunidade) => comunidade.tipo === 'CURSO');
+    if (!comunidadeDeCurso) {
+      return;
+    }
+
+    const chave = `${CHAVE_TOAST_AUTOJOIN}${comunidadeDeCurso.id}`;
+    try {
+      if (localStorage.getItem(chave)) {
+        return;
+      }
+      localStorage.setItem(chave, '1');
+    } catch {
+      // localStorage indisponível (aba privada, cookies bloqueados etc.) — sem
+      // como marcar "já mostrei", então nem mostra, pra não repetir a cada visita.
+      return;
+    }
+
+    this.toastService.mostrar(`Você já faz parte de ${comunidadeDeCurso.nome} 🎓`);
+  }
+
   /** Story 2.4 (RF24) — ingressa direto da Home, sem passar pela lista completa. */
   protected ingressar(comunidade: Comunidade): void {
     if (this.ingressandoId() !== null) {
@@ -79,7 +113,7 @@ export class Feed {
     }
 
     this.ingressandoId.set(comunidade.id);
-    this.comunidadesService.ingressar(comunidade.id).subscribe({
+    this.comunidadesService.ingressar(comunidade.id, comunidade.nome).subscribe({
       next: () => {
         this.ingressandoId.set(null);
         this.descobrir.update((lista) => lista.filter((item) => item.id !== comunidade.id));

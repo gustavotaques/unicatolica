@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { API_BASE_URL } from '../../../core/config/api.config';
+import { ToastService } from '../../../ui';
 import { ComunidadesLista } from './comunidades-lista';
 
 describe('ComunidadesLista', () => {
@@ -63,5 +64,16 @@ describe('ComunidadesLista', () => {
     fixture.detectChanges();
 
     expect(compiled.querySelector('.lista__botao-sair')).toBeTruthy();
+  });
+
+  it('mostra o toast "Você entrou em {comunidade}" ao ingressar (Story 2.4)', () => {
+    const toastService = TestBed.inject(ToastService);
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    (compiled.querySelector('.lista__botao-participar') as HTMLButtonElement).click();
+    httpMock.expectOne(`${API_BASE_URL}/comunidades/2/membros`).flush(null);
+    httpMock.expectOne(`${API_BASE_URL}/comunidades/minhas`).flush([{ ...pagina.content[1], souMembro: true }]);
+
+    expect(toastService.toasts().map((t) => t.mensagem)).toContain('Você entrou em Xadrez');
   });
 });

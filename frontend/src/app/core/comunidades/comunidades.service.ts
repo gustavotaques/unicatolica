@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable, map, switchMap, tap } from 'rxjs';
+import { ToastService } from '../../ui';
 import { AuthService } from '../auth/auth.service';
 import { API_BASE_URL } from '../config/api.config';
 
@@ -38,6 +39,7 @@ export interface Pagina<T> {
 export class ComunidadesService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
 
   private readonly _minhasComunidades = signal<Comunidade[]>([]);
   readonly minhasComunidades = this._minhasComunidades.asReadonly();
@@ -81,15 +83,18 @@ export class ComunidadesService {
   /**
    * `POST /comunidades/{id}/membros` (Story 2.4, RF24/RF25) — só comunidades abertas.
    * Recarrega {@link minhasComunidades} antes de completar, então quem assina já vê a
-   * cache atualizada.
+   * cache atualizada, e dispara o toast "Você entrou em {comunidade}" (critério de
+   * aceite da Story 2.4) — centralizado aqui porque Home, lista de descoberta e a
+   * página de cada comunidade chamam este método pra ingressar.
    */
-  ingressar(id: number): Observable<void> {
+  ingressar(id: number, nome: string): Observable<void> {
     return this.http
       .post<void>(`${API_BASE_URL}/comunidades/${id}/membros`, null, {
         headers: this.authService.obterCabecalhoAutorizacao(),
       })
       .pipe(
         switchMap(() => this.carregarMinhas()),
+        tap(() => this.toastService.mostrar(`Você entrou em ${nome}`)),
         map(() => undefined),
       );
   }
