@@ -1,7 +1,6 @@
 package br.edu.unicatolica.pacext.identidade.aplicacao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,7 +67,9 @@ class ConfirmacaoEmailServiceTest {
         service.confirmar(TOKEN);
 
         assertTrue(usuario.emailConfirmado);
-        assertNull(usuario.tokenConfirmacaoEmail);
+        // tokenConfirmacaoEmail NÃO é zerado (defeito D5) — continua apontando pro usuário
+        // pra próxima busca por esse mesmo token achar o registro e cair no branch idempotente.
+        assertEquals(TOKEN, usuario.tokenConfirmacaoEmail);
         verify(auditoriaService).registrar(eq(7L), eq("identidade"), eq("EMAIL_CONFIRMADO"), eq("Usuario"), eq(7L),
                 eq(null));
     }
@@ -82,6 +83,26 @@ class ConfirmacaoEmailServiceTest {
         service.confirmar(TOKEN);
 
         verify(auditoriaService, never()).registrar(any(), any(), any(), any(), any(), any());
+    }
+
+    /**
+     * Defeito D5: {@code openapi.yaml} promete idempotência ("clicar de novo num link já
+     * usado com sucesso não é um erro"), mas o segundo clique com o mesmo token real
+     * devolvia 404 — o teste acima ({@code confirmarNovamenteComEmailJaConfirmadoEIdempotente})
+     * mascarava isso porque configura {@code emailConfirmado=true} artificialmente, sem
+     * passar pelo primeiro {@code confirmar()} de verdade. Este teste encadeia duas
+     * chamadas reais com o MESMO mock de busca por token (como o banco faria, já que o
+     * token deixou de ser zerado ao confirmar) e prova que a segunda não lança erro.
+     */
+    @Test
+    void confirmarDeNovoComOMesmoTokenAposConfirmacaoBemSucedidaNaoLancaErro() {
+        Usuario usuario = usuarioPendente();
+        when(usuarioRepository.buscarPorTokenConfirmacao(TOKEN)).thenReturn(Optional.of(usuario));
+
+        service.confirmar(TOKEN);
+        service.confirmar(TOKEN);
+
+        assertTrue(usuario.emailConfirmado);
     }
 
     @Test

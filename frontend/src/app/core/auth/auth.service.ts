@@ -45,7 +45,8 @@ export class AuthService {
   /**
    * Header `Authorization` pronto pra passar em `{ headers }` de qualquer chamada
    * autenticada — ainda não existe um `HttpInterceptor` global (AD-7 não decidiu isso
-   * ainda), então cada serviço que fala com endpoint autenticado usa isto explicitamente.
+   * ainda), então cada serviço que fala com endpoint autenticado usa isto explicitamente
+   * (ver `ComunidadesService`/`UsuarioService`, Épico 2).
    */
   obterCabecalhoAutorizacao(): Record<string, string> {
     const token = this.obterToken();
@@ -53,12 +54,18 @@ export class AuthService {
   }
 
   logout(): void {
-    const headers = this.obterCabecalhoAutorizacao();
+    const token = this.obterToken();
     localStorage.removeItem(TOKEN_STORAGE_KEY);
-    if (headers['Authorization']) {
+    if (token) {
       // Encerra a sessão no servidor (Story 1.6) — best-effort: mesmo se falhar (ex.: token
       // já expirado), a sessão local já foi encerrada acima, que é o que importa para o usuário.
-      this.http.post(`${API_BASE_URL}/auth/logout`, null, { headers }).subscribe({ error: () => undefined });
+      // A falha é logada (não silenciada) para não esconder um problema real de quem
+      // estiver testando/depurando (defeito D8) — só não bloqueia o logout local.
+      this.http
+        .post(`${API_BASE_URL}/auth/logout`, null, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .subscribe({ error: (erro) => console.error('Falha ao encerrar sessão no servidor.', erro) });
     }
   }
 
