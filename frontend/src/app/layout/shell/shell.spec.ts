@@ -201,13 +201,17 @@ describe('Shell', () => {
     expect(buscar.tabIndex).toBeLessThan(0);
   });
 
-  it('"Início" é o único link e recebe aria-current="page" quando /feed está ativa', async () => {
+  it('"Início" recebe aria-current="page" quando /feed está ativa (Descobrir comunidades não)', async () => {
     const f = await montar(tokenComPerfis(['ALUNO']));
 
+    // "Início" e "Descobrir comunidades" (Épico 2) são os dois itens com rota hoje —
+    // os outros continuam inertes (<span>), então isto não volta a ser 1 sozinho.
     const links = [...f.nativeElement.querySelectorAll('a.shell__nav-item')];
-    expect(links).toHaveLength(1);
-    const inicio = links[0] as HTMLAnchorElement;
-    expect((inicio.textContent ?? '').trim()).toBe('Início');
+    expect(links).toHaveLength(2);
+    const inicio = links.find((el) => (el.textContent ?? '').trim() === 'Início') as HTMLAnchorElement;
+    const descobrir = links.find((el) => (el.textContent ?? '').trim() === 'Descobrir comunidades') as HTMLAnchorElement;
+    expect(inicio).toBeTruthy();
+    expect(descobrir).toBeTruthy();
     expect(inicio.getAttribute('aria-current')).toBeNull();
 
     await TestBed.inject(Router).navigateByUrl('/feed');
@@ -215,6 +219,7 @@ describe('Shell', () => {
 
     expect(inicio.getAttribute('aria-current')).toBe('page');
     expect(inicio.classList.contains('shell__nav-item--active')).toBe(true);
+    expect(descobrir.getAttribute('aria-current')).toBeNull();
   });
 
   it('clicar no avatar abre o dropdown e marca aria-expanded="true"', async () => {

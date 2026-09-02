@@ -36,8 +36,11 @@ describe('Feed', () => {
       curso: 'Engenharia de Software',
     });
     httpMock.expectOne(`${API_BASE_URL}/comunidades/minhas`).flush(minhas);
+    // `expectOne(string)` casa contra a URL COM query string (urlWithParams) — esta
+    // chamada sempre leva `?tipo=...&pagina=...&tamanho=...`, então precisa de um
+    // predicado checando só `req.url` (sem params), não a forma de string solta.
     httpMock
-      .expectOne(`${API_BASE_URL}/comunidades`)
+      .expectOne((req) => req.url === `${API_BASE_URL}/comunidades`)
       .flush({ content: [], page: 0, size: 6, totalElements: 0, totalPages: 0 });
     fixture.detectChanges();
   }

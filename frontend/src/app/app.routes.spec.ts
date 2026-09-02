@@ -16,6 +16,11 @@ class AuthStub {
     return false;
   }
   logout(): void {}
+  // Épico 2: Shell agora injeta ComunidadesService, que chama isto pra montar o
+  // header de toda chamada autenticada — sem o stub aqui, o Shell nem instancia.
+  obterCabecalhoAutorizacao(): Record<string, string> {
+    return {};
+  }
 }
 
 describe('app.routes - wiring do auth guard sobre a tabela real de rotas', () => {
