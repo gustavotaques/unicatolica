@@ -1,6 +1,7 @@
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { ComunidadesService } from '../../core/comunidades/comunidades.service';
 
 /** Um item da navegação global. `path === null` = item ainda sem rota (inerte). */
 interface NavItem {
@@ -8,14 +9,17 @@ interface NavItem {
   path: string | null;
   /** Só aparece para MODERADOR / ADMINISTRADOR. */
   privileged?: boolean;
+  /** Só true no item "Suas comunidades" — expande a lista dinâmica logo abaixo dele. */
+  expandeComunidades?: boolean;
 }
 
 /**
  * Itens da sidebar, na ordem exata da tabela "Navegação global" de
  * EXPERIENCE.md: Denúncias e Solicitações de fixação ficam entre "Criar
  * enquete" e "Suas comunidades", e só aparecem para MODERADOR / ADMINISTRADOR.
- * Hoje só "Início" tem rota - o resto entra como rota conforme cada epic
- * aterrissa.
+ * "Início" e "Descobrir comunidades" (Epic 2) têm rota; o resto entra
+ * conforme cada epic aterrissa. "Suas comunidades" não vira rota própria —
+ * é só o cabeçalho da lista dinâmica (ver {@link Shell.minhasComunidades}).
  */
 const NAV_ITENS: readonly NavItem[] = [
   { label: 'Início', path: '/feed' },
@@ -25,8 +29,8 @@ const NAV_ITENS: readonly NavItem[] = [
   { label: 'Criar enquete', path: null },
   { label: 'Denúncias', path: null, privileged: true },
   { label: 'Solicitações de fixação', path: null, privileged: true },
-  { label: 'Suas comunidades', path: null },
-  { label: 'Descobrir comunidades', path: null },
+  { label: 'Suas comunidades', path: null, expandeComunidades: true },
+  { label: 'Descobrir comunidades', path: '/comunidades' },
 ];
 
 @Component({
@@ -42,11 +46,18 @@ const NAV_ITENS: readonly NavItem[] = [
 export class Shell {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly comunidadesService = inject(ComunidadesService);
 
   private readonly avatar = viewChild<ElementRef<HTMLButtonElement>>('avatar');
 
   protected readonly navItens = NAV_ITENS;
   protected readonly menuAberto = signal(false);
+  /**
+   * "Suas comunidades" (Epic 2) — cache compartilhada do `ComunidadesService`
+   * (ver lá): entrar/sair numa comunidade em qualquer tela atualiza isto aqui
+   * também, sem precisar recarregar a página.
+   */
+  protected readonly minhasComunidades = this.comunidadesService.minhasComunidades;
 
   /**
    * Derivado uma única vez (não é um método re-executado por item do `@for`).
@@ -56,6 +67,12 @@ export class Shell {
   protected readonly ehPrivilegiado = computed(
     () => this.auth.possuiPerfil('MODERADOR') || this.auth.possuiPerfil('ADMINISTRADOR'),
   );
+
+  constructor() {
+    // Best-effort: a sidebar não é o lugar de mostrar erro de rede — em caso de
+    // falha a cache simplesmente fica vazia, sem travar o resto da navegação.
+    this.comunidadesService.carregarMinhas().subscribe({ error: () => undefined });
+  }
 
   protected alternarMenu(evento: Event): void {
     // Impede que o clique borbulhe até o listener `document:click` e feche o

@@ -61,7 +61,7 @@ class UsuarioAutenticadoTest {
         String token = Jwt.claims()
                 .issuer(ISSUER)
                 .subject(subject)
-                .claim("roles", roles)
+                .groups(roles)
                 .sign(privateKey);
         JsonWebToken jsonWebToken = jwtParser.parse(token);
 

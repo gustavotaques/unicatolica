@@ -12,7 +12,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.security.PrivateKey;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -57,14 +56,10 @@ public class AuthService {
             throw new EmailNaoConfirmadoException();
         }
 
-        // Claim literal "roles" (não o helper .groups(), que grava sob a claim padrão
-        // "groups") — AD-2 promete "roles" por nome, e smallrye.jwt.path.groups=roles só
-        // funcionava até aqui por coincidência: fallback silencioso do SmallRye para
-        // "groups" quando o path configurado não resolve (defeito D3).
         String token = Jwt.claims()
                 .issuer(issuer)
                 .subject(String.valueOf(usuario.id))
-                .claim("roles", Set.of(usuario.perfil))
+                .groups(Set.of(usuario.perfil))
                 .sign(privateKey);
 
         auditoriaService.registrar(usuario.id, "identidade", "LOGIN", "Login bem-sucedido.");
@@ -76,14 +71,6 @@ public class AuthService {
      * instante presente em {@code sessaoValidaDesde} — o JWT ainda expira naturalmente
      * pelo claim {@code exp}, mas {@link br.edu.unicatolica.pacext.infraestrutura.seguranca.JwtSecurityFilter}
      * passa a rejeitar qualquer token emitido antes deste instante para este usuário.
-     *
-     * <p>Truncado para segundos porque o claim {@code iat} do JWT (NumericDate) só tem essa
-     * precisão — sem truncar, {@code sessaoValidaDesde} carregaria uma precisão sub-segundo
-     * que nenhum {@code iat} jamais poderia igualar ou superar, tornando a comparação em
-     * {@code SessaoInvalidadaFilter} inconsistente. Com os dois truncados ao mesmo grão, um
-     * token cujo {@code iat} coincide com este instante foi necessariamente emitido antes do
-     * logout (ou durante) e é corretamente invalidado — ver o comentário de
-     * {@code SessaoInvalidadaFilter} sobre por que a comparação usa {@code <=}.</p>
      */
     @Transactional
     public void logout(Long usuarioId) {
@@ -91,7 +78,7 @@ public class AuthService {
         if (usuario == null) {
             return;
         }
-        usuario.sessaoValidaDesde = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        usuario.sessaoValidaDesde = Instant.now();
         auditoriaService.registrar(usuario.id, "identidade", "LOGOUT", "Logout realizado.");
     }
 

@@ -1,0 +1,133 @@
+// Usa os tokens globais --uc-* (Story 14.1, frontend/src/styles/_tokens.scss) — nada de
+// paleta local aqui, ao contrário da primeira versão desta tela (antes do Design System
+// existir).
+:host {
+  display: block;
+}
+
+.home__estado {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--uc-color-ink-soft);
+}
+
+.home__estado--erro {
+  color: #b3261e;
+}
+
+.home {
+  max-width: 720px;
+}
+
+.home__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--uc-space-section-gap);
+}
+
+.home__saudacao {
+  font-size: var(--uc-font-size-greeting);
+  font-weight: var(--uc-font-weight-semibold);
+  letter-spacing: var(--uc-letter-spacing-greeting);
+}
+
+.home__saudacao span {
+  color: var(--uc-color-ink-faint);
+  font-weight: var(--uc-font-weight-regular);
+  font-size: var(--uc-font-size-meta);
+  display: block;
+  margin-top: 2px;
+}
+
+.home__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--uc-radius-full);
+  background: linear-gradient(135deg, var(--uc-color-orange), var(--uc-color-maroon));
+  color: var(--uc-color-surface);
+  font-size: var(--uc-font-size-meta);
+  font-weight: var(--uc-font-weight-semibold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home__aviso {
+  margin-bottom: var(--uc-space-section-gap);
+}
+
+.home__aviso p {
+  margin: 0 0 4px;
+  font-size: var(--uc-font-size-body);
+  color: var(--uc-color-ink-soft);
+}
+
+.home__aviso p:last-child {
+  margin-bottom: 0;
+}
+
+.home__secao {
+  margin-bottom: var(--uc-space-section-gap);
+}
+
+.home__secao h2 {
+  font-size: var(--uc-font-size-label-caps);
+  text-transform: uppercase;
+  letter-spacing: var(--uc-letter-spacing-label-caps);
+  color: var(--uc-color-ink-faint);
+  margin: 0 0 10px;
+}
+
+.home__vazio {
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-faint);
+}
+
+.home__lista-comunidades {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home__lista-comunidades li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--uc-font-size-body);
+}
+
+.home__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.home__card-comunidade {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.home__card-nome {
+  font-size: var(--uc-font-size-body);
+  font-weight: var(--uc-font-weight-semibold);
+  color: var(--uc-color-ink);
+  text-decoration: none;
+}
+
+.home__card-nome:hover {
+  text-decoration: underline;
+}
+
+.home__ver-todas {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-soft);
+  text-decoration: none;
+}

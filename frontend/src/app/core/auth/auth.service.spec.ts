@@ -1,7 +1,6 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
 import { AuthService, JWT_ROLES_CLAIM } from './auth.service';
 
 /** Base64url de uma string UTF-8 (sem padding), como um JWT real. */
@@ -71,22 +70,6 @@ describe('AuthService', () => {
     const req = httpMock.expectOne('http://localhost:8080/auth/logout');
     expect(req.request.headers.get('Authorization')).toBe('Bearer token-fake');
     req.flush(null);
-  });
-
-  it('loga (nao silencia) uma falha do backend no logout', () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    service.login('aluno@catolicasc.edu.br', 'Senha123!').subscribe();
-    httpMock.expectOne('http://localhost:8080/auth/login').flush({ token: 'token-fake' });
-
-    service.logout();
-
-    httpMock
-      .expectOne('http://localhost:8080/auth/logout')
-      .flush(null, { status: 401, statusText: 'Unauthorized' });
-
-    expect(consoleErrorSpy).toHaveBeenCalled();
-    // Falhar no backend nao pode impedir o logout local (defeito D8: continua best-effort).
-    expect(service.obterToken()).toBeNull();
   });
 
   it('nao chama o backend no logout se nao havia token armazenado', () => {

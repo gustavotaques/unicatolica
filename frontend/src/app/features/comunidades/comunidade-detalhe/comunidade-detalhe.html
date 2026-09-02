@@ -1,0 +1,34 @@
+@if (carregando()) {
+  <p class="detalhe__estado">Carregando comunidade…</p>
+} @else if (erro(); as mensagem) {
+  <div class="detalhe__estado detalhe__estado--erro" role="alert">{{ mensagem }}</div>
+} @else if (comunidade(); as c) {
+  <div class="detalhe">
+    <header class="detalhe__cabecalho">
+      <h1>{{ c.nome }}</h1>
+      <p class="detalhe__subtitulo">
+        {{ c.tipo === 'CURSO' ? 'Comunidade de curso · associação automática' : 'Comunidade aberta' }}
+        · criada em {{ c.criadoEm | date: 'dd/MM/yyyy' }}
+      </p>
+
+      <div class="detalhe__acao">
+        @if (c.souMembro && c.tipo === 'ABERTA') {
+          <button type="button" class="detalhe__botao-sair" [disabled]="processando()" (click)="sair()">
+            {{ processando() ? 'Saindo…' : 'Sair' }}
+          </button>
+        } @else if (!c.souMembro && c.tipo === 'ABERTA') {
+          <button type="button" uc-button [disabled]="processando()" (click)="ingressar()">
+            {{ processando() ? 'Entrando…' : 'Participar' }}
+          </button>
+        } @else if (c.souMembro) {
+          <uc-member-indicator label="Você é membro" />
+        }
+      </div>
+    </header>
+
+    <uc-card class="detalhe__aviso">
+      <p><strong>Publicações chegam em breve.</strong></p>
+      <p>Essa comunidade ainda não tem nenhum jeito de postar ou comentar — é só o espaço reservado por enquanto.</p>
+    </uc-card>
+  </div>
+}

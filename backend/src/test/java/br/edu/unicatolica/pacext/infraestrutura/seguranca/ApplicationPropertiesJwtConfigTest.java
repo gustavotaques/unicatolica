@@ -1,12 +1,10 @@
 package br.edu.unicatolica.pacext.infraestrutura.seguranca;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Properties;
 import org.junit.jupiter.api.Test;
 
@@ -15,20 +13,17 @@ import org.junit.jupiter.api.Test;
  * runtime completo do Quarkus (sem Docker para os Dev Services de Postgres neste ambiente) —
  * então uma mudança em {@code application.properties}, como remover ou renomear
  * {@code smallrye.jwt.path.groups}, passaria despercebida por aqueles testes. Este teste lê o
- * {@code application.properties} de {@code src/main/resources} diretamente do disco (não via
- * classpath por nome — desde que {@code src/test/resources/application.properties} passou a
- * existir para fornecer chaves JWT de teste a {@code AutenticacaoFluxoTest}, o classpath tem
- * dois arquivos com esse nome, e o de teste teria precedência) e garante que o arquivo
- * principal configura exatamente o que os testes do filtro assumem manualmente, fechando essa
- * lacuna sem depender de um ambiente com Docker.
+ * {@code application.properties} real (o mesmo carregado pelo Quarkus via CDI em runtime) e
+ * garante que ele configura exatamente o que os testes do filtro assumem manualmente,
+ * fechando essa lacuna sem depender de um ambiente com Docker.
  */
 class ApplicationPropertiesJwtConfigTest {
 
     private Properties carregarApplicationProperties() throws IOException {
-        Path path = Path.of("src/main/resources/application.properties");
-        assertTrue(Files.exists(path), "src/main/resources/application.properties precisa existir.");
         Properties properties = new Properties();
-        try (InputStream in = Files.newInputStream(path)) {
+        try (InputStream in = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("application.properties")) {
+            assertNotNull(in, "application.properties precisa estar no classpath.");
             properties.load(in);
         }
         return properties;

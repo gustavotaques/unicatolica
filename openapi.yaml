@@ -105,23 +105,6 @@ paths:
         '202':
           description: Solicitação aceita.
 
-  /auth/logout:
-    post:
-      operationId: logout
-      summary: Encerra a sessão do usuário autenticado (Story 1.6, RF10/RF11).
-      tags: [Identidade]
-      description: >
-        Exige token válido (não entra na allowlist do JwtSecurityFilter, AD-2) para
-        saber qual usuário deslogar. Invalida imediatamente toda sessão emitida
-        (claim iat) até o momento do logout (RF11) — requisições subsequentes com o
-        mesmo token, mesmo antes do exp natural, são rejeitadas com 401. Idempotente:
-        chamar de novo com um token já invalidado também responde 401, nunca erro.
-      responses:
-        '204':
-          description: Sessão invalidada.
-        '401':
-          $ref: '#/components/responses/NaoAutenticado'
-
   /usuarios/me:
     get:
       operationId: obterUsuarioAutenticado
@@ -162,6 +145,164 @@ paths:
           $ref: '#/components/responses/NaoAutenticado'
         '403':
           $ref: '#/components/responses/SemPermissao'
+        '404':
+          $ref: '#/components/responses/NaoEncontrado'
+
+  /comunidades:
+    post:
+      operationId: criarComunidade
+      summary: Cria uma comunidade aberta (Story 2.2, RF21/RF22/RF23)
+      tags: [Comunidades]
+      description: >
+        Toda comunidade criada por aqui é do tipo ABERTA — o corpo não aceita "tipo"
+        de propósito (RF21.2: só administrador de plataforma cria comunidade de curso,
+        endpoint fora desta fatia, ver docs/modelo-epico-2-comunidades.md). O criador
+        vira administrador da comunidade automaticamente (RF23).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComunidadeRequest'
+      responses:
+        '201':
+          description: Comunidade criada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComunidadeResponse'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        # 409: já existe comunidade com esse nome. 422: nome não informado (RF22).
+        '409':
+          $ref: '#/components/responses/Conflito'
+        '422':
+          $ref: '#/components/responses/ErroValidacao'
+    get:
+      operationId: listarComunidades
+      summary: Lista e filtra comunidades, paginado (Story 2.5, RF27/RF28)
+      tags: [Comunidades]
+      parameters:
+        - name: tipo
+          in: query
+          schema:
+            type: string
+            enum: [CURSO, ABERTA]
+        - name: nome
+          in: query
+          schema:
+            type: string
+        - name: pagina
+          in: query
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+        - name: tamanho
+          in: query
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Página de comunidades.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComunidadePageResponse'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /comunidades/minhas:
+    get:
+      operationId: listarMinhasComunidades
+      summary: Lista as comunidades das quais o usuário autenticado é membro (Home)
+      tags: [Comunidades]
+      description: >
+        Sem paginação de propósito — alimenta a seção "Suas comunidades" da Home,
+        tende a ser um conjunto pequeno.
+      responses:
+        '200':
+          description: Comunidades do usuário autenticado.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComunidadeResponse'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+
+  /comunidades/{id}:
+    get:
+      operationId: obterComunidade
+      summary: Detalhe de uma comunidade, incluindo se o usuário é membro (Story 2.5, RF27.1)
+      tags: [Comunidades]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Dados da comunidade.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComunidadeResponse'
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        '404':
+          $ref: '#/components/responses/NaoEncontrado'
+
+  /comunidades/{id}/membros:
+    post:
+      operationId: ingressarNaComunidade
+      summary: Entra numa comunidade aberta (Story 2.4, RF24/RF25)
+      tags: [Comunidades]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Ingresso realizado.
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
+        # 403: comunidade não é do tipo ABERTA. 409: já é membro (RF25).
+        '403':
+          $ref: '#/components/responses/SemPermissao'
+        '404':
+          $ref: '#/components/responses/NaoEncontrado'
+        '409':
+          $ref: '#/components/responses/Conflito'
+
+  /comunidades/{id}/membros/me:
+    delete:
+      operationId: sairDaComunidade
+      summary: Sai de uma comunidade (Story 2.4, RF26)
+      tags: [Comunidades]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Associação removida.
+        '401':
+          $ref: '#/components/responses/NaoAutenticado'
         '404':
           $ref: '#/components/responses/NaoEncontrado'
 
@@ -271,6 +412,52 @@ components:
           description: 'Perfil global do usuário (RF13).'
           examples:
             - ALUNO
+        curso:
+          type: [string, 'null']
+          description: Curso informado no cadastro (Story 1.2) — usado na saudação da Home.
+
+    ComunidadeRequest:
+      type: object
+      required: [nome]
+      properties:
+        nome:
+          type: string
+        descricao:
+          type: string
+
+    ComunidadeResponse:
+      type: object
+      required: [id, nome, tipo, criadoEm]
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        descricao:
+          type: string
+        tipo:
+          type: string
+          enum: [CURSO, ABERTA]
+          description: 'Imutável após a criação (RF21.1).'
+        souMembro:
+          type: [boolean, 'null']
+          description: >
+            Se o usuário autenticado é membro desta comunidade (RF27.1) — presente só na
+            consulta de uma comunidade específica, ausente nas listagens.
+        criadoEm:
+          type: string
+          format: date-time
+
+    ComunidadePageResponse:
+      allOf:
+        - $ref: '#/components/schemas/PageResponse'
+        - type: object
+          properties:
+            content:
+              type: array
+              items:
+                $ref: '#/components/schemas/ComunidadeResponse'
 
     Erro:
       type: object

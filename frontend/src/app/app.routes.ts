@@ -28,6 +28,20 @@ export const routes: Routes = [
         path: 'feed',
         loadComponent: () => import('./features/feed/feed').then((m) => m.Feed),
       },
+      {
+        path: 'comunidades',
+        loadComponent: () =>
+          import('./features/comunidades/comunidades-lista/comunidades-lista').then((m) => m.ComunidadesLista),
+      },
+      {
+        // Mesmo padrão de "Home" pra qualquer comunidade — curso ou aberta (ver
+        // ComunidadeDetalhe). Vem depois de 'comunidades' na lista, mas isso não
+        // importa pro Router: segmentos diferentes ('comunidades' vs 'comunidades/:id'),
+        // sem ambiguidade de precedência como haveria em frameworks tipo JAX-RS.
+        path: 'comunidades/:id',
+        loadComponent: () =>
+          import('./features/comunidades/comunidade-detalhe/comunidade-detalhe').then((m) => m.ComunidadeDetalhe),
+      },
     ],
   },
 ];

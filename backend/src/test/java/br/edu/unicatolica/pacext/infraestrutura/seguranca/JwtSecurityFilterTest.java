@@ -1,8 +1,7 @@
 package br.edu.unicatolica.pacext.infraestrutura.seguranca;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,6 +20,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Set;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,7 +32,8 @@ import org.mockito.ArgumentCaptor;
  * chaves gerado em memória (nenhuma chave commitada no repo) e um {@link ContainerRequestContext}
  * mockado via Mockito, cobrindo exatamente o contrato da AD-2: allowlist
  * {@code @PermitAll}, exigência de {@code Authorization: Bearer} e das claims
- * {@code sub}/{@code roles}.
+ * {@code sub}/{@code roles}. A checagem de logout (Story 1.6) não é deste filtro — ver
+ * {@link SessaoPosLogoutFilterTest}.
  */
 class JwtSecurityFilterTest {
 
@@ -68,7 +69,7 @@ class JwtSecurityFilterTest {
         return Jwt.claims()
                 .issuer(ISSUER)
                 .subject(subject)
-                .claim("roles", roles)
+                .groups(roles)
                 .sign(privateKey);
     }
 
@@ -148,7 +149,7 @@ class JwtSecurityFilterTest {
         String tokenExpirado = Jwt.claims()
                 .issuer(ISSUER)
                 .subject("42")
-                .claim("roles", Set.of("ALUNO"))
+                .groups(Set.of("ALUNO"))
                 .expiresAt(Instant.now().minusSeconds(3600))
                 .sign(privateKey);
         ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer " + tokenExpirado);
@@ -172,7 +173,7 @@ class JwtSecurityFilterTest {
     }
 
     @Test
-    void aceitaTokenValidoComSubERoles() throws Exception {
+    void aceitaTokenValidoComSubERolesEGuardaEmitidoEm() throws Exception {
         String token = validToken("42", Set.of("ALUNO"));
         ContainerRequestContext requestContext = mockContext("/comunidades/1", "GET", "Bearer " + token);
 
@@ -181,14 +182,14 @@ class JwtSecurityFilterTest {
         verify(requestContext, never()).abortWith(any());
         verify(requestContext).setProperty(JwtSecurityFilter.REQUEST_PROPERTY_USUARIO_ID, "42");
         verify(requestContext).setProperty(JwtSecurityFilter.REQUEST_PROPERTY_ROLES, Set.of("ALUNO"));
-        verify(requestContext).setProperty(org.mockito.ArgumentMatchers.eq(JwtSecurityFilter.REQUEST_PROPERTY_EMITIDO_EM), any());
+        verify(requestContext).setProperty(eq(JwtSecurityFilter.REQUEST_PROPERTY_EMITIDO_EM), any());
     }
 
     @SuppressWarnings("unchecked")
     private void assertAbortedWith401(ContainerRequestContext requestContext) {
         ArgumentCaptor<Response> captor = ArgumentCaptor.forClass(Response.class);
         verify(requestContext).abortWith(captor.capture());
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), captor.getValue().getStatus());
-        assertFalse(captor.getValue().getEntity() == null);
+        Assertions.assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), captor.getValue().getStatus());
+        Assertions.assertFalse(captor.getValue().getEntity() == null);
     }
 }

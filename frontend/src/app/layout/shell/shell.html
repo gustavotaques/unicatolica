@@ -29,6 +29,28 @@
             }}</span>
           }
         </li>
+        @if (item.expandeComunidades) {
+          <li>
+            <ul class="shell__comunidades-lista" aria-label="Suas comunidades">
+              @for (comunidade of minhasComunidades(); track comunidade.id) {
+                <li>
+                  <a class="shell__comunidade-item" [routerLink]="['/comunidades', comunidade.id]">
+                    <span
+                      class="shell__ponto"
+                      [class.shell__ponto--curso]="comunidade.tipo === 'CURSO'"
+                      aria-hidden="true"
+                    ></span>
+                    {{ comunidade.nome }}
+                  </a>
+                </li>
+              } @empty {
+                <li class="shell__comunidade-item shell__comunidade-item--vazio">
+                  Você ainda não faz parte de nenhuma
+                </li>
+              }
+            </ul>
+          </li>
+        }
       }
     }
   </ul>

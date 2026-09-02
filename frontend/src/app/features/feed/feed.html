@@ -1,2 +1,47 @@
-<h1>Início</h1>
-<p>Feed principal em construção.</p>
+@if (carregando()) {
+  <p class="home__estado">Carregando sua Home…</p>
+} @else if (erro(); as mensagem) {
+  <div class="home__estado home__estado--erro" role="alert">{{ mensagem }}</div>
+} @else {
+  <div class="home">
+    <div class="home__topo">
+      <div class="home__saudacao">
+        Olá, {{ usuario()?.nome }}
+        @if (usuario()?.curso; as curso) {
+          <span>{{ curso }}</span>
+        }
+      </div>
+      <div class="home__avatar" aria-hidden="true">{{ iniciais() }}</div>
+    </div>
+
+    <uc-card class="home__aviso">
+      <p><strong>Publicações chegam em breve.</strong></p>
+      <p>Por enquanto, participe das comunidades do seu curso e descubra outras abertas abaixo.</p>
+    </uc-card>
+
+    <section class="home__secao">
+      <h2>Descubra comunidades</h2>
+      @if (descobrir().length > 0) {
+        <div class="home__grade">
+          @for (comunidade of descobrir(); track comunidade.id) {
+            <uc-card class="home__card-comunidade">
+              <uc-badge variant="open">Aberta</uc-badge>
+              <a class="home__card-nome" [routerLink]="['/comunidades', comunidade.id]">{{ comunidade.nome }}</a>
+              <button
+                type="button"
+                uc-button
+                [disabled]="ingressandoId() === comunidade.id"
+                (click)="ingressar(comunidade)"
+              >
+                {{ ingressandoId() === comunidade.id ? 'Entrando…' : 'Participar' }}
+              </button>
+            </uc-card>
+          }
+        </div>
+      } @else {
+        <p class="home__vazio">Nenhuma comunidade nova pra descobrir agora.</p>
+      }
+      <a class="home__ver-todas" routerLink="/comunidades">Ver todas as comunidades →</a>
+    </section>
+  </div>
+}

@@ -54,13 +54,9 @@ public class ConfirmacaoEmailService {
                     "Link de confirmação expirado. Solicite um novo.", null);
         }
 
-        // tokenConfirmacaoEmail e tokenConfirmacaoExpiraEm NÃO são zerados aqui: são a
-        // chave usada por buscarPorTokenConfirmacao acima para achar este usuário. Zerar
-        // faria a busca do próximo clique no mesmo link falhar (404), quebrando a
-        // idempotência que este método promete no Javadoc e no openapi.yaml (defeito D5) —
-        // a checagem de usuario.emailConfirmado logo acima já garante que confirmar de
-        // novo é sempre um no-op seguro, então o token pode continuar apontando pra cá.
         usuario.emailConfirmado = true;
+        usuario.tokenConfirmacaoEmail = null;
+        usuario.tokenConfirmacaoExpiraEm = null;
         usuario.atualizadoEm = Instant.now();
 
         auditoriaService.registrar(usuario.id, "identidade", "EMAIL_CONFIRMADO", "Usuario", usuario.id, null);

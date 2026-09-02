@@ -89,6 +89,46 @@
   cursor: default;
 }
 
+// -- "Suas comunidades" dynamic sub-list (Epic 2) -----------------------
+// Deliberately NOT .shell__nav-item: it's a list of links to community
+// pages, not part of the fixed global nav IA above it.
+.shell__comunidades-lista {
+  margin: 0 0 calc(var(--uc-space-unit) / 2);
+  padding: 0;
+  list-style: none;
+}
+
+.shell__comunidade-item {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--uc-space-unit) * 2.5);
+  padding: calc(var(--uc-space-unit) * 1.5) calc(var(--uc-space-unit) * 2.5);
+  border-radius: var(--uc-radius-sm);
+  color: var(--uc-color-ink-soft);
+  font-size: var(--uc-font-size-meta);
+  text-decoration: none;
+}
+
+.shell__comunidade-item:hover {
+  background: var(--uc-color-orange-tint);
+}
+
+.shell__comunidade-item--vazio {
+  color: var(--uc-color-ink-faint);
+}
+
+.shell__ponto {
+  width: calc(var(--uc-space-unit) * 2);
+  height: calc(var(--uc-space-unit) * 2);
+  border-radius: var(--uc-radius-full);
+  background: var(--uc-color-border);
+  flex-shrink: 0;
+}
+
+.shell__ponto--curso {
+  background: var(--uc-color-maroon);
+}
+
 // -- Topbar ------------------------------------------------------------
 .shell__topbar {
   grid-column: 2;
@@ -185,6 +225,7 @@
 
 // -- Focus ring (matches ui/button/button.scss) -------------------
 .shell__nav-item:focus-visible,
+.shell__comunidade-item:focus-visible,
 .shell__avatar:focus-visible,
 .shell__menu-item:focus-visible {
   outline: 2px solid var(--uc-color-maroon);
