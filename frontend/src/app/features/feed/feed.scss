@@ -1,21 +1,27 @@
-// Usa os tokens globais --uc-* (Story 14.1, frontend/src/styles/_tokens.scss) — nada de
+// Usa os tokens globais --uc-* (Story 14.1, frontend/src/styles/_tokens.scss) - nada de
 // paleta local aqui, ao contrário da primeira versão desta tela (antes do Design System
 // existir).
+//
+// Story 14.7 terminou a conversão: o vermelho de erro virou --uc-color-error e todo
+// espaçamento cru virou calc() sobre --uc-space-unit. O que sobrou de literal é
+// estrutural e carrega um marcador `// layout-literal:` que o guard reconhece
+// (src/styles/scss-guard.spec.ts).
 :host {
   display: block;
 }
 
 .home__estado {
-  padding: 3rem 1.5rem;
+  padding: calc(var(--uc-space-unit) * 12) calc(var(--uc-space-unit) * 6);
   text-align: center;
   color: var(--uc-color-ink-soft);
 }
 
 .home__estado--erro {
-  color: #b3261e;
+  color: var(--uc-color-error);
 }
 
 .home {
+  // layout-literal: coluna de leitura do feed; DESIGN.md defere a largura exata de conteudo para a implementacao.
   max-width: 720px;
 }
 
@@ -37,12 +43,12 @@
   font-weight: var(--uc-font-weight-regular);
   font-size: var(--uc-font-size-meta);
   display: block;
-  margin-top: 2px;
+  margin-top: calc(var(--uc-space-unit) / 2);
 }
 
 .home__avatar {
-  width: 36px;
-  height: 36px;
+  width: calc(var(--uc-space-unit) * 9);
+  height: calc(var(--uc-space-unit) * 9);
   border-radius: var(--uc-radius-full);
   background: linear-gradient(135deg, var(--uc-color-orange), var(--uc-color-maroon));
   color: var(--uc-color-surface);
@@ -58,7 +64,7 @@
 }
 
 .home__aviso p {
-  margin: 0 0 4px;
+  margin: 0 0 var(--uc-space-unit);
   font-size: var(--uc-font-size-body);
   color: var(--uc-color-ink-soft);
 }
@@ -76,7 +82,7 @@
   text-transform: uppercase;
   letter-spacing: var(--uc-letter-spacing-label-caps);
   color: var(--uc-color-ink-faint);
-  margin: 0 0 10px;
+  margin: 0 0 calc(var(--uc-space-unit) * 2.5);
 }
 
 .home__vazio {
@@ -90,27 +96,28 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: calc(var(--uc-space-unit) * 2.5);
 }
 
 .home__lista-comunidades li {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(var(--uc-space-unit) * 2.5);
   font-size: var(--uc-font-size-body);
 }
 
 .home__grade {
   display: grid;
+  // layout-literal: largura minima de card antes de quebrar a coluna; nao e um valor de design do DESIGN.md.
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+  gap: calc(var(--uc-space-unit) * 3);
 }
 
 .home__card-comunidade {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: calc(var(--uc-space-unit) * 2);
 }
 
 .home__card-nome {
@@ -126,7 +133,7 @@
 
 .home__ver-todas {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: calc(var(--uc-space-unit) * 2.5);
   font-size: var(--uc-font-size-meta);
   color: var(--uc-color-ink-soft);
   text-decoration: none;

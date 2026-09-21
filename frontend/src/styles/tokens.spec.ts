@@ -33,6 +33,9 @@ const EXPECTED: Record<string, Record<string, string>> = {
     '--uc-color-orange': '#EA6A2E',
     '--uc-color-orange-tint': '#FDEEE6',
     '--uc-color-green-ok': '#3A7D5C',
+    // Added in Story 14.7 and escalated back into DESIGN.md `colors.error`
+    // before landing here (see _tokens.scss header).
+    '--uc-color-error': '#B3261E',
   },
   typography: {
     '--uc-font-family-base':
@@ -235,25 +238,16 @@ describe('.uc-text-* utility classes', () => {
   }
 });
 
-// -- no reset / no body restyle (guards Story 14.7 scope) -------------
+// -- single declaration site + no dark mode ---------------------------
+//
+// Story 14.1 also asserted here that the bundle carried no reset, no `body`
+// rule and no bare element selector - the pieces it deferred to Story 14.7.
+// 14.7 has landed them (`_base.scss`), so those three assertions are gone and
+// `base.spec.ts` owns the base layer's contract instead. What survives is what
+// still holds forever: tokens are declared in exactly one `:root` block, and
+// no dark-mode / @import / @font-face rule exists.
 
-describe('no reset / no body restyle in the compiled output', () => {
-  it('has no body{}, no *{}, no box-sizing declaration', () => {
-    expect(compiledCss).not.toMatch(/(^|})\s*body\s*{/);
-    expect(compiledCss).not.toMatch(/(^|})\s*\*\s*{/);
-    expect(compiledCss).not.toMatch(/box-sizing/);
-  });
-
-  it('every rule selector is :root or a class selector (no bare element type)', () => {
-    const selectors = [...compiledCss.matchAll(/(^|})\s*([^{}@]+?)\s*{/g)].map((m) => m[2].trim());
-    expect(selectors.length).toBeGreaterThan(0);
-    for (const selector of selectors) {
-      for (const part of selector.split(',').map((s) => s.trim())) {
-        expect(part).toMatch(/^(:root\b|\.)/);
-      }
-    }
-  });
-
+describe('token declaration site and global scope limits', () => {
   it('declares --uc-* custom properties only inside one single :root block', () => {
     const rootOpeners = [...compiledCss.matchAll(/(^|})\s*:root\s*{/g)];
     expect(rootOpeners.length, 'exactly one :root block expected').toBe(1);
@@ -264,9 +258,9 @@ describe('no reset / no body restyle in the compiled output', () => {
     expect(declaredInRoot, '--uc-* declared outside the :root block').toBe(declaredEverywhere);
   });
 
-  it('emits no at-rule that would signal reset / import / dark-mode scope (Story 14.7)', () => {
+  it('emits no dark-mode, @import or @font-face at-rule', () => {
     // @media covers prefers-color-scheme; the rest would mean a font-face,
-    // keyframes, @supports gate or an @import crept into a 14.1 partial.
+    // keyframes, @supports gate or an @import crept into a global partial.
     expect(compiledCss).not.toMatch(/@(media|font-face|keyframes|supports|import)\b/);
     expect(compiledCss).not.toMatch(/prefers-color-scheme/);
   });

@@ -1,0 +1,54 @@
+// Casca das telas públicas (Story 14.7).
+//
+// Todo valor é um token --uc-* da Story 14.1. A marca repete o idioma do
+// shell.scss autenticado (traço bordô de 24px em radius-sm + nome semibold),
+// que é o único uso de bordô permitido pelo DESIGN.md: traço, nunca fundo.
+// O card segue o padrão do sistema - surface + borda de 1px + radius-lg,
+// nunca sombra.
+
+:host {
+  display: block;
+}
+
+.auth-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; // layout-literal: fallback de viewport para navegadores sem dvh
+  min-height: 100dvh; // layout-literal: altura de viewport dinamica, nao e um espacamento de design
+  padding: var(--uc-space-page-margin);
+  background: var(--uc-color-bg);
+}
+
+.auth-shell__conteudo {
+  // Cresce até o teto; sem `width` fixa, então nada de literal de layout aqui.
+  flex: 1;
+  max-width: calc(var(--uc-space-unit) * 100);
+}
+
+.auth-shell__marca {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--uc-space-unit) * 2);
+  margin-bottom: calc(var(--uc-space-unit) * 5);
+}
+
+.auth-shell__marca-traco {
+  width: calc(var(--uc-space-unit) * 6);
+  height: calc(var(--uc-space-unit) * 6);
+  border-radius: var(--uc-radius-sm);
+  background: var(--uc-color-maroon);
+}
+
+.auth-shell__marca-nome {
+  font-size: var(--uc-font-size-body);
+  font-weight: var(--uc-font-weight-semibold);
+  color: var(--uc-color-ink);
+}
+
+.auth-shell__card {
+  background: var(--uc-color-surface);
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-lg);
+  padding: calc(var(--uc-space-unit) * 7);
+}

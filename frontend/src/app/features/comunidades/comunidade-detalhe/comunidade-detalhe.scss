@@ -1,23 +1,32 @@
 // Mesmos tokens --uc-* (Story 14.1) usados em feed.scss/comunidades-lista.scss.
+//
+// Story 14.7 converteu o vermelho de erro e os dois rgba(255,255,255,...) do botão
+// "Sair" (agora borda de 1px em --uc-color-surface sobre fundo transparente, o mesmo
+// idioma de pill secundária das telas públicas). A faixa bordô do cabeçalho fica como
+// está: vem do mockup aprovado (mockups/home-comunidade.html) e recolori-la é decisão
+// de DESIGN.md, registrada em deferred-work.md.
 :host {
   display: block;
 }
 
 .detalhe__estado {
-  padding: 3rem 1.5rem;
+  padding: calc(var(--uc-space-unit) * 12) calc(var(--uc-space-unit) * 6);
   text-align: center;
   color: var(--uc-color-ink-soft);
 }
 
 .detalhe__estado--erro {
-  color: #b3261e;
+  color: var(--uc-color-error);
 }
 
 .detalhe {
+  // layout-literal: coluna de leitura da comunidade, igual a do feed.
   max-width: 720px;
   // Header sangra até a borda do <main> do Shell (padding negativo cancela o do
   // Shell) — mesmo efeito "banner cheio" do mockup home-comunidade.html.
+  // layout-literal: sangria calculada sobre o padding do <main> do Shell, nao um valor de design.
   margin: calc(var(--uc-space-unit) * -7) 0 0 calc(var(--uc-space-unit) * -8);
+  // layout-literal: 100% da coluna mais a sangria da margem negativa acima
   width: calc(100% + calc(var(--uc-space-unit) * 8));
 }
 
@@ -38,6 +47,9 @@
 .detalhe__subtitulo {
   margin: 0;
   font-size: var(--uc-font-size-meta);
+  // Atenuacao do subtitulo sobre a faixa bordo. Sem marcador `layout-literal`:
+  // esse marcador so isenta a regra de tamanho do guard, e `opacity` nao e uma
+  // dimensao - nenhuma regra a alcanca. DESIGN.md nao define token de opacidade.
   opacity: 0.85;
 }
 
@@ -54,8 +66,8 @@
 }
 
 .detalhe__botao-sair {
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--uc-color-surface);
+  background: transparent;
   color: var(--uc-color-surface);
   border-radius: var(--uc-radius-full);
   padding: var(--uc-space-unit) calc(var(--uc-space-unit) * 4);
@@ -68,12 +80,22 @@
   cursor: not-allowed;
 }
 
+// O anel de foco global (`styles/_base.scss`) e bordo sobre `bg` quase-branco:
+// 4,9:1, visivel. Aqui o botao fica sobre a propria faixa bordo do cabecalho,
+// onde esse anel daria 1,00:1 - literalmente invisivel. Este e o unico contexto
+// escuro do app, entao a inversao vive aqui e nao na camada base: `surface`
+// sobre bordo da 10,20:1. Mesma largura e offset do anel global, so a cor muda.
+.detalhe__botao-sair:focus-visible {
+  outline: 2px solid var(--uc-color-surface);
+  outline-offset: 2px;
+}
+
 .detalhe__aviso {
   margin: 0 var(--uc-space-page-margin);
 }
 
 .detalhe__aviso p {
-  margin: 0 0 4px;
+  margin: 0 0 var(--uc-space-unit);
   font-size: var(--uc-font-size-body);
   color: var(--uc-color-ink-soft);
 }

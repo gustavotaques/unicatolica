@@ -1,0 +1,59 @@
+// UniCatolica - Campus Clean global base layer (Story 14.7).
+//
+// The document-level layer Story 14.1 deliberately deferred here: reset,
+// canvas painting and the one global keyboard-focus ring. It is the only
+// place in the codebase allowed to style bare element selectors.
+//
+// Contract:
+//  - NO `:root` block and NO `--uc-*` custom property lives here. `_tokens.scss`
+//    is the single declaration site; `tokens.spec.ts` extracts the first `:root`
+//    rule of the compiled bundle and compares the token set exactly, so a
+//    custom property declared here would silently escape that guard.
+//  - Every colour / font / spacing value is a `var(--uc-*)` token. The only
+//    literals are structural: `border-box`, `0` margins, and the 2px focus
+//    outline + offset that `ui/button/button.scss` already established.
+//  - No dark-mode / `prefers-color-scheme` block (out of MVP scope).
+//
+// Loaded by `styles.scss` AFTER `tokens` and `typography`, so the `var(--uc-*)`
+// references below always resolve.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+// The canvas: near-white bg, ink text and the system font stack DESIGN.md
+// picks for every type role. Applying the stack once here is what finally
+// makes the `.uc-text-*` utilities render in the intended font - Story 14.1
+// left them font-family-less on purpose.
+body {
+  background: var(--uc-color-bg);
+  color: var(--uc-color-ink);
+  font-family: var(--uc-font-family-base);
+  font-size: var(--uc-font-size-body);
+  line-height: var(--uc-line-height-body);
+}
+
+// Form controls do not inherit the document font by default; without this the
+// token font stack stops at the edge of every <input> and <button>.
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+// One global focus ring for the whole app, matching ui/button/button.scss so a
+// button, a link and a bare <input> all show the same indicator (EXPERIENCE.md
+// "Accessibility Floor": visible keyboard focus on every interactive element).
+// Components may still restate it; they must not contradict it.
+:focus-visible {
+  outline: 2px solid var(--uc-color-maroon);
+  outline-offset: 2px;
+}

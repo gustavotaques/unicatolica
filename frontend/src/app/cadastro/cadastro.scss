@@ -1,129 +1,135 @@
+// Tela de cadastro (Story 1.2, restilizada na Story 14.7).
+//
+// Reescrita de 139 linhas hardcoded para consumo de token: todo valor aqui é
+// um --uc-* da Story 14.1. O enquadramento (landmark, marca, card) vem do
+// <uc-auth-shell>; o envio é o `button[uc-button]` da Story 14.2, única ação
+// laranja da tela. O anel de foco é o global de `styles/_base.scss`.
+//
+// Avisos (erro e "verifique seu e-mail") são `surface` + borda de 1px + texto
+// no token - nunca um bloco preenchido, pelo mesmo motivo que os cards usam
+// borda e não sombra (DESIGN.md "Elevation & Depth" / "Do's and Don'ts").
+
 :host {
   display: block;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-.cadastro {
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f4f4f5;
-  padding: 1.5rem;
-  box-sizing: border-box;
-}
-
-.cadastro__card {
-  width: 100%;
-  max-width: 26rem;
-  background: #fff;
-  border: 1px solid #e2e2e5;
-  border-radius: 0.75rem;
-  padding: 2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-h1 {
-  font-size: 1.375rem;
-  margin: 0 0 0.25rem;
+.cadastro__titulo {
+  margin: 0 0 calc(var(--uc-space-unit) / 2);
+  font-size: var(--uc-font-size-greeting);
+  font-weight: var(--uc-font-weight-semibold);
+  letter-spacing: var(--uc-letter-spacing-greeting);
+  color: var(--uc-color-ink);
 }
 
 .cadastro__subtitulo {
-  margin: 0 0 1.5rem;
-  color: #6b6b70;
-  font-size: 0.875rem;
+  margin: 0 0 calc(var(--uc-space-unit) * 6);
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-soft);
 }
 
-form {
+.cadastro__form {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
 }
 
-label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  margin-top: 0.75rem;
+.cadastro__label {
+  margin-bottom: calc(var(--uc-space-unit) / 2);
+  font-size: var(--uc-font-size-meta);
+  font-weight: var(--uc-font-weight-semibold);
+  color: var(--uc-color-ink);
 }
 
-input {
-  font: inherit;
-  padding: 0.55rem 0.65rem;
-  border: 1px solid #cfcfd4;
-  border-radius: 0.4rem;
+.cadastro__campo {
+  margin-bottom: calc(var(--uc-space-unit) * 4);
+  padding: calc(var(--uc-space-unit) * 2) calc(var(--uc-space-unit) * 2.5);
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-default);
+  background: var(--uc-color-surface);
+  color: var(--uc-color-ink);
+  font-size: var(--uc-font-size-body);
 }
 
-input:focus-visible {
-  outline: 2px solid #7a1f2b;
-  outline-offset: 1px;
+// `ink-faint` da 2,57:1 sobre `surface`, abaixo do piso AA de 4,5:1 -
+// e estes placeholders carregam exemplo real ("voce@catolicasc.edu.br",
+// "Engenharia de Software"), nao enfeite. `ink-soft` da 5,36:1.
+.cadastro__campo::placeholder {
+  color: var(--uc-color-ink-soft);
+}
+
+// O campo inválido ganha contorno de erro além da mensagem: cor nunca é o
+// único canal, mas reforça o que o aria-describedby já anuncia.
+.cadastro__campo[aria-invalid='true'] {
+  border-color: var(--uc-color-error);
+  margin-bottom: 0;
 }
 
 .campo-erro {
-  color: #b3261e;
-  font-size: 0.75rem;
+  margin-bottom: calc(var(--uc-space-unit) * 4);
+  padding-top: var(--uc-space-unit);
+  color: var(--uc-color-error);
+  font-size: var(--uc-font-size-meta);
 }
 
-button {
-  margin-top: 1.5rem;
-  padding: 0.65rem 1rem;
-  border: none;
-  border-radius: 999px;
-  background: #d9622b;
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  cursor: pointer;
+.cadastro__enviar {
+  align-self: flex-start;
+  margin-top: calc(var(--uc-space-unit) * 2);
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.cadastro__aviso {
+  margin-bottom: var(--uc-space-section-gap);
+  padding: calc(var(--uc-space-unit) * 3) calc(var(--uc-space-unit) * 4);
+  border-radius: var(--uc-radius-default);
+  background: var(--uc-color-surface);
+  font-size: var(--uc-font-size-body);
 }
 
-.aviso {
-  border-radius: 0.5rem;
-  padding: 0.85rem 1rem;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
+.cadastro__aviso--sucesso {
+  border: 1px solid var(--uc-color-green-ok);
+  color: var(--uc-color-ink);
 }
 
-.aviso--sucesso {
-  background: #eaf7ee;
-  border: 1px solid #bfe6c9;
-  color: #1e5631;
+.cadastro__aviso--erro {
+  border: 1px solid var(--uc-color-error);
+  color: var(--uc-color-error);
 }
 
-.aviso--erro {
-  background: #fdecea;
-  border: 1px solid #f3c2bd;
-  color: #8c2d24;
+.cadastro__aviso-texto {
+  margin: 0 0 var(--uc-space-unit);
+}
+
+.cadastro__aviso-texto:last-child {
+  margin-bottom: 0;
 }
 
 .cadastro__resumo {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.15rem 0.75rem;
-  margin: 0.75rem 0 0;
-  font-size: 0.8125rem;
+  gap: var(--uc-space-unit) calc(var(--uc-space-unit) * 3);
+  margin: 0;
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-soft);
 }
 
 .cadastro__resumo dt {
-  font-weight: 600;
+  font-weight: var(--uc-font-weight-semibold);
+  color: var(--uc-color-ink);
 }
 
 .cadastro__resumo dd {
   margin: 0;
 }
 
+// Ação secundária: pill de borda, fundo transparente, texto em ink. Nunca uma
+// segunda cor preenchida competindo com o laranja.
 .botao-secundario {
-  margin-top: 0.85rem;
-  padding: 0.5rem 0.85rem;
-  border: 1px solid #1e5631;
-  border-radius: 999px;
+  margin-top: var(--uc-space-section-gap);
+  padding: calc(var(--uc-space-unit) * 2) calc(var(--uc-space-unit) * 4);
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-full);
   background: transparent;
-  color: #1e5631;
-  font-weight: 600;
-  font-size: 0.8125rem;
+  color: var(--uc-color-ink);
+  font-size: var(--uc-font-size-meta);
+  font-weight: var(--uc-font-weight-semibold);
   cursor: pointer;
 }
 
@@ -133,7 +139,7 @@ button:disabled {
 }
 
 .cadastro__reenvio-confirmado {
-  margin: 0.85rem 0 0;
-  font-size: 0.8125rem;
-  color: #1e5631;
+  margin: var(--uc-space-section-gap) 0 0;
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-green-ok);
 }

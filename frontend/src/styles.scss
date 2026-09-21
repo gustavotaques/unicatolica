@@ -1,6 +1,8 @@
 /* UniCatolica - Campus Clean global stylesheet.
- * Story 14.1 ships the token layer and type-role utilities only.
- * No global element styles, body restyle or CSS reset here - that is Story 14.7.
+ * Story 14.1 shipped the token layer and the type-role utilities; Story 14.7
+ * adds the global base layer (reset, body canvas, font stack, focus ring).
+ * Order matters: `base` consumes the tokens, so it loads last.
  * styles.scss stays the single build entry point; partials load via @use. */
 @use './styles/tokens';
 @use './styles/typography';
+@use './styles/base';

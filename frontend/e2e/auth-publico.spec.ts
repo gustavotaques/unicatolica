@@ -3,14 +3,30 @@ import { mockConfirmacaoInvalida, mockConfirmacaoOk } from './support/mocks';
 import { semToken } from './support/seed';
 
 /**
- * Suíte 1 - telas públicas de auth (Epic 1, restyle 14.7 fora de escopo).
+ * Suíte 1 - telas públicas de auth (Epic 1, restilizadas na Story 14.7).
  * Renderização, validação de formulário e foco de teclado visível. Sem
  * backend: `/login` e `/cadastro` não fazem chamada até o submit; a
  * confirmação de e-mail é mockada.
  */
 
+/** `--uc-color-bg` (#FAFAF8) como o navegador reporta. */
+const CANVAS_BASE = 'rgb(250, 250, 248)';
+
 test.beforeEach(async ({ page }) => {
   await semToken(page);
+});
+
+test.describe('Camada base global (Story 14.7)', () => {
+  // Prova que `styles/_base.scss` chega a um navegador de verdade: o teste
+  // unitário só compara o CSS compilado, não o que a página realmente pinta.
+  for (const rota of ['/login', '/cadastro', '/confirmar-email']) {
+    test(`${rota} pinta o canvas com --uc-color-bg`, async ({ page }) => {
+      await page.goto(rota);
+
+      const fundo = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+      expect(fundo).toBe(CANVAS_BASE);
+    });
+  }
 });
 
 test.describe('Login', () => {

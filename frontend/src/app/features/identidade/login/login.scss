@@ -1,0 +1,88 @@
+// Tela de login (Story 1.5, restilizada na Story 14.7).
+//
+// Era a única tela do corte sem folha de estilo nenhuma. O enquadramento
+// (landmark, marca, card) vem do <uc-auth-shell>; aqui ficam só os elementos
+// do próprio template. Todo valor é um token --uc-* da Story 14.1 - nenhum
+// literal de cor, fonte, espaçamento ou raio.
+//
+// O botão de envio é o `button[uc-button]` da Story 14.2, o único estilo de
+// ação forte do sistema, e é a única ação laranja da tela (DESIGN.md: no
+// máximo uma por tela). O anel de foco é o global de `styles/_base.scss`.
+
+:host {
+  display: block;
+}
+
+.login__titulo {
+  margin: 0 0 calc(var(--uc-space-unit) / 2);
+  font-size: var(--uc-font-size-greeting);
+  font-weight: var(--uc-font-weight-semibold);
+  letter-spacing: var(--uc-letter-spacing-greeting);
+  color: var(--uc-color-ink);
+}
+
+.login__subtitulo {
+  margin: 0 0 calc(var(--uc-space-unit) * 6);
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-soft);
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login__label {
+  margin-bottom: calc(var(--uc-space-unit) / 2);
+  font-size: var(--uc-font-size-meta);
+  font-weight: var(--uc-font-weight-semibold);
+  color: var(--uc-color-ink);
+}
+
+.login__campo {
+  margin-bottom: calc(var(--uc-space-unit) * 4);
+  padding: calc(var(--uc-space-unit) * 2) calc(var(--uc-space-unit) * 2.5);
+  border: 1px solid var(--uc-color-border);
+  border-radius: var(--uc-radius-default);
+  background: var(--uc-color-surface);
+  color: var(--uc-color-ink);
+  font-size: var(--uc-font-size-body);
+}
+
+// `ink-faint` da 2,57:1 sobre `surface`, abaixo do piso AA de 4,5:1.
+// Placeholder aqui carrega informacao, nao enfeite, entao usa `ink-soft`
+// (5,36:1). Ver EXPERIENCE.md "Accessibility Floor" / RNF06.
+.login__campo::placeholder {
+  color: var(--uc-color-ink-soft);
+}
+
+.login__enviar {
+  align-self: flex-start;
+  margin-top: calc(var(--uc-space-unit) * 2);
+}
+
+// Erro de credencial: texto no vermelho de erro sobre `surface`, com borda de
+// 1px - nunca um bloco vermelho preenchido (DESIGN.md "Do's and Don'ts").
+.login__erro {
+  margin: calc(var(--uc-space-unit) * 4) 0 0;
+  padding: calc(var(--uc-space-unit) * 2.5) calc(var(--uc-space-unit) * 3);
+  border: 1px solid var(--uc-color-error);
+  border-radius: var(--uc-radius-default);
+  background: var(--uc-color-surface);
+  color: var(--uc-color-error);
+  font-size: var(--uc-font-size-meta);
+}
+
+.login__rodape {
+  margin: calc(var(--uc-space-unit) * 6) 0 0;
+  font-size: var(--uc-font-size-meta);
+  color: var(--uc-color-ink-soft);
+}
+
+// Ação secundária: nunca laranja. O laranja da tela já é o botão Entrar, e o
+// DESIGN.md admite no máximo uma ação laranja por tela.
+.login__link {
+  color: var(--uc-color-ink);
+  font-weight: var(--uc-font-weight-semibold);
+  text-decoration: underline;
+}

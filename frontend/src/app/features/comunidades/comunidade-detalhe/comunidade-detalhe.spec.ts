@@ -2,6 +2,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { API_BASE_URL } from '../../../core/config/api.config';
 import { ComunidadeDetalhe } from './comunidade-detalhe';
 
@@ -103,5 +106,39 @@ describe('ComunidadeDetalhe', () => {
     f.detectChanges();
 
     expect((f.nativeElement as HTMLElement).querySelector('[role="alert"]')).toBeTruthy();
+  });
+});
+
+// jsdom does not compute styles from an external stylesheet, so this screen's
+// one dark context is pinned to the SCSS source, as badge.spec.ts pins its own.
+// Story 14.7 restyled `.detalhe__botao-sair` (it used to be a pair of
+// rgba(255,255,255,...) literals) and added the focus override the global ring
+// cannot provide here; both are visible changes, so both get an assertion.
+describe('comunidade-detalhe.scss style contract', () => {
+  const dir = dirname(fileURLToPath(import.meta.url));
+  // Comments are stripped first: this file's own header NAMES the rgba() pair it
+  // replaced, and a prose mention must not read as a live declaration.
+  const scss = readFileSync(join(dir, 'comunidade-detalhe.scss'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+  const regra = (selector: string): string =>
+    scss.replace(/\s+/g, ' ').match(new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`))?.[1] ?? '';
+
+  it('the "Sair" button reads as an outline on the maroon band, with no alpha literal', () => {
+    const botao = regra('.detalhe__botao-sair');
+    expect(botao).toContain('border: 1px solid var(--uc-color-surface)');
+    expect(botao).toContain('background: transparent');
+    expect(botao).toContain('color: var(--uc-color-surface)');
+    expect(scss).not.toMatch(/rgba?\(/);
+  });
+
+  it('overrides the global maroon focus ring, which would be invisible on the band', () => {
+    // Global ring: 2px solid var(--uc-color-maroon) in styles/_base.scss. On the
+    // maroon header band that is 1.00:1; `surface` gives 10.20:1.
+    const foco = regra('.detalhe__botao-sair:focus-visible');
+    expect(foco, 'no :focus-visible override on the button over the maroon band').not.toBe('');
+    expect(foco).toContain('outline: 2px solid var(--uc-color-surface)');
+    expect(foco).toContain('outline-offset: 2px');
+    expect(foco).not.toContain('var(--uc-color-maroon)');
   });
 });
