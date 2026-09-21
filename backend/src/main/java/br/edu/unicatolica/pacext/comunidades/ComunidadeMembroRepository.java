@@ -12,6 +12,12 @@ public class ComunidadeMembroRepository implements PanacheRepository<ComunidadeM
         return count("comunidade = ?1 and usuarioId = ?2", comunidade, usuarioId) > 0;
     }
 
+    /** Story 2.6 (RF29/RF30/RF31) — administrador da comunidade, não da plataforma. */
+    public boolean ehAdministrador(Comunidade comunidade, Long usuarioId) {
+        return count("comunidade = ?1 and usuarioId = ?2 and papelNaComunidade = ?3", comunidade, usuarioId,
+                PapelMembro.ADMINISTRADOR) > 0;
+    }
+
     /** Home (RF27.1-ish) — "Suas comunidades" na barra lateral, mais recente primeiro. */
     public List<ComunidadeMembro> listarPorUsuario(Long usuarioId) {
         return list("usuarioId = ?1 order by entrouEm desc", usuarioId);
