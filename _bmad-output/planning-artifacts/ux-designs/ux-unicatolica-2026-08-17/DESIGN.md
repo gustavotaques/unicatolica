@@ -15,6 +15,7 @@ colors:
   orange: '#EA6A2E'
   orange-tint: '#FDEEE6'
   green-ok: '#3A7D5C'
+  error: '#B3261E'
 typography:
   greeting:
     fontFamily: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif
@@ -82,6 +83,8 @@ A postura é: espaço em branco generoso, cards de baixo contraste, uma única c
 - **`orange` (#EA6A2E)** — único acento de ação do sistema. Reservado para CTA primário (botões "Participar", "Publicar", link ativo na navbar) e para o badge "novo"/tag de destaque. Se outra cor começar a competir por atenção de ação, é sinal de que o token está sendo mal usado.
 - **`orange-tint` (#FDEEE6)** — fundo suave para badges e estado ativo de item de navegação; nunca para texto.
 - **`green-ok` (#3A7D5C)** — verde de sucesso genérico do sistema: indica "você é membro"/confirmação de associação e também qualquer outra confirmação positiva (ex.: formulário salvo, ação concluída). Um único token de sucesso, não dois.
+
+- **`error` (#B3261E)** — vermelho de erro do sistema: texto de mensagem de validação inline e de aviso de falha (login rejeitado, cadastro recusado). É a contraparte de `green-ok` no lado negativo, e vale a mesma regra: um único token, nunca um bloco vermelho preenchido. Aviso de erro é `surface` + borda de 1px em `error` + texto em `error`, igual ao padrão "borda, nunca sombra" dos cards. **Adicionado durante a implementação da Story 14.7** (não veio da sessão de UX original): o valor já estava de-facto hardcoded em três telas (`feed`, `comunidades-lista`, `comunidade-detalhe`), e a escalada "Ask First" de `frontend/src/styles/README.md` exige que qualquer valor ausente deste documento volte para cá antes de virar token. Contraste 6.54:1 sobre `surface` (#FFFFFF) e 6.25:1 sobre o canvas `bg` (#FAFAF8) — AA para texto normal nos dois fundos.
 
 **Modo escuro:** fora de escopo do MVP (decisão confirmada em conversa). Nenhum token dark é definido aqui.
 

@@ -13,6 +13,10 @@
 // (focus ring, overlay scrim, disabled state, ...) is an "Ask First"
 // escalation in the consuming story, not a hardcode.
 //
+// --uc-color-error is the one token added after 14.1: DESIGN.md had no error
+// role, three screens had already hardcoded #B3261E, and Story 14.7 escalated
+// it back into the DESIGN.md `colors` frontmatter before adding it here.
+//
 // No dark-mode / `prefers-color-scheme` block: dark mode is out of the MVP.
 
 // prettier-ignore
@@ -28,6 +32,7 @@
   --uc-color-orange: #EA6A2E;
   --uc-color-orange-tint: #FDEEE6;
   --uc-color-green-ok: #3A7D5C;
+  --uc-color-error: #B3261E;
 
   // -- Typography (DESIGN.md `typography`) ------------------------------
   --uc-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;

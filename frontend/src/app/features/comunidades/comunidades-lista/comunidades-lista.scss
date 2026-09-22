@@ -1,9 +1,15 @@
-// Usa os tokens globais --uc-* (Story 14.1) — nada de paleta local aqui.
+// Usa os tokens globais --uc-* (Story 14.1) - nada de paleta local aqui.
+//
+// Story 14.7 fechou os furos que restavam: `var(--lista-ink)` nunca foi declarado
+// (texto caía no valor inicial do navegador), o vermelho de erro era hardcoded e o
+// peso 700 é reservado ao papel `label-caps` pelo DESIGN.md. Literal estrutural que
+// ficou carrega `// layout-literal:` (ver src/styles/scss-guard.spec.ts).
 :host {
   display: block;
 }
 
 .lista {
+  // layout-literal: largura da grade de descoberta; DESIGN.md defere larguras de coluna para a implementacao.
   max-width: 960px;
 }
 
@@ -15,7 +21,7 @@
 
 .lista__filtros {
   display: flex;
-  gap: 10px;
+  gap: calc(var(--uc-space-unit) * 2.5);
   margin-bottom: var(--uc-space-section-gap);
 }
 
@@ -23,7 +29,7 @@
 .lista__filtros select {
   border: 1px solid var(--uc-color-border);
   border-radius: var(--uc-radius-default);
-  padding: 8px 12px;
+  padding: calc(var(--uc-space-unit) * 2) calc(var(--uc-space-unit) * 3);
   font-size: var(--uc-font-size-body);
 }
 
@@ -32,19 +38,20 @@
 }
 
 .lista__estado {
-  padding: 2rem 0;
+  padding: calc(var(--uc-space-unit) * 8) 0;
   text-align: center;
   color: var(--uc-color-ink-soft);
 }
 
 .lista__estado--erro {
-  color: #b3261e;
+  color: var(--uc-color-error);
 }
 
 .lista__grade {
   display: grid;
+  // layout-literal: largura minima de card antes de quebrar a coluna; nao e um valor de design do DESIGN.md.
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+  gap: calc(var(--uc-space-unit) * 3.5);
 }
 
 .lista__card {
@@ -55,13 +62,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: calc(var(--uc-space-unit) * 2);
+  margin-bottom: calc(var(--uc-space-unit) * 2);
 }
 
 .lista__nome {
-  font-weight: 700;
-  color: var(--lista-ink);
+  font-weight: var(--uc-font-weight-semibold);
+  color: var(--uc-color-ink);
   text-decoration: none;
 }
 
@@ -72,7 +79,7 @@
 .lista__descricao {
   font-size: var(--uc-font-size-meta);
   color: var(--uc-color-ink-soft);
-  margin: 0 0 12px;
+  margin: 0 0 calc(var(--uc-space-unit) * 3);
 }
 
 .lista__botao-sair {
@@ -94,7 +101,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: calc(var(--uc-space-unit) * 4);
   margin-top: var(--uc-space-section-gap);
   font-size: var(--uc-font-size-body);
 }
@@ -103,7 +110,7 @@
   border: 1px solid var(--uc-color-border);
   background: var(--uc-color-surface);
   border-radius: var(--uc-radius-default);
-  padding: 6px 12px;
+  padding: calc(var(--uc-space-unit) * 1.5) calc(var(--uc-space-unit) * 3);
   cursor: pointer;
 }
 

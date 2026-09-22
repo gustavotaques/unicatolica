@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { API_BASE_URL } from '../core/config/api.config';
+import { UcAuthShell } from '../layout/auth-shell/auth-shell';
 
 type Estado = 'confirmando' | 'confirmado' | 'erro';
 
@@ -13,7 +14,7 @@ type Estado = 'confirmando' | 'confirmado' | 'erro';
  */
 @Component({
   selector: 'app-confirmar-email',
-  imports: [RouterLink],
+  imports: [RouterLink, UcAuthShell],
   templateUrl: './confirmar-email.html',
   styleUrl: './confirmar-email.scss',
 })

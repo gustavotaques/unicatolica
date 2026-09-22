@@ -1,0 +1,17 @@
+<!--
+  Casca das telas públicas (Story 14.7).
+  O <main> é o landmark da tela inteira: as rotas públicas ficam fora da casca
+  autenticada (app.routes.ts), então nenhuma outra <main> concorre com esta.
+-->
+<main class="auth-shell">
+  <div class="auth-shell__conteudo">
+    <div class="auth-shell__marca">
+      <span class="auth-shell__marca-traco" aria-hidden="true"></span>
+      <span class="auth-shell__marca-nome">UniCatólica</span>
+    </div>
+
+    <div class="auth-shell__card">
+      <ng-content />
+    </div>
+  </div>
+</main>

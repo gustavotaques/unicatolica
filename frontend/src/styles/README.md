@@ -1,4 +1,4 @@
-# Camada de tokens de design (Story 14.1)
+# Camada de tokens de design (Story 14.1) e camada base (Story 14.7)
 
 Esta pasta e a **fonte unica** de valores de design do frontend: paleta, escala
 tipografica, espacamento, raio e a sombra de overlay. Tudo vem, verbatim, do
@@ -11,13 +11,18 @@ tipografica, espacamento, raio e a sombra de overlay. Tudo vem, verbatim, do
 | ------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | `_tokens.scss`     | Bloco `:root` unico. Todas as custom properties `--uc-*`. Fonte da verdade.                                       |
 | `_typography.scss` | Classes utilitarias `.uc-text-*`, uma por papel de tipografia. Compoem so `var(--uc-*)`.                          |
-| `../styles.scss`   | Unico entry point de build. Agrega os parciais via `@use`.                                                        |
+| `_base.scss`       | Camada base global (Story 14.7): reset, pintura do `body`, `font: inherit` em controles e anel de foco unico.     |
+| `../styles.scss`   | Unico entry point de build. Agrega os parciais via `@use` (tokens -> typography -> base, nessa ordem).            |
 | `tokens.spec.ts`   | Compila `styles.scss` com `sass` e trava os tokens, a tabela deste README e as classes `.uc-text-*` contra drift. |
+| `base.spec.ts`     | Compila `styles.scss` e trava o contrato da camada base (regra `body`, reset, anel de foco, zero hex fora do `:root`). |
+| `scss-guard.spec.ts` | Guard "nada hardcoded" sobre **todas** as folhas de `src/app/**` e `src/styles/*` (Story 14.7).                  |
 
 ## Regra: consuma via `var(--uc-*)`, nunca hardcode
 
 Componentes e telas em `frontend/src/app/**` **nunca** escrevem um hex, px, peso
-de fonte ou raio literal. Eles leem o token:
+de fonte, espacamento de letra, familia de fonte ou raio literal. Eles leem o
+token. Isso nao e convencao: `scss-guard.spec.ts` le cada folha de estilo e
+falha nomeando arquivo, linha e declaracao.
 
 ```scss
 .card {
@@ -50,8 +55,52 @@ token novo entra aqui sem passar pelo `DESIGN.md`.
   `uc-*`, nao a utilitaria de tipografia. O `button[uc-button]` nao sobrescreve
   o `type` nativo: em uma acao que nao deve enviar um formulario ao redor, o
   consumidor precisa passar `type="button"` explicitamente.
-- A Story 14.7 migra as telas ja existentes (Login, Cadastro, Verifique seu
-  e-mail) do SCSS por componente com valores hardcoded para consumo de token.
+- A Story 14.7 migrou as telas ja existentes (Login, Cadastro, Verifique seu
+  e-mail) do SCSS por componente com valores hardcoded para consumo de token, e
+  deu as tres a casca comum `<uc-auth-shell>`
+  (`src/app/layout/auth-shell/`): landmark `<main>`, marca e card centralizado.
+
+## Camada base (`_base.scss`, Story 14.7)
+
+E a unica camada autorizada a estilizar seletor de elemento. Carrega:
+
+- reset `box-sizing: border-box` em tudo e `margin: 0` em `html, body`;
+- pintura do canvas: `body` com `--uc-color-bg`, `--uc-color-ink`,
+  `--uc-font-family-base`, `--uc-font-size-body` e `--uc-line-height-body`;
+- `font: inherit` em `button, input, select, textarea` (controle de formulario
+  nao herda a fonte do documento sozinho);
+- **um** anel de foco global, `2px solid var(--uc-color-maroon)` com
+  `outline-offset: 2px`, igual ao de `ui/button/button.scss`.
+
+Duas regras inegociaveis, ambas travadas por teste:
+
+1. **Nenhum bloco `:root` e nenhuma custom property `--uc-*` aqui.**
+   `_tokens.scss` e o unico ponto de declaracao; `tokens.spec.ts` extrai o
+   primeiro `:root` compilado e compara o conjunto de tokens exatamente, entao
+   um token declarado aqui escaparia do guard.
+2. **Nenhum valor de design literal.** So sobram literais estruturais
+   (`border-box`, `0`, o contorno de 2px). `base.spec.ts` verifica a regra
+   `body` declaracao por declaracao e que nao existe hex fora do `:root`.
+
+Ordem de `@use` em `styles.scss`: `tokens` -> `typography` -> `base`. A base
+consome os tokens, entao entra por ultimo.
+
+## Guard "nada hardcoded" (`scss-guard.spec.ts`, Story 14.7)
+
+Sucede o guard da Story 14.2 (`src/app/ui/ui-styles.spec.ts`, deletado) e vale
+para **toda** folha de `src/app/**` mais `src/styles/*`. Reprova hex, literal de
+tamanho em propriedade de dimensao, cor/fonte fora de token e referencia a um
+`--uc-*` que `_tokens.scss` nao declara.
+
+Duas valvulas, ambas explicitas:
+
+- um gradiente cujas paradas de cor sao todas `var(--uc-*)` e um `background`
+  valido (a geometria pode ser literal, a cor nao);
+- uma declaracao fica isenta quando a propria linha, ou a linha imediatamente
+  acima, traz `// layout-literal: <motivo>` **com motivo nao vazio**. E para as
+  dimensoes estruturais que o `DESIGN.md` escreve com "~" e defere (sidebar de
+  220px, coluna de leitura de 720px, `minmax()` de grade). Motivo vazio nao
+  isenta nada.
 
 ## Modo escuro
 
@@ -66,10 +115,9 @@ e uma escolha pragmatica; uma fonte de exibicao propria mais adiante e uma
 revisao explicita do `DESIGN.md`, nao um bloqueio para esta camada.
 
 As classes `.uc-text-*` **nao** aplicam `font-family` (nenhum papel do
-`DESIGN.md` define uma). A pilha de sistema so passa a valer quando a Story 14.7
-a aplicar uma vez no documento; ate la, texto marcado com `.uc-text-*` herda a
-fonte default do navegador. Isso e intencional para manter a 14.1 sem impacto
-visual.
+`DESIGN.md` define uma). A pilha de sistema vale para o documento inteiro desde
+a Story 14.7, aplicada uma unica vez no `body` por `_base.scss`; texto marcado
+com `.uc-text-*` herda dali.
 
 ## Tabela de tokens
 
@@ -91,6 +139,7 @@ vermelho).
 | `--uc-color-orange`      | `#EA6A2E` | `colors.orange` - unico acento de acao forte (CTA primario, tag de destaque)                                             |
 | `--uc-color-orange-tint` | `#FDEEE6` | `colors.orange-tint` - fundo suave de badge / nav ativa; nunca texto                                                     |
 | `--uc-color-green-ok`    | `#3A7D5C` | `colors.green-ok` - unico token de sucesso (membro, confirmacao positiva)                                                |
+| `--uc-color-error`       | `#B3261E` | `colors.error` - texto de erro (validacao inline, falha de login/cadastro); aviso e borda + texto, nunca bloco preenchido |
 
 ### Tipografia (`typography`)
 
@@ -141,6 +190,7 @@ que precise de um pede via "Ask First".
 
 ```bash
 cd frontend
-npm test          # tokens.spec.ts trava tokens + este README + classes .uc-text-*
+npm test          # tokens.spec.ts (tokens + este README + .uc-text-*),
+                  # base.spec.ts (camada base) e scss-guard.spec.ts (nada hardcoded)
 npm run build     # styles.scss compila sem erro de Sass
 ```

@@ -4,18 +4,21 @@
 // var(--uc-*) token from Story 14.1. The only raw literals are the structural
 // dimensions DESIGN.md writes as "~" and explicitly defers (sidebar width,
 // topbar height, dropdown min-width), plus 1px/2px borders & outlines, 0, and
-// unitless weights / z-index - all flagged inline below.
+// unitless weights / z-index. Story 14.7 turned those inline notes into
+// `// layout-literal: <reason>` markers - the one escape hatch the widened
+// no-hardcode guard (src/styles/scss-guard.spec.ts) recognises. Comment-only
+// change: no declaration and no rendered pixel moved.
 //
 // Right-hand discovery panel and responsive collapse are out of scope
 // (Story 14.4). No new --uc-* token is introduced here.
 
 :host {
   display: grid;
-  // ~220px sidebar (DESIGN.md "Layout & Spacing", deferred) + fluid main.
+  // layout-literal: ~220px sidebar (DESIGN.md "Layout & Spacing", deferido) + main fluido.
   grid-template-columns: 220px 1fr;
   grid-template-rows: auto 1fr;
-  min-height: 100vh; // fallback for browsers without dvh
-  min-height: 100dvh;
+  min-height: 100vh; // layout-literal: fallback de viewport para navegadores sem dvh
+  min-height: 100dvh; // layout-literal: altura de viewport dinamica, nao e um espacamento de design
   background: var(--uc-color-bg);
   color: var(--uc-color-ink);
   font-family: var(--uc-font-family-base);
@@ -30,8 +33,8 @@
   position: sticky;
   top: 0;
   align-self: start;
-  height: 100vh; // fallback for browsers without dvh
-  height: 100dvh;
+  height: 100vh; // layout-literal: fallback de viewport para navegadores sem dvh
+  height: 100dvh; // layout-literal: altura de viewport dinamica, nao e um espacamento de design
   overflow-y: auto;
   padding: var(--uc-space-section-gap) var(--uc-space-card-padding);
   background: var(--uc-color-bg);
@@ -139,7 +142,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  height: 64px; // ~ topbar height (DESIGN.md, deferred)
+  height: 64px; // layout-literal: ~64px de altura da topbar (DESIGN.md, deferido)
   padding: 0 var(--uc-space-page-margin);
   background: var(--uc-color-bg);
   border-bottom: 1px solid var(--uc-color-border);
@@ -162,7 +165,9 @@
 
 .shell__avatar-face {
   display: block;
+  // layout-literal: preenche o botao que o contem, nao e uma dimensao de design
   width: 100%;
+  // layout-literal: preenche o botao que o contem, nao e uma dimensao de design
   height: 100%;
   border-radius: var(--uc-radius-full);
   background: var(--uc-color-maroon);
@@ -171,9 +176,10 @@
 // -- Avatar dropdown -------------------------------------------------
 .shell__menu {
   position: absolute;
+  // layout-literal: ancora logo abaixo do avatar (100% da altura dele), nao um espacamento
   top: calc(100% + var(--uc-space-unit));
   right: 0;
-  min-width: 200px; // ~ dropdown min-width (DESIGN.md, deferred)
+  min-width: 200px; // layout-literal: ~200px de largura minima do dropdown (DESIGN.md, deferido)
   padding: calc(var(--uc-space-unit) / 2);
   background: var(--uc-color-surface);
   border: 1px solid var(--uc-color-border);
@@ -199,6 +205,7 @@
 
 .shell__menu-item {
   display: block;
+  // layout-literal: ocupa a largura do dropdown, nao e uma dimensao de design
   width: 100%;
   padding: calc(var(--uc-space-unit) * 2) calc(var(--uc-space-unit) * 3);
   border: 0;
