@@ -106,6 +106,14 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <!-- Regras de dependência entre módulos (ArquiteturaTest) — ver
+                 docs/decisoes/2026-09-24-reestruturacao.md. Fora do BOM do Quarkus. -->
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5</artifactId>
+            <version>1.5.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
