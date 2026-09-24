@@ -93,6 +93,7 @@ Todo módulo segue o mesmo formato (**Alvo**; hoje só `identidade/` está perto
    - **Hoje:** `UsuarioResource` ainda viola esta regra.
 3. **Erro tem um só caminho:** lançar `ApiException` (fábricas `validacao`, `naoAutenticado`, `semPermissao`, `naoEncontrado`, `conflito`) ou uma subclasse dela. O `Resource` nunca monta `ErroResponse` à mão.
    - **Hoje:** `AuthResource` e `UsuarioResource` montam `ErroResponse` à mão.
+   - **Filtros:** `JwtSecurityFilter` e `SessaoInvalidadaFilter` não lançam exceção (usam `abortWith`). No **Alvo**, montam o 401 por um único helper em `compartilhado/erro/`, nunca com `ErroResponse.of` direto.
 4. **O transversal não importa nenhum módulo.** Quando precisa de dado de um módulo, declara uma interface que o módulo implementa.
    - **Hoje:** `SessaoInvalidadaFilter` importa `UsuarioRepository`.
 5. **Referência a dado de outro módulo é só pelo id.** Exemplo: `comunidade_membro.usuario_id` é um `Long`, sem relação JPA nem FK para `usuario` (AD-3).
@@ -139,10 +140,17 @@ Raiz: `frontend/src/app/`
 
 ## 8. Rodando localmente
 
+Pré-requisitos: Docker rodando, JDK 21 e Node 24, o mesmo do CI (`nvm use` lê o `.nvmrc`).
+
 ```bash
-cp .env.example .env
-docker-compose up          # Postgres :5432, Quarkus :8080 (/q/health), Angular :4200
+./scripts/dev-setup.sh                  # uma vez: .env, chaves JWT, link backend/.env
+cd backend && ./mvnw quarkus:dev        # Quarkus :8080 (/q/health), debug :5005
+cd frontend && npm ci && npm start      # Angular :4200
 ```
+
+O Postgres sobe sozinho pelo Quarkus Dev Services, tanto no `quarkus:dev` quanto no `./mvnw test`. O banco de dev é descartado ao parar o Quarkus, e o seed do contexto `dev` recria os dados de teste a cada subida. Para usar um banco persistente (ex.: o `db` do compose), defina `QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://localhost:5432/pacext` no `.env`.
+
+Sem nada instalado além do Docker, `docker-compose up` continua subindo tudo junto (Postgres :5432, Quarkus :8080, Angular :4200), só que mais devagar.
 
 | O quê | Comando |
 |---|---|

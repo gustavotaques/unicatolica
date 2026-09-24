@@ -41,20 +41,8 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: pacext
-          POSTGRES_USER: pacext
-          POSTGRES_PASSWORD: pacext
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U pacext -d pacext"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
+    # Sem services: postgres — o Quarkus Dev Services sobe o Postgres via Testcontainers
+    # (o runner tem Docker), igual ao `./mvnw test` local.
     steps:
       - uses: actions/checkout@v4
 
@@ -67,12 +55,6 @@ jobs:
 
       - name: Rodar build + testes (mvnw test)
         run: ./mvnw --batch-mode test
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: pacext
-          DB_USER: pacext
-          DB_PASSWORD: pacext
 
   contrato-openapi:
     name: Contrato — valida openapi.yaml

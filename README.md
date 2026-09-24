@@ -37,9 +37,11 @@ unicatolica/
 ## Como rodar
 
 ```bash
-cp .env.example .env
-docker-compose up
+./scripts/dev-setup.sh   # uma vez: .env e chaves JWT locais
+docker-compose up        # tudo em container
 ```
+
+Para desenvolver com mais agilidade (backend e frontend no host, Postgres pelo Quarkus Dev Services), veja [`docs/como-funciona.md`](docs/como-funciona.md#8-rodando-localmente).
 
 - Frontend em `http://localhost:4200`
 - Backend em `http://localhost:8080` (health check em `/q/health`)

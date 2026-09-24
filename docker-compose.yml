@@ -1,8 +1,15 @@
 # Ambiente local reprodutível (AD-7 da Architecture Spine).
 # `docker-compose up` sobe Postgres + Quarkus em dev mode + Angular dev server.
-# Nenhum dev instala Postgres localmente fora deste compose.
 #
-# Uso: cp .env.example .env   (depois ajuste se quiser) e então `docker-compose up`.
+# Alternativa mais rápida para o dia a dia: rodar backend e frontend direto no host, com o
+# Postgres subindo sozinho pelo Quarkus Dev Services (ver docs/como-funciona.md, seção
+# "Rodando localmente", e docs/decisoes/2026-09-24-identidade-desacoplada.md).
+#
+# Uso: ./scripts/dev-setup.sh   (cria o .env e as chaves JWT) e então `docker-compose up`.
+#
+# target/, node_modules/ e .angular/ ficam em volumes próprios, nunca na pasta do host: os
+# containers rodam como root (os arquivos ficariam com dono root) e o node_modules do Alpine
+# (musl) quebra os binários nativos quando usado pelo host (glibc), e vice-versa.
 
 services:
   db:
@@ -37,11 +44,12 @@ services:
         exec ./mvnw quarkus:dev -Dquarkus.http.host=0.0.0.0
     volumes:
       - ./backend:/workspace
+      - pacext-backend-target:/workspace/target
       - pacext-maven-repo:/root/.m2
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME:-pacext}
+      # URL explícita desliga o Dev Services (que não roda dentro de container) e usa o "db".
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/${DB_NAME:-pacext}
+      QUARKUS_DEVSERVICES_ENABLED: 'false'
       DB_USER: ${DB_USER:-pacext}
       DB_PASSWORD: ${DB_PASSWORD:-pacext}
       JWT_ISSUER: ${JWT_ISSUER:-https://pacext.unicatolica.edu.br}
@@ -66,20 +74,26 @@ services:
       start_period: 60s
 
   frontend:
-    image: node:22-alpine
+    image: node:24-alpine
     working_dir: /workspace
-    command: ['sh', '-c', 'npm ci && npm start -- --host 0.0.0.0']
+    # npm ci só quando o package-lock.json mudou desde a última instalação.
+    command:
+      ['sh', '-c', '[ node_modules/.package-lock.json -nt package-lock.json ] || npm ci; exec npm start -- --host 0.0.0.0']
     volumes:
       - ./frontend:/workspace
+      - pacext-frontend-node-modules:/workspace/node_modules
+      - pacext-frontend-angular-cache:/workspace/.angular
     environment:
       NODE_ENV: development
       API_URL: ${API_URL:-http://localhost:8080}
+    # Sem depends_on: o dev server sobe em paralelo com o backend; as chamadas à API só
+    # falham até o Quarkus terminar de subir.
     ports:
       - '4200:4200'
-    depends_on:
-      backend:
-        condition: service_healthy
 
 volumes:
   pacext-db-data:
   pacext-maven-repo:
+  pacext-backend-target:
+  pacext-frontend-node-modules:
+  pacext-frontend-angular-cache:
