@@ -25,8 +25,10 @@ Rede social acadêmica do Campus Joinville da CatólicaSC — projeto de PAC Ext
 
 ## Running and verifying
 
-- Ambiente local completo: `cp .env.example .env && docker-compose up` — Postgres 16 (5432), Quarkus dev (8080, debug 5005, health `/q/health`), Angular (4200). Sem `JWT_PRIVATE_KEY`/`JWT_PUBLIC_KEY` no `.env` o Quarkus usa chave em memória e tokens não sobrevivem a reinício.
-- Backend: `cd backend && ./mvnw test` (precisa de Postgres acessível via `DB_*`; o compose serve). Testes em `backend/src/test/java/...` espelham os pacotes, com `@QuarkusTest` + rest-assured.
+- Setup uma vez: `./scripts/dev-setup.sh` (cria `.env`, gera chaves JWT, liga `backend/.env` → `../.env`). Com `JWT_PRIVATE_KEY`/`JWT_PUBLIC_KEY` vazios no `.env` o Quarkus dev não sobe (`mp.jwt.verify.publickey` vazio).
+- Dia a dia no host (Docker rodando, JDK 21, Node 24 via `.nvmrc`): `cd backend && ./mvnw quarkus:dev` (8080, debug 5005, health `/q/health`) e `cd frontend && npm start` (4200). Postgres vem do Quarkus Dev Services — a `jdbc.url` só é fixa em `%prod`; banco externo em dev só via `QUARKUS_DATASOURCE_JDBC_URL`.
+- Tudo em container: `docker-compose up` (Postgres 16 em 5432 + Quarkus + Angular). `target/`, `node_modules/` e `.angular/` do compose ficam em volumes próprios — não misturar com os do host.
+- Backend: `cd backend && ./mvnw test` (Dev Services sobe o Postgres; precisa só do Docker). Testes em `backend/src/test/java/...` espelham os pacotes, com `@QuarkusTest` + rest-assured.
 - Frontend: `cd frontend && npx ng test --watch=false` (Vitest) e `npx ng build`. E2E: `npm run e2e` (Playwright; sobe o `ng serve` sozinho, backend mockado via `page.route()`; teste com Quarkus real só com `E2E_BACKEND=1`; pré-requisito `npx playwright install chromium`).
 - Contrato: `npx --yes @redocly/cli lint openapi.yaml`.
 - CI (`.github/workflows/ci.yml`) roda exatamente esses 3 jobs: Frontend, Backend, Contrato. Ainda não há validação em runtime da resposta contra o schema do `openapi.yaml` (prevista na AD-4).
