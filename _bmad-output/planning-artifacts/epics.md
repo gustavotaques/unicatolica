@@ -5,7 +5,7 @@ inputDocuments:
   - _bmad-output/planning-artifacts/architecture/architecture-unicatolica-2026-08-22/ARCHITECTURE-SPINE.md
   - _bmad-output/planning-artifacts/ux-designs/ux-unicatolica-2026-08-17/DESIGN.md
   - _bmad-output/planning-artifacts/ux-designs/ux-unicatolica-2026-08-17/EXPERIENCE.md
-  - docs/unicatolica-pacext-contexto.md
+  - docs/produto/contexto-pacext.md
 ---
 
 # UniCatólica (PACEXT) - Epic Breakdown

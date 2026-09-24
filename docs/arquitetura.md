@@ -10,8 +10,8 @@ created: 2026-08-22
 updated: 2026-08-22
 binds: []
 sources:
-  - docs/unicatolica-pacext-prd.md
-  - docs/unicatolica-pacext-contexto.md
+  - docs/produto/prd.md
+  - docs/produto/contexto-pacext.md
   - _bmad-output/planning-artifacts/ux-designs/ux-unicatolica-2026-08-17/DESIGN.md
   - _bmad-output/planning-artifacts/ux-designs/ux-unicatolica-2026-08-17/EXPERIENCE.md
 companions:
@@ -63,7 +63,7 @@ flowchart TD
 
 - **Binds:** todo o sistema
 - **Prevents:** divergência de linguagem/framework entre módulos ou entre frontend e backend
-- **Rule:** Frontend Angular/TypeScript; backend Java + Quarkus + Hibernate ORM; monólito multimodular (não microsserviços); TDD+SOLID; DDD focado no núcleo de interação de comunidade. Validado com o orientador (`docs/unicatolica-pacext-contexto.md` §5–6) — não é uma decisão em aberto deste spine. TDD é mecanicamente reforçado pelo gate de CI (AD-8: sem suite de testes passando, sem merge); SOLID e DDD são disciplina de design, não verificada automaticamente — dependem de revisão de código, que este time optou por não tornar obrigatória (AD-8).
+- **Rule:** Frontend Angular/TypeScript; backend Java + Quarkus + Hibernate ORM; monólito multimodular (não microsserviços); TDD+SOLID; DDD focado no núcleo de interação de comunidade. Validado com o orientador (`docs/produto/contexto-pacext.md` §5–6) — não é uma decisão em aberto deste spine. TDD é mecanicamente reforçado pelo gate de CI (AD-8: sem suite de testes passando, sem merge); SOLID e DDD são disciplina de design, não verificada automaticamente — dependem de revisão de código, que este time optou por não tornar obrigatória (AD-8).
 
 ### AD-2 — Filtro de segurança JWT `[ADOPTED]`
 
@@ -75,7 +75,7 @@ flowchart TD
 
 - **Binds:** todos os 12 módulos
 - **Prevents:** um módulo escrevendo direto na tabela de outro; acoplamento que impede separar em serviços no futuro
-- **Rule:** cada módulo é dono das próprias tabelas (mapa componente→requisitos, `docs/unicatolica-pacext-contexto.md` §6.3). Leitura entre módulos via associação JPA é permitida, mas **somente-leitura ao nível de transação** — entidade projetada/DTO ou sessão em `FlushMode.MANUAL`, nunca a entidade gerenciável completa do módulo dono, pra uma mutação acidental não vazar como escrita não autorizada via dirty-checking do Hibernate. Escrita em dado de outro módulo só através de uma interface Java publicada pelo módulo dono (não "o `Service`" genericamente) — essa interface segue a mesma disciplina de acordo-antes-de-implementar da AD-4. Acesso direto a repositório/tabela alheios é proibido. Como não há revisão humana obrigatória (AD-8), essa regra é verificada por um teste de arquitetura automatizado na esteira de CI (ex.: ArchUnit) que falha o build se um pacote de módulo importar o `Repository` de outro módulo.
+- **Rule:** cada módulo é dono das próprias tabelas (mapa componente→requisitos, `docs/produto/contexto-pacext.md` §6.3). Leitura entre módulos via associação JPA é permitida, mas **somente-leitura ao nível de transação** — entidade projetada/DTO ou sessão em `FlushMode.MANUAL`, nunca a entidade gerenciável completa do módulo dono, pra uma mutação acidental não vazar como escrita não autorizada via dirty-checking do Hibernate. Escrita em dado de outro módulo só através de uma interface Java publicada pelo módulo dono (não "o `Service`" genericamente) — essa interface segue a mesma disciplina de acordo-antes-de-implementar da AD-4. Acesso direto a repositório/tabela alheios é proibido. Como não há revisão humana obrigatória (AD-8), essa regra é verificada por um teste de arquitetura automatizado na esteira de CI (ex.: ArchUnit) que falha o build se um pacote de módulo importar o `Repository` de outro módulo.
 
 ### AD-4 — Contrato OpenAPI-first
 
@@ -188,14 +188,14 @@ erDiagram
     USUARIO ||--o{ PUBLICACAO : "publica"
 ```
 
-ERD cobre só a fatia da semana 1 (Identidade, Perfil, Comunidades, Publicações). Discussão/Comentário, Enquete (com o split `enquete_participacao`/`enquete_voto` já travado em `docs/unicatolica-pacext-contexto.md` §3.8 — não redesenhado aqui), Notificação, Mensagem e Denúncia existem no domínio completo mas ficam fora deste diagrama por estarem em módulos deferidos.
+ERD cobre só a fatia da semana 1 (Identidade, Perfil, Comunidades, Publicações). Discussão/Comentário, Enquete (com o split `enquete_participacao`/`enquete_voto` já travado em `docs/produto/contexto-pacext.md` §3.8 — não redesenhado aqui), Notificação, Mensagem e Denúncia existem no domínio completo mas ficam fora deste diagrama por estarem em módulos deferidos.
 
 ## Deferred
 
 - **Stretch goal da semana 1** (não bloqueiam a entrega, entram se sobrar tempo): Perfil Acadêmico completo (RF14–RF20, além do perfil padrão do cadastro) e Discussões com encadeamento de respostas (RF37–RF42) — mesma arquitetura (AD-1 a AD-11) já se aplica, é só questão de sequência.
 - **Módulos totalmente fora do corte da semana 1**: Filtro de Conteúdo, Materiais, Enquetes, Busca, Notificações, Mensagens, Moderação — os mesmos AD-1 a AD-11 se aplicam quando forem construídos; revisitar o corte de escopo depois que a fatia núcleo estiver no ar.
 - **RF75.1–75.3 (agente de IA de triagem de moderação)** — exigência formal do orientador, sem desenho de integração ainda (onde roda, síncrono ou assíncrono, fonte da blacklist) — precisa de uma passada de design própria antes de Moderação ser construído.
-- **RNF05/LGPD para módulos futuros que tocam dado pessoal** (Enquetes, Mensagens, Moderação) — seguem o padrão de anonimização já travado em `docs/unicatolica-pacext-contexto.md` §3.8 (split `enquete_participacao`/`enquete_voto`); não redesenhado aqui porque esses módulos estão fora do corte da semana 1.
+- **RNF05/LGPD para módulos futuros que tocam dado pessoal** (Enquetes, Mensagens, Moderação) — seguem o padrão de anonimização já travado em `docs/produto/contexto-pacext.md` §3.8 (split `enquete_participacao`/`enquete_voto`); não redesenhado aqui porque esses módulos estão fora do corte da semana 1.
 - **Storage de arquivos para Materiais (RF48–52)** — o C4 nível 2 do contexto cita "Sistema de arquivos / Object Storage" genericamente; disco do Render free tier é efêmero, então isso exige uma escolha real de object storage (ex.: S3-compatível) — não escolhida aqui.
 - **Latência de "acordar" em free tier — risco direto pra RNF03 (p95 ≤ 2s)**: Render free tier hiberna a instância após 15 min de inatividade (~1 min pra acordar, teto de 750h/mês); Neon escala a computação a zero após 5 min ocioso — mesma categoria de latência de "religar". Aceitável para desenvolvimento e demo avisada; risco real de estourar RNF03 numa demonstração ao vivo sem aviso ou numa medição formal do NFR. Revisitar (upgrade pro tier pago do Render, manter o Neon "aquecido") antes de qualquer demo/avaliação de alto risco.
 - **Colisão de edição concorrente em `openapi.yaml`** (achado da revisão adversarial) — o time optou conscientemente por manter o merge CI-only também para esse arquivo, sem exceção de aprovação obrigatória. Risco aceito; revisitar se um incidente real de contrato quebrado em produção acontecer.

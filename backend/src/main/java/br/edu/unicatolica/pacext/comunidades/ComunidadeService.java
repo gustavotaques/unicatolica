@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Regras de negócio das Stories 2.2 (criar comunidade aberta), 2.4 (entrar/sair) e 2.5
  * (listar/filtrar/visualizar) do Epic 2. Entrada rápida (protótipo desta fatia, ver
- * docs/modelo-epico-2-comunidades.md) — Story 2.1 (endpoint de admin criar comunidade de
+ * docs/decisoes/2026-08-modelo-epico-2-comunidades.md) — Story 2.1 (endpoint de admin criar comunidade de
  * curso) e 2.6 (administração) ficam de fora por dependerem do papel ADMINISTRADOR de
  * plataforma, que ainda não existe em Identidade.
  */

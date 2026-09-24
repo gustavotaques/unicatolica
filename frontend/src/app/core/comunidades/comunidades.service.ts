@@ -26,7 +26,7 @@ export interface Pagina<T> {
 
 /**
  * Fala com o módulo Comunidades do Epic 2 (protótipo, ver
- * docs/modelo-epico-2-comunidades.md) — listar/filtrar, "minhas comunidades" e
+ * docs/decisoes/2026-08-modelo-epico-2-comunidades.md) — listar/filtrar, "minhas comunidades" e
  * entrar/sair. Criação de comunidade aberta (Story 2.2) fica pra quando a tela de
  * criação existir.
  *

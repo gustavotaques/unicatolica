@@ -3,12 +3,12 @@
     Seed das comunidades de curso (Story 2.1, RF21.2) — pré-criação pelo administrador da
     plataforma. Protótipo desta fatia: insere direto via migration, sem o papel
     ADMINISTRADOR de plataforma existir ainda em Identidade (bloqueado — ver
-    docs/modelo-epico-2-comunidades.md). criado_por_usuario_id=0 é um valor reservado
+    docs/decisoes/2026-08-modelo-epico-2-comunidades.md). criado_por_usuario_id=0 é um valor reservado
     ("sistema/seed"), documentado aqui, não um usuário real — revisitar quando o endpoint
     real de criação por admin existir.
 
     Uma comunidade por curso (não por curso+modalidade) — decisão registrada em
-    docs/modelo-epico-2-comunidades.md. Nomes precisam bater exatamente (case-insensitive,
+    docs/decisoes/2026-08-modelo-epico-2-comunidades.md. Nomes precisam bater exatamente (case-insensitive,
     ver ComunidadeRepository.buscarPorTipoENome) com o texto que o aluno digita em
     "curso" no cadastro (Story 1.2) para o auto-join (Story 2.3) funcionar.
 -->

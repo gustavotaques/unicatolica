@@ -12,7 +12,7 @@ const CHAVE_TOAST_AUTOJOIN = 'pacext.autojoin-toast.';
  * Home — renderiza dentro do `<router-outlet>` do `Shell` (`layout/shell/`), que já
  * cobre navegação global e o menu de conta/logout (Story 14.3) — este componente só
  * preenche o conteúdo. Modelo visual "Telas-Chave UniCatólica" (ver
- * docs/modelo-epico-2-comunidades.md e a home-comunidade.html do bmad), reconstruído
+ * docs/decisoes/2026-08-modelo-epico-2-comunidades.md e a home-comunidade.html do bmad), reconstruído
  * sobre os primitivos oficiais do Design System (Story 14.2: `uc-card`, `uc-badge`,
  * `uc-button`, `uc-member-indicator`) depois que eles aterrissaram na main.
  *

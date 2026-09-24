@@ -173,7 +173,7 @@ paths:
       description: >
         Toda comunidade criada por aqui é do tipo ABERTA — o corpo não aceita "tipo"
         de propósito (RF21.2: só administrador de plataforma cria comunidade de curso,
-        endpoint fora desta fatia, ver docs/modelo-epico-2-comunidades.md). O criador
+        endpoint fora desta fatia, ver docs/decisoes/2026-08-modelo-epico-2-comunidades.md). O criador
         vira administrador da comunidade automaticamente (RF23).
       requestBody:
         required: true

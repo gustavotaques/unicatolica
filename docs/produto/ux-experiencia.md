@@ -4,8 +4,8 @@ status: final
 created: 2026-08-17
 updated: 2026-08-22
 sources:
-  - docs/unicatolica-pacext-prd.md
-  - docs/unicatolica-pacext-contexto.md
+  - docs/produto/prd.md
+  - docs/produto/contexto-pacext.md
 ---
 
 # UniCatólica — Experience Spine

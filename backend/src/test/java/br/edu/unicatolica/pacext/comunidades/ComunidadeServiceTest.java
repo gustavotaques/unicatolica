@@ -24,7 +24,7 @@ import org.mockito.ArgumentCaptor;
 
 /**
  * Testa {@link ComunidadeService} isoladamente com Mockito — critérios das Stories 2.2,
- * 2.4 e 2.5. Entrada rápida desta fatia (ver docs/modelo-epico-2-comunidades.md).
+ * 2.4 e 2.5. Entrada rápida desta fatia (ver docs/decisoes/2026-08-modelo-epico-2-comunidades.md).
  */
 class ComunidadeServiceTest {
 

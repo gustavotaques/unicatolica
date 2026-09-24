@@ -4,7 +4,7 @@ Rede social acadêmica para o Campus Joinville da CatólicaSC. Conecta os 3.000+
 
 Projeto do **PAC Extensionista** (5º semestre, Engenharia de Software) da CatólicaSC, orientado pelo Prof. Edson Vaz Lopes.
 
-> **Status:** planejamento concluído (PRD, arquitetura, UX e épicos validados); fundação do projeto (scaffold, CI/CD, contrato OpenAPI base) implementada — Story 1.1. Entrega da fatia núcleo prevista para **2026-08-29**.
+> **Status:** implementação do corte must-have em andamento — Identidade (cadastro, confirmação de e-mail, login, logout) e Comunidades já em código; Publicações em desenvolvimento. Para entender como o código funciona, comece por [`docs/como-funciona.md`](docs/como-funciona.md).
 
 ## Stack
 
@@ -18,19 +18,20 @@ Projeto do **PAC Extensionista** (5º semestre, Engenharia de Software) da Cató
 | CI/CD | GitHub Actions → deploy automático no Render |
 | Deploy | Render Static Site (frontend) + Render Web Service via Docker (backend) |
 
-Arquitetura: monólito multimodular (não microsserviços), um módulo por área funcional — Identidade, Perfil Acadêmico, Comunidades, Publicações, Discussões, Filtro de Conteúdo, Materiais, Enquetes, Busca, Notificações, Mensagens, Moderação. Detalhes e decisões em [`docs/unicatolica-architecture-spine.md`](docs/unicatolica-architecture-spine.md).
+Arquitetura: monólito multimodular (não microsserviços), um módulo por área funcional — Identidade, Perfil Acadêmico, Comunidades, Publicações, Discussões, Filtro de Conteúdo, Materiais, Enquetes, Busca, Notificações, Mensagens, Moderação. Detalhes e decisões em [`docs/arquitetura.md`](docs/arquitetura.md).
 
-## Estrutura planejada do repositório
+## Estrutura do repositório
 
 ```
 unicatolica/
-  frontend/            # SPA Angular
-  backend/              # Quarkus — um pacote por módulo de domínio
-  openapi.yaml           # contrato REST
+  frontend/              # SPA Angular (core/, features/, layout/, ui/)
+  backend/               # Quarkus — um pacote por módulo de domínio
+  openapi.yaml           # contrato REST, fonte de verdade
   docker-compose.yml     # ambiente local (Postgres + backend + frontend)
   .env.example
-  docs/                   # PRD, arquitetura, UX, contexto do PAC Extensionista
-  _bmad-output/            # artefatos de planejamento (PRD, épicos, UX, arquitetura)
+  .github/workflows/     # CI: Frontend, Backend, Contrato
+  docs/                  # documentação viva — índice em docs/README.md
+  _bmad-output/          # histórico do planejamento (PRD, épicos, UX, arquitetura, specs)
 ```
 
 ## Como rodar
@@ -65,11 +66,13 @@ Revisão humana **não é obrigatória** para merge (decisão do time, AD-8) —
 
 | Documento | Conteúdo |
 |---|---|
-| [`docs/unicatolica-pacext-contexto.md`](docs/unicatolica-pacext-contexto.md) | Relatório do PAC Extensionista — 80 requisitos funcionais, 9 não funcionais, riscos, C4 |
-| [`docs/unicatolica-pacext-prd.md`](docs/unicatolica-pacext-prd.md) | PRD — visão, personas, jornadas de usuário, métricas de sucesso |
-| [`docs/unicatolica-architecture-spine.md`](docs/unicatolica-architecture-spine.md) | Decisões de arquitetura, stack, convenções, diagramas |
-| [`docs/unicatolica-experience.md`](docs/unicatolica-experience.md) / [`unicatolica-design.md`](docs/unicatolica-design.md) | Fluxos de UX e sistema de design (Campus Clean) |
-| [`docs/unicatolica-artefatos.md`](docs/unicatolica-artefatos.md) | Links para os protótipos e decks interativos |
+| [`docs/README.md`](docs/README.md) | Índice da documentação — por onde começar |
+| [`docs/como-funciona.md`](docs/como-funciona.md) | Como uma requisição atravessa o sistema e onde colocar código novo |
+| [`docs/produto/contexto-pacext.md`](docs/produto/contexto-pacext.md) | Relatório do PAC Extensionista — 80 requisitos funcionais, 9 não funcionais, riscos, C4 |
+| [`docs/produto/prd.md`](docs/produto/prd.md) | PRD — visão, personas, jornadas de usuário, métricas de sucesso |
+| [`docs/arquitetura.md`](docs/arquitetura.md) | Decisões de arquitetura, stack, convenções, diagramas |
+| [`docs/produto/ux-experiencia.md`](docs/produto/ux-experiencia.md) / [`ux-design.md`](docs/produto/ux-design.md) | Fluxos de UX e sistema de design (Campus Clean) |
+| [`docs/produto/artefatos-visuais.md`](docs/produto/artefatos-visuais.md) | Links para os protótipos e decks interativos |
 | [`_bmad-output/planning-artifacts/epics.md`](_bmad-output/planning-artifacts/epics.md) | Épicos e histórias, com corte de escopo da semana 1 |
 
 ## Escopo da entrega (semana 1)
