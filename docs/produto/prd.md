@@ -9,7 +9,7 @@ updated: 2026-08-12
 
 ## 0. Propósito do documento
 
-Este PRD serve à equipe do projeto (Gustavo Vinicius Taques, João Pedro Angélico, Luis Fernando Pereira, Vynicyus Cândido), ao orientador (Prof. Edson Vaz Lopes) e a quem for dar continuidade técnica (arquitetura, UX, épicos/histórias). Apoia-se em `docs/unicatolica-pacext-contexto.md` — o relatório final do PAC Extensionista, com os 80 requisitos funcionais, 9 não funcionais, arquitetura C4, riscos e decisões validadas com o orientador — sem duplicar esse conteúdo: reorganiza-o em torno de visão, jornadas de usuário e métricas de sucesso, e formaliza decisões de produto tomadas após a validação acadêmica (registradas com data em `.memlog.md` e sinalizadas inline). Vocabulário-âncora no Glossário (§2). Requisitos funcionais mantêm a numeração RFxx original, em vez de um esquema FR-1...FR-N genérico, para preservar a rastreabilidade com o documento de contexto e o mapeamento de riscos; decisões novas desta conversa estendem essa numeração (ex.: RF21.1, RF81). Suposições marcadas com `[ASSUMPTION]` e indexadas em §10. Stack tecnológica e arquitetura C4 estão em `docs/unicatolica-pacext-contexto.md` §5–§6 — este PRD trata de capacidades, não de implementação.
+Este PRD serve à equipe do projeto (Gustavo Vinicius Taques, João Pedro Angélico, Luis Fernando Pereira, Vynicyus Cândido), ao orientador (Prof. Edson Vaz Lopes) e a quem for dar continuidade técnica (arquitetura, UX, épicos/histórias). Apoia-se em `docs/produto/contexto-pacext.md` — o relatório final do PAC Extensionista, com os 80 requisitos funcionais, 9 não funcionais, arquitetura C4, riscos e decisões validadas com o orientador — sem duplicar esse conteúdo: reorganiza-o em torno de visão, jornadas de usuário e métricas de sucesso, e formaliza decisões de produto tomadas após a validação acadêmica (registradas com data em `.memlog.md` e sinalizadas inline). Vocabulário-âncora no Glossário (§2). Requisitos funcionais mantêm a numeração RFxx original, em vez de um esquema FR-1...FR-N genérico, para preservar a rastreabilidade com o documento de contexto e o mapeamento de riscos; decisões novas desta conversa estendem essa numeração (ex.: RF21.1, RF81). Suposições marcadas com `[ASSUMPTION]` e indexadas em §10. Stack tecnológica e arquitetura C4 estão em `docs/produto/contexto-pacext.md` §5–§6 — este PRD trata de capacidades, não de implementação.
 
 ## 1. Visão
 
@@ -83,10 +83,10 @@ A UniCatólica é uma rede social acadêmica que conecta os mais de 3.000 alunos
 
 ## 4. Features
 
-*Os 12 módulos a seguir já foram validados com o orientador (seção 9 do documento de contexto) e têm seus requisitos completos em `docs/unicatolica-pacext-contexto.md` — referenciados aqui por ID (RFxx), não duplicados. As decisões novas desta conversa (2026-08-12) recebem descrição e critério de aceitação completos, com IDs que estendem a numeração existente.*
+*Os 12 módulos a seguir já foram validados com o orientador (seção 9 do documento de contexto) e têm seus requisitos completos em `docs/produto/contexto-pacext.md` — referenciados aqui por ID (RFxx), não duplicados. As decisões novas desta conversa (2026-08-12) recebem descrição e critério de aceitação completos, com IDs que estendem a numeração existente.*
 
 ### 4.1 Identidade e Acesso
-**Descrição:** Cadastro, autenticação, sessão (JWT) e controle de acesso por perfil. Requisitos completos: RF01–RF13, RF01.1 (`docs/unicatolica-pacext-contexto.md` §3.1).
+**Descrição:** Cadastro, autenticação, sessão (JWT) e controle de acesso por perfil. Requisitos completos: RF01–RF13, RF01.1 (`docs/produto/contexto-pacext.md` §3.1).
 
 **Novo — Confirmação de e-mail institucional** (realiza UJ-1)
 
@@ -116,7 +116,7 @@ Qualquer usuário autenticado pode visualizar o perfil acadêmico público de ou
 ### 4.3 Comunidades
 **Descrição:** Criação, ingresso, saída, listagem, filtro e administração de comunidades. Requisitos completos: RF21–RF31 (§3.3).
 
-`[NOTA: diverge da decisão validada com o orientador em docs/unicatolica-pacext-contexto.md §9.2 ("Coordenador ou professor pode gerenciar a comunidade e adicionar colaboradores"). Decisão desta conversa (2026-08-12): o docente é tratado como usuário acadêmico comum, sem privilégios de gestão de comunidade distintos de um aluno — mesma categoria das demais decisões pós-validação desta seção 4, ver .memlog.md.]`
+`[NOTA: diverge da decisão validada com o orientador em docs/produto/contexto-pacext.md §9.2 ("Coordenador ou professor pode gerenciar a comunidade e adicionar colaboradores"). Decisão desta conversa (2026-08-12): o docente é tratado como usuário acadêmico comum, sem privilégios de gestão de comunidade distintos de um aluno — mesma categoria das demais decisões pós-validação desta seção 4, ver .memlog.md.]`
 
 **Novo — Dois tipos de comunidade, comunidades de curso pré-criadas e auto-join** (realiza UJ-1; decisão confirmada em conversa, ver `.memlog.md`)
 
@@ -157,7 +157,7 @@ Qualquer usuário autenticado pode visualizar o feed de uma comunidade de curso 
 **Descrição:** Anexação de arquivos (PNG/PDF/JPG) e links a postagens. Requisitos completos: RF48–RF52 (§3.7).
 
 ### 4.8 Enquetes e Pesquisas
-**Descrição:** Criação, resposta, consolidação e encerramento de enquetes, com anonimato real de voto (separação entre `enquete_participacao` e `enquete_voto`, sem vínculo persistido entre usuário e opção votada), mínimo de 5 votos para exibir resultado, e distinção entre enquete de comunidade e enquete da universidade (fixada na homepage, sujeita a aprovação de moderador). Especificação completa — incluindo regras de votação, encerramento, modelo de anonimato, auditoria e fluxo de criação — em `docs/unicatolica-pacext-contexto.md` §3.8. Requisitos: RF53–RF58 e subitens.
+**Descrição:** Criação, resposta, consolidação e encerramento de enquetes, com anonimato real de voto (separação entre `enquete_participacao` e `enquete_voto`, sem vínculo persistido entre usuário e opção votada), mínimo de 5 votos para exibir resultado, e distinção entre enquete de comunidade e enquete da universidade (fixada na homepage, sujeita a aprovação de moderador). Especificação completa — incluindo regras de votação, encerramento, modelo de anonimato, auditoria e fluxo de criação — em `docs/produto/contexto-pacext.md` §3.8. Requisitos: RF53–RF58 e subitens.
 
 > Aviso de manutenção herdado da especificação-fonte: nenhuma coluna deve ser adicionada a `enquete_voto` (usuário, curso, período, timestamp) sob risco de anular o anonimato garantido por RF57.1 — ver §3.8 do documento de contexto para a justificativa completa.
 
@@ -223,7 +223,7 @@ O sistema exibe avisos institucionais no dashboard principal do usuário, filtra
 
 ## 6. Escopo do MVP
 
-Escopo deliberadamente contido para mitigar R02 (escopo superdimensionado) — ver mapeamento de riscos completo em `docs/unicatolica-pacext-contexto.md` §8.
+Escopo deliberadamente contido para mitigar R02 (escopo superdimensionado) — ver mapeamento de riscos completo em `docs/produto/contexto-pacext.md` §8.
 
 ### 6.1 Em escopo
 - Os 12 módulos validados (RF01–RF80 e subitens): identidade e acesso, perfil acadêmico, comunidades, publicações, discussões, filtro de conteúdo, materiais, enquetes, busca, notificações, mensagens, moderação.
@@ -254,7 +254,7 @@ Escopo deliberadamente contido para mitigar R02 (escopo superdimensionado) — v
 
 ## 8. NFRs Cross-Cutting e Conformidade Regulatória
 
-*Requisitos não funcionais completos (RNF01–RNF09) em `docs/unicatolica-pacext-contexto.md` §4 — não duplicados aqui. Resumo por categoria:*
+*Requisitos não funcionais completos (RNF01–RNF09) em `docs/produto/contexto-pacext.md` §4 — não duplicados aqui. Resumo por categoria:*
 
 - **Usabilidade e responsividade** (RNF01, RNF02) — realiza UJ-1: Julia completa login, ingresso em comunidade e primeira postagem sem treinamento prévio, em desktop e mobile browser.
 - **Desempenho** (RNF03) — operações críticas (navegação, autenticação, feed, abertura de comunidade) com p95 ≤ 2s.
@@ -267,7 +267,7 @@ Escopo deliberadamente contido para mitigar R02 (escopo superdimensionado) — v
 
 ## 9. Arquitetura de Informação (referência)
 
-10 telas prototipadas no Figma (login, dashboard principal, dashboard de comunidades, perfil, busca, mensagens, notificações, criar enquete, solicitação de fixação, painel administrativo com URL própria) — diagrama de navegação e detalhes completos em `docs/unicatolica-pacext-contexto.md` §7. `[NOTE FOR PM: quando disponível, importar o System Design de alta fidelidade do Figma via MCP para validar esta seção contra o protótipo mais recente — ver `.memlog.md`.]`
+10 telas prototipadas no Figma (login, dashboard principal, dashboard de comunidades, perfil, busca, mensagens, notificações, criar enquete, solicitação de fixação, painel administrativo com URL própria) — diagrama de navegação e detalhes completos em `docs/produto/contexto-pacext.md` §7. `[NOTE FOR PM: quando disponível, importar o System Design de alta fidelidade do Figma via MCP para validar esta seção contra o protótipo mais recente — ver `.memlog.md`.]`
 
 ## 10. Open Questions e Suposições
 

@@ -6,7 +6,7 @@
  * id simples (sem relação JPA cruzando pacote), nunca acesso a repositório alheio.
  * Organizado em subpacotes por camada — {@code web} (Resource/DTO), {@code aplicacao}
  * (Service, regra de negócio), {@code dominio} (entidade, Repository, exceções de
- * domínio) — ver {@code docs/arquitetura-camadas-explicacao.md}.</p>
+ * domínio) — ver {@code docs/como-funciona.md}.</p>
  *
  * <p>Implementa Story 1.2 (cadastro), Story 1.3 (confirmação de e-mail), Story 1.4
  * (login/emissão de JWT) e Story 1.5 (bloqueio de acesso/restrição por perfil, via

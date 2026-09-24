@@ -6,7 +6,7 @@
  * ponto de entrada externo é a interface publicada {@link AutoJoinCursoService}. Implementa
  * auto-join (Story 2.3/RF24.1), criação de comunidade aberta (Story 2.2/RF21-23) e
  * entrar/sair/listar/filtrar (Stories 2.4/2.5, RF24-28) — entrada rápida desta fatia, ver
- * {@code docs/modelo-epico-2-comunidades.md}. Story 2.1 (endpoint de admin criar comunidade
+ * {@code docs/decisoes/2026-08-modelo-epico-2-comunidades.md}. Story 2.1 (endpoint de admin criar comunidade
  * de curso) e Story 2.6 (administração) ficam de fora, bloqueadas pelo papel
  * {@code ADMINISTRADOR} de plataforma, que ainda não existe em Identidade; os 26 cursos da
  * instituição já estão pré-carregados via seed (changelog
