@@ -99,7 +99,7 @@ Todo módulo segue o mesmo formato (**Alvo**; hoje só `identidade/` está perto
 5. **Referência a dado de outro módulo é só pelo id.** Exemplo: `comunidade_membro.usuario_id` é um `Long`, sem relação JPA nem FK para `usuario` (AD-3).
 6. **Auditoria só pelo `AuditoriaService`.** Nenhum módulo escreve direto em `log_auditoria` (AD-11).
 
-As regras 1, 2 e 4 vão ser verificadas por um teste ArchUnit no CI (PR 2 da reestruturação).
+As regras 1, 2 e 4, e a regra "`identidade` não importa nenhum outro módulo", são verificadas por `ArquiteturaTest` (ArchUnit) no CI. As violações que já existiam ficam em `EXCECOES_TEMPORARIAS`, cada uma com o PR que a remove; o teste também falha quando uma exceção deixa de ser necessária, então a lista só diminui. Nunca adicione uma exceção nova: corrija o código.
 
 ## 5. Banco e migrations
 

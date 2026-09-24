@@ -87,7 +87,7 @@ flowchart LR
 | 0 | Frente A inteira: Dev Services, `dev-setup.sh`, `.nvmrc`, compose mais rápido, CI sem `services: postgres`, docs de "rodando localmente" |
 | 3 | (já previsto) `UsuarioAutenticado` para `compartilhado/seguranca` |
 | 5 | (ampliado) `UsuarioService`, `SessaoConsulta` e `UsuarioConsulta` |
-| 5b | Evento `UsuarioCadastrado` no lugar da chamada a `AutoJoinCursoService`; regra ArchUnit "identidade é folha"; `package-info` atualizado |
+| 5b | Evento `UsuarioCadastrado` no lugar da chamada a `AutoJoinCursoService`; remove a exceção temporária de "identidade é folha" (a regra entrou no PR 2); `package-info` atualizado |
 
 ## Consequências
 
