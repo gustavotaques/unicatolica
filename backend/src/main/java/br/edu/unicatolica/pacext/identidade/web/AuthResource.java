@@ -1,10 +1,7 @@
 package br.edu.unicatolica.pacext.identidade.web;
 
 import br.edu.unicatolica.pacext.identidade.aplicacao.AuthService;
-import br.edu.unicatolica.pacext.identidade.dominio.CredenciaisInvalidasException;
-import br.edu.unicatolica.pacext.identidade.dominio.EmailNaoConfirmadoException;
 import br.edu.unicatolica.pacext.compartilhado.seguranca.UsuarioAutenticado;
-import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -28,17 +25,8 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest request) {
-        try {
-            String token = authService.autenticar(request.email(), request.senha());
-            return Response.ok(new LoginResponse(token)).build();
-        } catch (CredenciaisInvalidasException e) {
-            ErroResponse erro = ErroResponse.of("CREDENCIAL_INVALIDA", "E-mail ou senha inválidos.", null);
-            return Response.status(Response.Status.UNAUTHORIZED).entity(erro).build();
-        } catch (EmailNaoConfirmadoException e) {
-            ErroResponse erro = ErroResponse.of("EMAIL_NAO_CONFIRMADO",
-                    "Confirme seu e-mail antes de entrar. Reenviar confirmação", null);
-            return Response.status(Response.Status.UNAUTHORIZED).entity(erro).build();
-        }
+        String token = authService.autenticar(request.email(), request.senha());
+        return Response.ok(new LoginResponse(token)).build();
     }
 
     /**

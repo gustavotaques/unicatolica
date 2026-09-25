@@ -4,7 +4,7 @@ import br.edu.unicatolica.pacext.identidade.dominio.AcessoNegadoException;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.compartilhado.seguranca.UsuarioAutenticado;
-import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -54,8 +54,7 @@ public class UsuarioResource {
 
     private Response respostaOuNaoEncontrado(Usuario usuario) {
         if (usuario == null) {
-            ErroResponse erro = ErroResponse.of("RECURSO_NAO_ENCONTRADO", "Usuário não encontrado.", null);
-            return Response.status(Response.Status.NOT_FOUND).entity(erro).build();
+            throw ApiException.naoEncontrado("RECURSO_NAO_ENCONTRADO", "Usuário não encontrado.", null);
         }
         return Response.ok(UsuarioResponse.de(usuario)).build();
     }

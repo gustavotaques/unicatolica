@@ -56,7 +56,7 @@ Código que todos os módulos usam e que não pertence a nenhum.
 | Assunto | Onde |
 |---|---|
 | Filtros de autenticação, `UsuarioAutenticado` | `compartilhado/seguranca/` |
-| Erro (`ApiException`, `ErroResponse`, mappers) | `compartilhado/erro/` (**hoje** ainda há 2 mappers em `identidade/web/`, removidos no PR 4) |
+| Erro (`ApiException`, `ErroResponse`, mappers) | `compartilhado/erro/` (todos; nenhum módulo tem mapper próprio) |
 | Paginação (`PageResponse`) | `compartilhado/paginacao/` |
 | Auditoria (`AuditoriaService`) | `compartilhado/auditoria/` |
 | E-mail (`EmailService`) | `compartilhado/email/` |
@@ -92,8 +92,8 @@ Todo módulo segue o mesmo formato (**Alvo**; hoje só `identidade/` está perto
 2. **O Resource só chama o Service**, nunca o Repository.
    - **Hoje:** `UsuarioResource` ainda viola esta regra.
 3. **Erro tem um só caminho:** lançar `ApiException` (fábricas `validacao`, `naoAutenticado`, `semPermissao`, `naoEncontrado`, `conflito`) ou uma subclasse dela. O `Resource` nunca monta `ErroResponse` à mão.
-   - **Hoje:** `AuthResource` e `UsuarioResource` montam `ErroResponse` à mão.
-   - **Filtros:** `JwtSecurityFilter` e `SessaoInvalidadaFilter` não lançam exceção (usam `abortWith`). No **Alvo**, montam o 401 por um único helper em `compartilhado/erro/`, nunca com `ErroResponse.of` direto.
+   - Exceção de domínio com nome próprio (ex.: `CredenciaisInvalidasException`) estende `ApiException` e passa status, código e mensagem no construtor.
+   - **Filtros:** `JwtSecurityFilter` e `SessaoInvalidadaFilter` não lançam exceção (usam `abortWith`). Montam o 401 por `RespostasErro.naoAutenticado(detalhes)`, nunca com `ErroResponse.of` direto.
 4. **O transversal não importa nenhum módulo.** Quando precisa de dado de um módulo, declara uma interface que o módulo implementa.
    - **Hoje:** `SessaoInvalidadaFilter` importa `UsuarioRepository`.
 5. **Referência a dado de outro módulo é só pelo id.** Exemplo: `comunidade_membro.usuario_id` é um `Long`, sem relação JPA nem FK para `usuario` (AD-3).

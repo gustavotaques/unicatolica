@@ -2,6 +2,7 @@ package br.edu.unicatolica.pacext.identidade.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,9 +11,12 @@ import br.edu.unicatolica.pacext.identidade.aplicacao.AuthService;
 import br.edu.unicatolica.pacext.identidade.dominio.CredenciaisInvalidasException;
 import br.edu.unicatolica.pacext.identidade.dominio.EmailNaoConfirmadoException;
 import br.edu.unicatolica.pacext.compartilhado.seguranca.UsuarioAutenticado;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiExceptionMapper;
 import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 
 /**
@@ -46,7 +50,8 @@ class AuthResourceTest {
         when(authService.autenticar(Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new CredenciaisInvalidasException());
 
-        Response response = resource.login(new LoginRequest("aluno@catolicasc.edu.br", "senha-errada"));
+        Response response = respostaDoErro(
+                () -> resource.login(new LoginRequest("aluno@catolicasc.edu.br", "senha-errada")));
 
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
         ErroResponse corpo = (ErroResponse) response.getEntity();
@@ -59,7 +64,8 @@ class AuthResourceTest {
         when(authService.autenticar(Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new EmailNaoConfirmadoException());
 
-        Response response = resource.login(new LoginRequest("aluno@catolicasc.edu.br", "Senha123!"));
+        Response response = respostaDoErro(
+                () -> resource.login(new LoginRequest("aluno@catolicasc.edu.br", "Senha123!")));
 
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
         ErroResponse corpo = (ErroResponse) response.getEntity();
@@ -75,5 +81,10 @@ class AuthResourceTest {
 
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
         verify(authService).logout(42L);
+    }
+
+    /** O Resource deixa a {@link ApiException} subir; o mapper monta o envelope (AD-5). */
+    private static Response respostaDoErro(Executable chamada) {
+        return new ApiExceptionMapper().toResponse(assertThrows(ApiException.class, chamada));
     }
 }

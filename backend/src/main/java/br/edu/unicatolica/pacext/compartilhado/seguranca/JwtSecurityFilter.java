@@ -1,6 +1,6 @@
 package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
-import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
+import br.edu.unicatolica.pacext.compartilhado.erro.RespostasErro;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.annotation.Priority;
@@ -11,8 +11,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.time.Instant;
@@ -129,10 +127,6 @@ public class JwtSecurityFilter implements ContainerRequestFilter {
     }
 
     private void abort(ContainerRequestContext requestContext, String detalhes) {
-        ErroResponse erro = ErroResponse.of("NAO_AUTENTICADO", "Autenticação necessária.", detalhes);
-        requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                .type(MediaType.APPLICATION_JSON)
-                .entity(erro)
-                .build());
+        requestContext.abortWith(RespostasErro.naoAutenticado(detalhes));
     }
 }

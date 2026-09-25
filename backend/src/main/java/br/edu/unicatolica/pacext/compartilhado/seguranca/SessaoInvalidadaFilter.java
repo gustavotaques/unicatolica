@@ -2,15 +2,13 @@ package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
-import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
+import br.edu.unicatolica.pacext.compartilhado.erro.RespostasErro;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 import java.time.Instant;
 
@@ -52,11 +50,7 @@ public class SessaoInvalidadaFilter implements ContainerRequestFilter {
         Instant emitidoEm = (Instant) requestContext.getProperty(JwtSecurityFilter.REQUEST_PROPERTY_EMITIDO_EM);
         Usuario usuario = usuarioRepository.findById(Long.valueOf((String) usuarioIdProperty));
         if (usuario != null && usuario.sessaoValidaDesde != null && !emitidoEm.isAfter(usuario.sessaoValidaDesde)) {
-            ErroResponse erro = ErroResponse.of("NAO_AUTENTICADO", "Autenticação necessária.", "Token JWT inválido ou expirado.");
-            requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                    .type(MediaType.APPLICATION_JSON)
-                    .entity(erro)
-                    .build());
+            requestContext.abortWith(RespostasErro.naoAutenticado("Token JWT inválido ou expirado."));
         }
     }
 }
