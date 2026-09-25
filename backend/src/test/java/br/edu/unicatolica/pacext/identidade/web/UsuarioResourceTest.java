@@ -7,10 +7,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import br.edu.unicatolica.pacext.identidade.dominio.AcessoNegadoException;
-import br.edu.unicatolica.pacext.identidade.dominio.NaoAutenticadoException;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.compartilhado.seguranca.UsuarioAutenticado;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiExceptionMapper;
 import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
@@ -82,7 +83,8 @@ class UsuarioResourceTest {
         when(usuarioAutenticado.possuiPerfil("MODERADOR")).thenReturn(true);
         when(usuarioRepository.findById(404L)).thenReturn(null);
 
-        Response response = resource.porId(404L);
+        Response response = new ApiExceptionMapper().toResponse(
+                assertThrows(ApiException.class, () -> resource.porId(404L)));
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         ErroResponse corpo = (ErroResponse) response.getEntity();
@@ -92,7 +94,7 @@ class UsuarioResourceTest {
 
     @Test
     void mapperTraduzAcessoNegadoParaEnvelope403() {
-        AcessoNegadoExceptionMapper mapper = new AcessoNegadoExceptionMapper();
+        ApiExceptionMapper mapper = new ApiExceptionMapper();
 
         Response response = mapper.toResponse(new AcessoNegadoException());
 
@@ -100,17 +102,5 @@ class UsuarioResourceTest {
         ErroResponse corpo = (ErroResponse) response.getEntity();
         assertNotNull(corpo.error());
         assertEquals("ACESSO_NEGADO", corpo.error().code());
-    }
-
-    @Test
-    void mapperTraduzNaoAutenticadoParaEnvelope401() {
-        NaoAutenticadoExceptionMapper mapper = new NaoAutenticadoExceptionMapper();
-
-        Response response = mapper.toResponse(new NaoAutenticadoException());
-
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
-        ErroResponse corpo = (ErroResponse) response.getEntity();
-        assertNotNull(corpo.error());
-        assertEquals("NAO_AUTENTICADO", corpo.error().code());
     }
 }

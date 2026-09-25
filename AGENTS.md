@@ -15,8 +15,8 @@ Rede social acadêmica do Campus Joinville da CatólicaSC — projeto de PAC Ext
 
 ## Where things are
 
-- Backend: `backend/src/main/java/br/edu/unicatolica/pacext/<modulo>/`. Layout de referência é `identidade/`: `web/` (`*Resource`, `*Request`/`*Response`, `*ExceptionMapper`), `aplicacao/` (`*Service`), `dominio/` (entidade, `*Repository`, exceções). `comunidades/` ainda está plano (só `web/` separado) — módulo novo segue `identidade/`.
-- Transversal do backend: `compartilhado/` — `seguranca/` (`JwtSecurityFilter`, `SessaoInvalidadaFilter`, `UsuarioAutenticado`), `erro/` (`ApiException`, mappers, `ErroResponse`), `paginacao/` (`PageResponse`), `auditoria/`, `email/`.
+- Backend: `backend/src/main/java/br/edu/unicatolica/pacext/<modulo>/`. Layout de referência é `identidade/`: `web/` (`*Resource`, `*Request`/`*Response`), `aplicacao/` (`*Service`), `dominio/` (entidade, `*Repository`, exceções que estendem `ApiException`). `comunidades/` ainda está plano (só `web/` separado) — módulo novo segue `identidade/`.
+- Transversal do backend: `compartilhado/` — `seguranca/` (`JwtSecurityFilter`, `SessaoInvalidadaFilter`, `UsuarioAutenticado`), `erro/` (`ApiException`, todos os mappers, `ErroResponse`, `RespostasErro` para os filtros), `paginacao/` (`PageResponse`), `auditoria/`, `email/`.
 - Migrations: `backend/src/main/resources/db/changelog/modulos/<modulo>/<modulo>-NNN-descricao.xml`, incluídas pelo `db.changelog-master.xml` (não editar o mestre por PR). Exceção: a pasta `modulos/infraestrutura/` (log_auditoria) mantém o nome antigo — renomear muda o caminho que o Liquibase grava e quebra o banco de produção.
 - Frontend: `frontend/src/app/` — `core/` (auth service/guard, serviços HTTP por módulo, `config/api.config.ts`), `features/<modulo>/<tela>/`, `layout/` (`shell`, `auth-shell`), `ui/` (design system, exportado por `ui/index.ts`). E2E em `frontend/e2e/`.
 - Tokens de design (Campus Clean): `frontend/src/styles/` — ver `frontend/src/styles/README.md`.
@@ -39,7 +39,7 @@ Rede social acadêmica do Campus Joinville da CatólicaSC — projeto de PAC Ext
 - Campos JSON de request/response em camelCase português (`nomeCompleto`, não `name`) — sem camada de tradução.
 - IDs são `bigint`/identity do Postgres, nunca UUID.
 - `Instant` só para timestamps (ISO-8601 UTC); campos só-data usam `LocalDate`, nunca `Instant`.
-- Erros seguem envelope fixo `{"error": {"code","message","details"}}` com status HTTP por cenário (401/403/404/400/422/409/500) — 403 vs. 404 decide se a existência do recurso deve ficar oculta (AD-5). Não montar `ErroResponse` à mão: lançar `ApiException` (fábricas `validacao`/`naoAutenticado`/`semPermissao`/`naoEncontrado`/`conflito`) e deixar o `ApiExceptionMapper` traduzir.
+- Erros seguem envelope fixo `{"error": {"code","message","details"}}` com status HTTP por cenário (401/403/404/400/422/409/500) — 403 vs. 404 decide se a existência do recurso deve ficar oculta (AD-5). Não montar `ErroResponse` à mão nem criar mapper por módulo: lançar `ApiException` (fábricas `validacao`/`naoAutenticado`/`semPermissao`/`naoEncontrado`/`conflito`) ou uma subclasse dela e deixar o `ApiExceptionMapper` traduzir. Filtros, que não podem lançar, usam `RespostasErro`.
 - Toda listagem pagina com o componente compartilhado `PageResponse` do `openapi.yaml` (e `compartilhado.paginacao.PageResponse` no backend) — nenhum endpoint inventa a própria forma.
 - JWT só via header `Authorization: Bearer` — nunca cookie (front guarda o token em `localStorage`). Claims fixos `sub` + `roles`; allowlist de endpoints públicos só no `JwtSecurityFilter`; CORS só em `quarkus.http.cors`.
 - Changelog Liquibase: um arquivo por módulo, changeset id prefixado pelo nome do módulo (ex.: `comunidades-002-...`), nunca contador global (AD-9).
