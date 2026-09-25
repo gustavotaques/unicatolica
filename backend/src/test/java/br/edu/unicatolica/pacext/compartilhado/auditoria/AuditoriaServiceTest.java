@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.auditoria;
+package br.edu.unicatolica.pacext.compartilhado.auditoria;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

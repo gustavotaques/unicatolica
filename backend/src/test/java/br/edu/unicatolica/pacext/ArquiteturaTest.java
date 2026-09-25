@@ -32,7 +32,7 @@ class ArquiteturaTest {
     private static final String RAIZ = "br.edu.unicatolica.pacext.";
 
     /** Pacote transversal: código que todos usam e que não pertence a nenhum módulo. */
-    private static final String TRANSVERSAL = "infraestrutura";
+    private static final String TRANSVERSAL = "compartilhado";
 
     /** Módulo que só pode depender do transversal (decisão identidade-desacoplada). */
     private static final String FOLHA = "identidade";
@@ -40,17 +40,15 @@ class ArquiteturaTest {
     private record Excecao(String regra, String origem, String alvo, String removidaNo) {}
 
     private static final List<Excecao> EXCECOES_TEMPORARIAS = List.of(
-            new Excecao("raiz-e-api-publica", "comunidades.web.ComunidadeResource",
-                    "identidade.infraestrutura.UsuarioAutenticado", "PR 3"),
-            new Excecao("raiz-e-api-publica", "infraestrutura.seguranca.SessaoInvalidadaFilter",
+            new Excecao("raiz-e-api-publica", "compartilhado.seguranca.SessaoInvalidadaFilter",
                     "identidade.dominio.Usuario", "PR 5"),
-            new Excecao("raiz-e-api-publica", "infraestrutura.seguranca.SessaoInvalidadaFilter",
+            new Excecao("raiz-e-api-publica", "compartilhado.seguranca.SessaoInvalidadaFilter",
                     "identidade.dominio.UsuarioRepository", "PR 5"),
             new Excecao("resource-so-chama-service", "identidade.web.UsuarioResource",
                     "identidade.dominio.UsuarioRepository", "PR 5"),
-            new Excecao("transversal-nao-importa-modulo", "infraestrutura.seguranca.SessaoInvalidadaFilter",
+            new Excecao("transversal-nao-importa-modulo", "compartilhado.seguranca.SessaoInvalidadaFilter",
                     "identidade.dominio.Usuario", "PR 5"),
-            new Excecao("transversal-nao-importa-modulo", "infraestrutura.seguranca.SessaoInvalidadaFilter",
+            new Excecao("transversal-nao-importa-modulo", "compartilhado.seguranca.SessaoInvalidadaFilter",
                     "identidade.dominio.UsuarioRepository", "PR 5"),
             new Excecao("identidade-e-folha", "identidade.aplicacao.CadastroService",
                     "comunidades.AutoJoinCursoService", "PR 5b"));

@@ -1,7 +1,7 @@
 package br.edu.unicatolica.pacext.identidade.web;
 
 import br.edu.unicatolica.pacext.identidade.dominio.NaoAutenticadoException;
-import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
+import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;

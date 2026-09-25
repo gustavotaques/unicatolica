@@ -146,8 +146,8 @@ São 8 PRs mecânicos (mais o PR 0 e o 5b, da decisão [`2026-09-24-identidade-d
 |---|---|---|---|
 | 0 | Ambiente local sem compose: Dev Services, `dev-setup.sh`, `.nvmrc` (ver [`2026-09-24-identidade-desacoplada.md`](2026-09-24-identidade-desacoplada.md)) | Baixo | Concluído (#22) |
 | 1 | Documentação: índice, `como-funciona.md`, spine em cópia única, histórico para `_bmad-output` | Nenhum | Concluído (#21) |
-| 2 | `ArquiteturaTest` (ArchUnit) com as regras 1, 2 e 4 e "identidade é folha", com exceções temporárias para as violações atuais; cada PR seguinte remove as suas | Baixo | Em andamento |
-| 3 | `infraestrutura` → `compartilhado`, com subpacotes; `UsuarioAutenticado` para `compartilhado/seguranca` | Baixo | Pendente |
+| 2 | `ArquiteturaTest` (ArchUnit) com as regras 1, 2 e 4 e "identidade é folha", com exceções temporárias para as violações atuais; cada PR seguinte remove as suas | Baixo | Concluído (#23) |
+| 3 | `infraestrutura` → `compartilhado`, com subpacotes; `UsuarioAutenticado` para `compartilhado/seguranca` | Baixo | Em andamento |
 | 4 | Erro único: exceções de domínio estendem `ApiException`; remover os 2 mappers do identidade e o `ErroResponse.of` dos Resources e dos filtros (ponto 1) | Médio | Pendente |
 | 5 | `UsuarioService` (Resource sem Repository), a interface `SessaoConsulta` e `UsuarioConsulta` | Baixo | Pendente |
 | 5b | Evento CDI `UsuarioCadastrado` no lugar da chamada direta a `AutoJoinCursoService`; remove a última exceção de "identidade é folha" | Baixo | Pendente |

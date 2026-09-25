@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.web;
+package br.edu.unicatolica.pacext.compartilhado.erro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;

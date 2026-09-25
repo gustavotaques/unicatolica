@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.seguranca;
+package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

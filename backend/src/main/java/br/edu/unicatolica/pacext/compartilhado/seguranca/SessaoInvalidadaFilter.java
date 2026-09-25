@@ -1,8 +1,8 @@
-package br.edu.unicatolica.pacext.infraestrutura.seguranca;
+package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
-import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
+import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;

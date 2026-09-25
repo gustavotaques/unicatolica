@@ -13,9 +13,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService;
-import br.edu.unicatolica.pacext.infraestrutura.web.ApiException;
-import br.edu.unicatolica.pacext.infraestrutura.web.PageResponse;
+import br.edu.unicatolica.pacext.compartilhado.auditoria.AuditoriaService;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
+import br.edu.unicatolica.pacext.compartilhado.paginacao.PageResponse;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

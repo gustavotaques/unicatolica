@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.auditoria;
+package br.edu.unicatolica.pacext.compartilhado.auditoria;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

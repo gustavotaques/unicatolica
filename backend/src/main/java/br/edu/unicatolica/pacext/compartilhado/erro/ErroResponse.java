@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.web;
+package br.edu.unicatolica.pacext.compartilhado.erro;
 
 /**
  * Envelope de erro padrão (AD-5 da Architecture Spine): toda resposta de erro de todo

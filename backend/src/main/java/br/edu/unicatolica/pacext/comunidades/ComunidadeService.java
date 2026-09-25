@@ -1,8 +1,8 @@
 package br.edu.unicatolica.pacext.comunidades;
 
-import br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService;
-import br.edu.unicatolica.pacext.infraestrutura.web.ApiException;
-import br.edu.unicatolica.pacext.infraestrutura.web.PageResponse;
+import br.edu.unicatolica.pacext.compartilhado.auditoria.AuditoriaService;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
+import br.edu.unicatolica.pacext.compartilhado.paginacao.PageResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

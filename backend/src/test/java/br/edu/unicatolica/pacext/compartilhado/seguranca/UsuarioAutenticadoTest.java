@@ -1,11 +1,11 @@
-package br.edu.unicatolica.pacext.identidade.infraestrutura;
+package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import br.edu.unicatolica.pacext.identidade.dominio.NaoAutenticadoException;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
 import io.smallrye.jwt.auth.principal.DefaultJWTParser;
 import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import io.smallrye.jwt.auth.principal.JWTParser;
@@ -89,6 +89,8 @@ class UsuarioAutenticadoTest {
     void idLancaNaoAutenticadoQuandoSubNaoENumerico() throws Exception {
         UsuarioAutenticado usuarioAutenticado = usuarioAutenticadoPara("nao-numerico", Set.of("ALUNO"));
 
-        assertThrows(NaoAutenticadoException.class, usuarioAutenticado::id);
+        ApiException erro = assertThrows(ApiException.class, usuarioAutenticado::id);
+        assertEquals(401, erro.getStatus());
+        assertEquals("NAO_AUTENTICADO", erro.getCode());
     }
 }
