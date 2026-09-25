@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.web;
+package br.edu.unicatolica.pacext.compartilhado.paginacao;
 
 import java.util.List;
 

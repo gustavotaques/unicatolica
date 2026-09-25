@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Prova end-to-end (Defeito D2) de que {@link
- * br.edu.unicatolica.pacext.infraestrutura.seguranca.JwtSecurityFilter} é o único ponto do
+ * br.edu.unicatolica.pacext.compartilhado.seguranca.JwtSecurityFilter} é o único ponto do
  * backend que responde por autenticação, como a AD-2 promete — inclusive quando o token
  * tem formato de JWT (três segmentos separados por ".") mas é inválido (assinatura ou
  * claims incorretos), não só quando está ausente ou vazio.

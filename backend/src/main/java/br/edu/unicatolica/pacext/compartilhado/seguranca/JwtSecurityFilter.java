@@ -1,6 +1,6 @@
-package br.edu.unicatolica.pacext.infraestrutura.seguranca;
+package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
-import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
+import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.annotation.Priority;

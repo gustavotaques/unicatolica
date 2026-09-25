@@ -5,7 +5,7 @@ import br.edu.unicatolica.pacext.identidade.dominio.EmailNaoConfirmadoException;
 import br.edu.unicatolica.pacext.identidade.dominio.PasswordHasher;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
-import br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService;
+import br.edu.unicatolica.pacext.compartilhado.auditoria.AuditoriaService;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -74,7 +74,7 @@ public class AuthService {
     /**
      * Logout (Story 1.6, RF10/RF11): adianta a invalidação do token atual gravando o
      * instante presente em {@code sessaoValidaDesde} — o JWT ainda expira naturalmente
-     * pelo claim {@code exp}, mas {@link br.edu.unicatolica.pacext.infraestrutura.seguranca.JwtSecurityFilter}
+     * pelo claim {@code exp}, mas {@link br.edu.unicatolica.pacext.compartilhado.seguranca.JwtSecurityFilter}
      * passa a rejeitar qualquer token emitido antes deste instante para este usuário.
      *
      * <p>Truncado para segundos porque o claim {@code iat} do JWT (NumericDate) só tem essa

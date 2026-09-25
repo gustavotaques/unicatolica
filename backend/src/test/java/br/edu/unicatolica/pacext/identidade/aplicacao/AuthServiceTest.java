@@ -15,7 +15,7 @@ import br.edu.unicatolica.pacext.identidade.dominio.EmailNaoConfirmadoException;
 import br.edu.unicatolica.pacext.identidade.dominio.PasswordHasher;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
-import br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService;
+import br.edu.unicatolica.pacext.compartilhado.auditoria.AuditoriaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.jwt.auth.principal.DefaultJWTParser;
 import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;

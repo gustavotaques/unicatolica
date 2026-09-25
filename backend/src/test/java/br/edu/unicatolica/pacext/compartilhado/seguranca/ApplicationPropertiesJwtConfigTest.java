@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.seguranca;
+package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

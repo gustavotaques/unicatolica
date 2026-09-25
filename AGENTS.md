@@ -8,16 +8,16 @@ Rede social acadêmica do Campus Joinville da CatólicaSC — projeto de PAC Ext
 ## Policy
 
 - Nunca implementar um endpoint novo (front ou back) sem `openapi.yaml` acordado primeiro entre os dois lados — contrato é fonte de verdade (AD-4).
-- Nunca importar nada de fora da raiz de outro módulo — só as interfaces públicas da raiz, ex.: `comunidades.AutoJoinCursoService` (AD-3). Dado de outro módulo é referenciado só pelo id (`Long`), sem FK nem relação JPA. `identidade` não importa nenhum outro módulo, e o transversal (`infraestrutura/`) não importa nenhum módulo. Verificado por `ArquiteturaTest` no CI; violações antigas ficam em `EXCECOES_TEMPORARIAS` com o PR que as remove — nunca adicionar uma nova.
-- Nunca escrever direto em `log_auditoria` — sempre injetar `infraestrutura.auditoria.AuditoriaService` (AD-11).
+- Nunca importar nada de fora da raiz de outro módulo — só as interfaces públicas da raiz, ex.: `comunidades.AutoJoinCursoService` (AD-3). Dado de outro módulo é referenciado só pelo id (`Long`), sem FK nem relação JPA. `identidade` não importa nenhum outro módulo, e o transversal (`compartilhado/`) não importa nenhum módulo. Verificado por `ArquiteturaTest` no CI; violações antigas ficam em `EXCECOES_TEMPORARIAS` com o PR que as remove — nunca adicionar uma nova.
+- Nunca escrever direto em `log_auditoria` — sempre injetar `compartilhado.auditoria.AuditoriaService` (AD-11).
 - Nunca commitar segredos/config — só variáveis de ambiente (Render env vars / `.env` local, modelo em `.env.example`).
 - `main` é protegida: sem push direto, nem para admin. Fluxo: branch → PR → os 3 checks do CI verdes → squash merge. Sem revisão humana obrigatória (AD-8, decisão do time).
 
 ## Where things are
 
-- Backend: `backend/src/main/java/br/edu/unicatolica/pacext/<modulo>/`. Layout de referência é `identidade/`: `web/` (`*Resource`, `*Request`/`*Response`, `*ExceptionMapper`), `aplicacao/` (`*Service`), `dominio/` (entidade, `*Repository`, exceções), `infraestrutura/`. `comunidades/` ainda está plano (só `web/` separado) — módulo novo segue `identidade/`.
-- Transversal do backend: `infraestrutura/` — `seguranca/` (`JwtSecurityFilter`, `SessaoInvalidadaFilter`), `web/` (`ApiException`, mappers, `ErroResponse`, `PageResponse`), `auditoria/`, `email/`.
-- Migrations: `backend/src/main/resources/db/changelog/modulos/<modulo>/<modulo>-NNN-descricao.xml`, incluídas pelo `db.changelog-master.xml` (não editar o mestre por PR).
+- Backend: `backend/src/main/java/br/edu/unicatolica/pacext/<modulo>/`. Layout de referência é `identidade/`: `web/` (`*Resource`, `*Request`/`*Response`, `*ExceptionMapper`), `aplicacao/` (`*Service`), `dominio/` (entidade, `*Repository`, exceções). `comunidades/` ainda está plano (só `web/` separado) — módulo novo segue `identidade/`.
+- Transversal do backend: `compartilhado/` — `seguranca/` (`JwtSecurityFilter`, `SessaoInvalidadaFilter`, `UsuarioAutenticado`), `erro/` (`ApiException`, mappers, `ErroResponse`), `paginacao/` (`PageResponse`), `auditoria/`, `email/`.
+- Migrations: `backend/src/main/resources/db/changelog/modulos/<modulo>/<modulo>-NNN-descricao.xml`, incluídas pelo `db.changelog-master.xml` (não editar o mestre por PR). Exceção: a pasta `modulos/infraestrutura/` (log_auditoria) mantém o nome antigo — renomear muda o caminho que o Liquibase grava e quebra o banco de produção.
 - Frontend: `frontend/src/app/` — `core/` (auth service/guard, serviços HTTP por módulo, `config/api.config.ts`), `features/<modulo>/<tela>/`, `layout/` (`shell`, `auth-shell`), `ui/` (design system, exportado por `ui/index.ts`). E2E em `frontend/e2e/`.
 - Tokens de design (Campus Clean): `frontend/src/styles/` — ver `frontend/src/styles/README.md`.
 - Documentação viva: `docs/` (índice `docs/README.md`; decisões novas em `docs/decisoes/`). Histórico de planejamento/implementação (só leitura): `_bmad-output/` — specs de story em `_bmad-output/implementation-artifacts/`.
@@ -40,7 +40,7 @@ Rede social acadêmica do Campus Joinville da CatólicaSC — projeto de PAC Ext
 - IDs são `bigint`/identity do Postgres, nunca UUID.
 - `Instant` só para timestamps (ISO-8601 UTC); campos só-data usam `LocalDate`, nunca `Instant`.
 - Erros seguem envelope fixo `{"error": {"code","message","details"}}` com status HTTP por cenário (401/403/404/400/422/409/500) — 403 vs. 404 decide se a existência do recurso deve ficar oculta (AD-5). Não montar `ErroResponse` à mão: lançar `ApiException` (fábricas `validacao`/`naoAutenticado`/`semPermissao`/`naoEncontrado`/`conflito`) e deixar o `ApiExceptionMapper` traduzir.
-- Toda listagem pagina com o componente compartilhado `PageResponse` do `openapi.yaml` (e `infraestrutura.web.PageResponse` no backend) — nenhum endpoint inventa a própria forma.
+- Toda listagem pagina com o componente compartilhado `PageResponse` do `openapi.yaml` (e `compartilhado.paginacao.PageResponse` no backend) — nenhum endpoint inventa a própria forma.
 - JWT só via header `Authorization: Bearer` — nunca cookie (front guarda o token em `localStorage`). Claims fixos `sub` + `roles`; allowlist de endpoints públicos só no `JwtSecurityFilter`; CORS só em `quarkus.http.cors`.
 - Changelog Liquibase: um arquivo por módulo, changeset id prefixado pelo nome do módulo (ex.: `comunidades-002-...`), nunca contador global (AD-9).
 - Cada módulo do backend documenta em `package-info.java` seus RFs, tabelas próprias e interface publicada — manter atualizado ao mexer no módulo.

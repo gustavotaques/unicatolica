@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.email;
+package br.edu.unicatolica.pacext.compartilhado.email;
 
 import io.quarkus.mailer.Mailer;
 import io.quarkus.mailer.Mail;
@@ -7,7 +7,7 @@ import jakarta.inject.Inject;
 
 /**
  * Serviço injetável de envio de e-mail — infraestrutura transversal (mesmo espírito de
- * {@link br.edu.unicatolica.pacext.infraestrutura.auditoria.AuditoriaService}), não
+ * {@link br.edu.unicatolica.pacext.compartilhado.auditoria.AuditoriaService}), não
  * pertence a nenhum módulo de domínio.
  *
  * <p>Sem {@code quarkus.mailer.host} configurado, o Quarkus usa uma mailbox mock em

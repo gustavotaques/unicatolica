@@ -10,8 +10,8 @@ import br.edu.unicatolica.pacext.identidade.dominio.AcessoNegadoException;
 import br.edu.unicatolica.pacext.identidade.dominio.NaoAutenticadoException;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
 import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
-import br.edu.unicatolica.pacext.identidade.infraestrutura.UsuarioAutenticado;
-import br.edu.unicatolica.pacext.infraestrutura.web.ErroResponse;
+import br.edu.unicatolica.pacext.compartilhado.seguranca.UsuarioAutenticado;
+import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
-package br.edu.unicatolica.pacext.identidade.infraestrutura;
+package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
-import br.edu.unicatolica.pacext.identidade.dominio.NaoAutenticadoException;
+import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -22,8 +22,8 @@ public class UsuarioAutenticado {
 
     /**
      * @return id (claim {@code sub}) do usuário autenticado na requisição corrente.
-     * @throws NaoAutenticadoException se a claim {@code sub} estiver ausente ou não for
-     *     numérica — guarda defensiva contra drift entre o {@code JwtSecurityFilter} (que já
+     * @throws ApiException 401 {@code NAO_AUTENTICADO} se a claim {@code sub} estiver ausente
+     *     ou não for numérica — guarda defensiva contra drift entre o {@code JwtSecurityFilter} (que já
      *     validou o token) e o {@link JsonWebToken} injetado via CDI; nunca deveria ocorrer
      *     em uso normal.
      */
@@ -31,7 +31,7 @@ public class UsuarioAutenticado {
         try {
             return Long.valueOf(jsonWebToken.getSubject());
         } catch (NumberFormatException e) {
-            throw new NaoAutenticadoException();
+            throw ApiException.naoAutenticado("NAO_AUTENTICADO", "Autenticação necessária.", null);
         }
     }
 

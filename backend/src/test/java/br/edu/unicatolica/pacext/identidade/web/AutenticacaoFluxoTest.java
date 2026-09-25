@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
  * acesso rejeitado funciona sobre o pipeline HTTP/JAX-RS real, coisa que nenhum outro
  * teste do módulo cobre — os demais instanciam recursos/filtro diretamente com mocks e
  * nunca disparam a chamada bloqueante ao banco que {@link
- * br.edu.unicatolica.pacext.infraestrutura.seguranca.JwtSecurityFilter} faz na thread de
+ * br.edu.unicatolica.pacext.compartilhado.seguranca.JwtSecurityFilter} faz na thread de
  * I/O do Vert.x.
  *
  * <p>Antes do fix, esta suíte falha já no segundo passo ({@code GET /usuarios/me} logo

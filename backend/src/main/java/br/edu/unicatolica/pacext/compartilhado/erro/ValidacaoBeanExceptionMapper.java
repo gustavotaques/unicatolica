@@ -1,4 +1,4 @@
-package br.edu.unicatolica.pacext.infraestrutura.web;
+package br.edu.unicatolica.pacext.compartilhado.erro;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

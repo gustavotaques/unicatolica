@@ -32,7 +32,7 @@ flowchart TD
 Passo a passo:
 
 1. **O frontend manda o token** no header `Authorization: Bearer <jwt>`, nunca em cookie (AD-2). O token fica em `localStorage` e é montado por `AuthService.authHeaders()` (`frontend/src/app/core/auth/auth.service.ts`). Ainda não existe `HttpInterceptor` global.
-2. **`JwtSecurityFilter`** (`infraestrutura/seguranca/`) roda antes de tudo. Rotas da allowlist passam direto: `/auth/login`, `/auth/registro`, `/auth/confirmacao-email/**`, `/q/health/**`. As demais precisam de um token válido com as claims `sub` (id do usuário) e `roles` (perfil global); sem isso, a resposta é 401.
+2. **`JwtSecurityFilter`** (`compartilhado/seguranca/`) roda antes de tudo. Rotas da allowlist passam direto: `/auth/login`, `/auth/registro`, `/auth/confirmacao-email/**`, `/q/health/**`. As demais precisam de um token válido com as claims `sub` (id do usuário) e `roles` (perfil global); sem isso, a resposta é 401.
 3. **`SessaoInvalidadaFilter`** rejeita tokens emitidos antes do último logout do usuário. É um filtro separado só porque consulta o banco, e o primeiro filtro roda numa thread onde isso não é permitido.
 4. **O `Resource`** recebe o HTTP, converte o JSON em `*Request` e chama o `Service`. Não tem regra de negócio.
 5. **O `Service`** aplica a regra de negócio, abre a transação, grava auditoria quando o evento é sensível e lança `ApiException` quando algo é recusado.
@@ -43,8 +43,7 @@ Passo a passo:
 
 Injete `UsuarioAutenticado` e use `id()` e `possuiPerfil("MODERADOR")`. A autorização fina ("só o criador pode editar") é decidida no módulo, nunca no filtro.
 
-- **Hoje:** `identidade/infraestrutura/UsuarioAutenticado`
-- **Alvo:** `compartilhado/seguranca/UsuarioAutenticado`
+Fica em `compartilhado/seguranca/UsuarioAutenticado`. Se a claim `sub` não puder ser lida, `id()` lança `ApiException` 401 `NAO_AUTENTICADO`.
 
 ## 3. Onde cada coisa mora (backend)
 
@@ -54,13 +53,15 @@ Raiz: `backend/src/main/java/br/edu/unicatolica/pacext/`
 
 Código que todos os módulos usam e que não pertence a nenhum.
 
-| Assunto | Hoje | Alvo |
-|---|---|---|
-| Filtros de autenticação | `infraestrutura/seguranca/` | `compartilhado/seguranca/` |
-| Erro (`ApiException`, `ErroResponse`, mappers) | `infraestrutura/web/` + 2 mappers em `identidade/web/` | `compartilhado/erro/` (todos) |
-| Paginação (`PageResponse`) | `infraestrutura/web/` | `compartilhado/paginacao/` |
-| Auditoria (`AuditoriaService`) | `infraestrutura/auditoria/` | `compartilhado/auditoria/` |
-| E-mail (`EmailService`) | `infraestrutura/email/` | `compartilhado/email/` |
+| Assunto | Onde |
+|---|---|
+| Filtros de autenticação, `UsuarioAutenticado` | `compartilhado/seguranca/` |
+| Erro (`ApiException`, `ErroResponse`, mappers) | `compartilhado/erro/` (**hoje** ainda há 2 mappers em `identidade/web/`, removidos no PR 4) |
+| Paginação (`PageResponse`) | `compartilhado/paginacao/` |
+| Auditoria (`AuditoriaService`) | `compartilhado/auditoria/` |
+| E-mail (`EmailService`) | `compartilhado/email/` |
+
+A migration de `log_auditoria` continua em `db/changelog/modulos/infraestrutura/`, com o id `infraestrutura-001-...`. O Liquibase identifica um changeset pelo caminho do arquivo, então renomear a pasta faria o banco de produção tentar criar a tabela de novo. Migrations novas do transversal vão em `modulos/compartilhado/`.
 
 ### Dentro de um módulo
 
@@ -75,7 +76,6 @@ Todo módulo segue o mesmo formato (**Alvo**; hoje só `identidade/` está perto
 ```
 
 - **Hoje, `comunidades/`** deixa entidades, Services e Repositories na raiz e só separa `web/`.
-- **Hoje, `identidade/`** tem um subpacote `infraestrutura/` extra (`UsuarioAutenticado`), que vai para o transversal.
 
 ### Estado dos módulos
 
