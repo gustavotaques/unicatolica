@@ -8,7 +8,7 @@ Rede social acadêmica do Campus Joinville da CatólicaSC — projeto de PAC Ext
 ## Policy
 
 - Nunca implementar um endpoint novo (front ou back) sem `openapi.yaml` acordado primeiro entre os dois lados — contrato é fonte de verdade (AD-4).
-- Nunca importar nada de fora da raiz de outro módulo — só as interfaces públicas da raiz, ex.: `comunidades.AutoJoinCursoService` (AD-3). Dado de outro módulo é referenciado só pelo id (`Long`), sem FK nem relação JPA. `identidade` não importa nenhum outro módulo, e o transversal (`compartilhado/`) não importa nenhum módulo. Verificado por `ArquiteturaTest` no CI; violações antigas ficam em `EXCECOES_TEMPORARIAS` com o PR que as remove — nunca adicionar uma nova.
+- Nunca importar nada de fora da raiz de outro módulo — só as interfaces públicas da raiz, ex.: `comunidades.AutoJoinCursoService` (AD-3). Dado de outro módulo é referenciado só pelo id (`Long`), sem FK nem relação JPA; nome/curso de usuário vêm de `identidade.UsuarioConsulta.buscarResumos(ids)`. `identidade` não importa nenhum outro módulo, e o transversal (`compartilhado/`) não importa nenhum módulo. Verificado por `ArquiteturaTest` no CI; violações antigas ficam em `EXCECOES_TEMPORARIAS` com o PR que as remove — nunca adicionar uma nova.
 - Nunca escrever direto em `log_auditoria` — sempre injetar `compartilhado.auditoria.AuditoriaService` (AD-11).
 - Nunca commitar segredos/config — só variáveis de ambiente (Render env vars / `.env` local, modelo em `.env.example`).
 - `main` é protegida: sem push direto, nem para admin. Fluxo: branch → PR → os 3 checks do CI verdes → squash merge. Sem revisão humana obrigatória (AD-8, decisão do time).

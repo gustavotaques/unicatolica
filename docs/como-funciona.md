@@ -90,13 +90,11 @@ Todo módulo segue o mesmo formato (**Alvo**; hoje só `identidade/` está perto
 
 1. **A raiz do módulo é a API pública.** Outro módulo só importa o que está na raiz. Exemplo: `identidade` cadastra o aluno e chama `comunidades.AutoJoinCursoService` para colocá-lo na comunidade do curso. Nunca `ComunidadeRepository`.
 2. **O Resource só chama o Service**, nunca o Repository.
-   - **Hoje:** `UsuarioResource` ainda viola esta regra.
 3. **Erro tem um só caminho:** lançar `ApiException` (fábricas `validacao`, `naoAutenticado`, `semPermissao`, `naoEncontrado`, `conflito`) ou uma subclasse dela. O `Resource` nunca monta `ErroResponse` à mão.
    - Exceção de domínio com nome próprio (ex.: `CredenciaisInvalidasException`) estende `ApiException` e passa status, código e mensagem no construtor.
    - **Filtros:** `JwtSecurityFilter` e `SessaoInvalidadaFilter` não lançam exceção (usam `abortWith`). Montam o 401 por `RespostasErro.naoAutenticado(detalhes)`, nunca com `ErroResponse.of` direto.
-4. **O transversal não importa nenhum módulo.** Quando precisa de dado de um módulo, declara uma interface que o módulo implementa.
-   - **Hoje:** `SessaoInvalidadaFilter` importa `UsuarioRepository`.
-5. **Referência a dado de outro módulo é só pelo id.** Exemplo: `comunidade_membro.usuario_id` é um `Long`, sem relação JPA nem FK para `usuario` (AD-3).
+4. **O transversal não importa nenhum módulo.** Quando precisa de dado de um módulo, declara uma interface que o módulo implementa. Exemplo: `SessaoInvalidadaFilter` usa `compartilhado.seguranca.SessaoConsulta`, implementada por `identidade.aplicacao.UsuarioService`.
+5. **Referência a dado de outro módulo é só pelo id.** Exemplo: `comunidade_membro.usuario_id` é um `Long`, sem relação JPA nem FK para `usuario` (AD-3). Para exibir nome ou curso, use `identidade.UsuarioConsulta.buscarResumos(ids)`, que busca em lote (sem N+1).
 6. **Auditoria só pelo `AuditoriaService`.** Nenhum módulo escreve direto em `log_auditoria` (AD-11).
 
 As regras 1, 2 e 4, e a regra "`identidade` não importa nenhum outro módulo", são verificadas por `ArquiteturaTest` (ArchUnit) no CI. As violações que já existiam ficam em `EXCECOES_TEMPORARIAS`, cada uma com o PR que a remove; o teste também falha quando uma exceção deixa de ser necessária, então a lista só diminui. Nunca adicione uma exceção nova: corrija o código.

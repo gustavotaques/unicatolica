@@ -40,16 +40,6 @@ class ArquiteturaTest {
     private record Excecao(String regra, String origem, String alvo, String removidaNo) {}
 
     private static final List<Excecao> EXCECOES_TEMPORARIAS = List.of(
-            new Excecao("raiz-e-api-publica", "compartilhado.seguranca.SessaoInvalidadaFilter",
-                    "identidade.dominio.Usuario", "PR 5"),
-            new Excecao("raiz-e-api-publica", "compartilhado.seguranca.SessaoInvalidadaFilter",
-                    "identidade.dominio.UsuarioRepository", "PR 5"),
-            new Excecao("resource-so-chama-service", "identidade.web.UsuarioResource",
-                    "identidade.dominio.UsuarioRepository", "PR 5"),
-            new Excecao("transversal-nao-importa-modulo", "compartilhado.seguranca.SessaoInvalidadaFilter",
-                    "identidade.dominio.Usuario", "PR 5"),
-            new Excecao("transversal-nao-importa-modulo", "compartilhado.seguranca.SessaoInvalidadaFilter",
-                    "identidade.dominio.UsuarioRepository", "PR 5"),
             new Excecao("identidade-e-folha", "identidade.aplicacao.CadastroService",
                     "comunidades.AutoJoinCursoService", "PR 5b"));
 

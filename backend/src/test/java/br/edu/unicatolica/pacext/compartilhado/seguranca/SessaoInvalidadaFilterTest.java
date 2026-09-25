@@ -6,11 +6,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
-import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Response;
 import java.time.Instant;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,16 +22,16 @@ import org.mockito.ArgumentCaptor;
  */
 class SessaoInvalidadaFilterTest {
 
-    private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
+    private final SessaoConsulta sessaoConsulta = mock(SessaoConsulta.class);
     private final SessaoInvalidadaFilter filter = new SessaoInvalidadaFilter();
 
     SessaoInvalidadaFilterTest() {
-        filter.usuarioRepository = usuarioRepository;
+        filter.sessaoConsulta = sessaoConsulta;
     }
 
     @BeforeEach
-    void resetUsuarioRepository() {
-        when(usuarioRepository.findById(any())).thenReturn(null);
+    void resetSessaoConsulta() {
+        when(sessaoConsulta.sessaoValidaDesde(any())).thenReturn(Optional.empty());
     }
 
     private ContainerRequestContext mockContext(String usuarioId, Instant emitidoEm) {
@@ -49,16 +48,13 @@ class SessaoInvalidadaFilterTest {
         filter.filter(requestContext);
 
         verify(requestContext, never()).abortWith(any());
-        verify(usuarioRepository, never()).findById(any());
+        verify(sessaoConsulta, never()).sessaoValidaDesde(any());
     }
 
     @Test
     void naoFazNadaQuandoUsuarioNuncaDeslogou() {
         ContainerRequestContext requestContext = mockContext("42", Instant.now());
-        Usuario usuario = new Usuario();
-        usuario.id = 42L;
-        usuario.sessaoValidaDesde = null;
-        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+        when(sessaoConsulta.sessaoValidaDesde(42L)).thenReturn(Optional.empty());
 
         filter.filter(requestContext);
 
@@ -68,10 +64,7 @@ class SessaoInvalidadaFilterTest {
     /** Fecha o critério de aceite da Story 1.6: token emitido antes do logout deve virar 401. */
     @Test
     void rejeitaTokenEmitidoAntesDoLogout() {
-        Usuario usuario = new Usuario();
-        usuario.id = 42L;
-        usuario.sessaoValidaDesde = Instant.now().plusSeconds(60);
-        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+        when(sessaoConsulta.sessaoValidaDesde(42L)).thenReturn(Optional.of(Instant.now().plusSeconds(60)));
         ContainerRequestContext requestContext = mockContext("42", Instant.now());
 
         filter.filter(requestContext);
@@ -85,10 +78,7 @@ class SessaoInvalidadaFilterTest {
     /** Logout de OUTRO usuário não pode afetar um token ainda válido do usuário atual. */
     @Test
     void aceitaTokenEmitidoAposLogoutDoProprioUsuario() {
-        Usuario usuario = new Usuario();
-        usuario.id = 42L;
-        usuario.sessaoValidaDesde = Instant.now().minusSeconds(60);
-        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+        when(sessaoConsulta.sessaoValidaDesde(42L)).thenReturn(Optional.of(Instant.now().minusSeconds(60)));
         ContainerRequestContext requestContext = mockContext("42", Instant.now());
 
         filter.filter(requestContext);
@@ -106,10 +96,7 @@ class SessaoInvalidadaFilterTest {
     @Test
     void rejeitaTokenEmitidoNoMesmoSegundoDoLogout() {
         Instant mesmoSegundo = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
-        Usuario usuario = new Usuario();
-        usuario.id = 42L;
-        usuario.sessaoValidaDesde = mesmoSegundo;
-        when(usuarioRepository.findById(42L)).thenReturn(usuario);
+        when(sessaoConsulta.sessaoValidaDesde(42L)).thenReturn(Optional.of(mesmoSegundo));
         ContainerRequestContext requestContext = mockContext("42", mesmoSegundo);
 
         filter.filter(requestContext);

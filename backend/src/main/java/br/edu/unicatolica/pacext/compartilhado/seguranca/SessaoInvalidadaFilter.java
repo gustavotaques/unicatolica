@@ -1,7 +1,5 @@
 package br.edu.unicatolica.pacext.compartilhado.seguranca;
 
-import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
-import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.compartilhado.erro.RespostasErro;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.annotation.Priority;
@@ -15,7 +13,7 @@ import java.time.Instant;
 /**
  * Segunda etapa da autenticação (Story 1.6, RF10/RF11) — invalida token emitido antes do
  * último logout do usuário. Separada de {@link JwtSecurityFilter} só por restrição
- * técnica: esta checagem consulta o banco (Hibernate ORM/Panache, bloqueante), e um filtro
+ * técnica: esta checagem consulta o banco via {@link SessaoConsulta} (Hibernate ORM/Panache, bloqueante), e um filtro
  * {@code @PreMatching} roda sempre na thread de I/O do Vert.x, onde {@code @Blocking} não
  * é honrado (defeito D1, comprovado por {@code AutenticacaoFluxoTest}) — um filtro comum
  * (pós-roteamento) como este já suporta {@code @Blocking} normalmente.
@@ -38,7 +36,7 @@ import java.time.Instant;
 public class SessaoInvalidadaFilter implements ContainerRequestFilter {
 
     @Inject
-    UsuarioRepository usuarioRepository;
+    SessaoConsulta sessaoConsulta;
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
@@ -48,8 +46,10 @@ public class SessaoInvalidadaFilter implements ContainerRequestFilter {
         }
 
         Instant emitidoEm = (Instant) requestContext.getProperty(JwtSecurityFilter.REQUEST_PROPERTY_EMITIDO_EM);
-        Usuario usuario = usuarioRepository.findById(Long.valueOf((String) usuarioIdProperty));
-        if (usuario != null && usuario.sessaoValidaDesde != null && !emitidoEm.isAfter(usuario.sessaoValidaDesde)) {
+        boolean emitidoAntesDoLogout = sessaoConsulta.sessaoValidaDesde(Long.valueOf((String) usuarioIdProperty))
+                .map(validaDesde -> !emitidoEm.isAfter(validaDesde))
+                .orElse(false);
+        if (emitidoAntesDoLogout) {
             requestContext.abortWith(RespostasErro.naoAutenticado("Token JWT inválido ou expirado."));
         }
     }

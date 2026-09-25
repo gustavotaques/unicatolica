@@ -2,6 +2,8 @@ package br.edu.unicatolica.pacext.identidade.dominio;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /** Repositório próprio do módulo Identidade — nenhum outro módulo acessa {@code usuario} diretamente (AD-3). */
@@ -20,5 +22,10 @@ public class UsuarioRepository implements PanacheRepository<Usuario> {
     /** Confirmação de e-mail (Story 1.3) — lookup pelo token de uso único do link. */
     public Optional<Usuario> buscarPorTokenConfirmacao(String token) {
         return find("tokenConfirmacaoEmail", token).firstResultOptional();
+    }
+
+    /** Consulta em lote para {@code UsuarioConsulta.buscarResumos}. */
+    public List<Usuario> buscarPorIds(Collection<Long> ids) {
+        return list("id in ?1", ids);
     }
 }
