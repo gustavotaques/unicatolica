@@ -148,8 +148,8 @@ São 8 PRs mecânicos (mais o PR 0 e o 5b, da decisão [`2026-09-24-identidade-d
 | 1 | Documentação: índice, `como-funciona.md`, spine em cópia única, histórico para `_bmad-output` | Nenhum | Concluído (#21) |
 | 2 | `ArquiteturaTest` (ArchUnit) com as regras 1, 2 e 4 e "identidade é folha", com exceções temporárias para as violações atuais; cada PR seguinte remove as suas | Baixo | Concluído (#23) |
 | 3 | `infraestrutura` → `compartilhado`, com subpacotes; `UsuarioAutenticado` para `compartilhado/seguranca` | Baixo | Concluído (#24) |
-| 4 | Erro único: exceções de domínio estendem `ApiException`; remover os 2 mappers do identidade e o `ErroResponse.of` dos Resources e dos filtros (ponto 1) | Médio | Em andamento |
-| 5 | `UsuarioService` (Resource sem Repository), a interface `SessaoConsulta` e `UsuarioConsulta` | Baixo | Pendente |
+| 4 | Erro único: exceções de domínio estendem `ApiException`; remover os 2 mappers do identidade e o `ErroResponse.of` dos Resources e dos filtros (ponto 1) | Médio | Concluído (#25) |
+| 5 | `UsuarioService` (Resource sem Repository), a interface `SessaoConsulta` e `UsuarioConsulta` | Baixo | Em andamento |
 | 5b | Evento CDI `UsuarioCadastrado` no lugar da chamada direta a `AutoJoinCursoService`; remove a última exceção de "identidade é folha" | Baixo | Pendente |
 | 6 | `comunidades/` no formato `web/aplicacao/dominio` | Baixo | Pendente |
 | 7 | Frontend: `cadastro/` e `confirmar-email/` para `features/identidade`; serviços ao lado das features (sem interceptor, ponto 3) | Baixo | Pendente |

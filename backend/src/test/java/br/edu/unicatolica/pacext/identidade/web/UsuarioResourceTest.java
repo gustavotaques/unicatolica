@@ -1,37 +1,27 @@
 package br.edu.unicatolica.pacext.identidade.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import br.edu.unicatolica.pacext.identidade.dominio.AcessoNegadoException;
+import br.edu.unicatolica.pacext.identidade.aplicacao.UsuarioService;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
-import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
-import br.edu.unicatolica.pacext.compartilhado.seguranca.UsuarioAutenticado;
-import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
-import br.edu.unicatolica.pacext.compartilhado.erro.ApiExceptionMapper;
-import br.edu.unicatolica.pacext.compartilhado.erro.ErroResponse;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 /**
  * Testa {@link UsuarioResource} chamando os métodos diretamente (sem subir o runtime
- * JAX-RS completo — mesmo padrão de {@code AuthResourceTest}/{@code JwtSecurityFilterTest},
- * sem Docker disponível). Cobre os quatro cenários da I/O Matrix da spec 1.5 que dependem
- * do módulo {@code identidade} (os dois cenários de token ausente/expirado são cobertos por
- * {@code JwtSecurityFilterTest}, responsabilidade exclusiva do filtro — AD-2).
+ * JAX-RS completo). O Resource só converte o que o {@link UsuarioService} devolve; a regra
+ * de perfil e o 404 são testados em {@code UsuarioServiceTest}, e o envelope HTTP real em
+ * {@code ErroEnvelopeFluxoTest}.
  */
 class UsuarioResourceTest {
 
-    private final UsuarioRepository usuarioRepository = mock(UsuarioRepository.class);
-    private final UsuarioAutenticado usuarioAutenticado = mock(UsuarioAutenticado.class);
+    private final UsuarioService usuarioService = mock(UsuarioService.class);
     private final UsuarioResource resource = new UsuarioResource();
 
     UsuarioResourceTest() {
-        resource.usuarioRepository = usuarioRepository;
-        resource.usuarioAutenticado = usuarioAutenticado;
+        resource.usuarioService = usuarioService;
     }
 
     private static Usuario usuario(Long id, String nome, String email, String perfil) {
@@ -45,8 +35,7 @@ class UsuarioResourceTest {
 
     @Test
     void meRetorna200ComOProprioUsuario() {
-        when(usuarioAutenticado.id()).thenReturn(1L);
-        when(usuarioRepository.findById(1L)).thenReturn(usuario(1L, "Ana Aluna", "ana@catolicasc.edu.br", "ALUNO"));
+        when(usuarioService.buscarProprio()).thenReturn(usuario(1L, "Ana Aluna", "ana@catolicasc.edu.br", "ALUNO"));
 
         Response response = resource.me();
 
@@ -59,16 +48,8 @@ class UsuarioResourceTest {
     }
 
     @Test
-    void alunoTentandoVerOutroUsuarioLancaAcessoNegado() {
-        when(usuarioAutenticado.possuiPerfil("MODERADOR")).thenReturn(false);
-
-        assertThrows(AcessoNegadoException.class, () -> resource.porId(99L));
-    }
-
-    @Test
-    void moderadorVeOutroUsuarioRetorna200() {
-        when(usuarioAutenticado.possuiPerfil("MODERADOR")).thenReturn(true);
-        when(usuarioRepository.findById(7L)).thenReturn(usuario(7L, "Beto Moderador", "beto@catolicasc.edu.br", "ALUNO"));
+    void porIdRetorna200ComOUsuarioPedido() {
+        when(usuarioService.buscarPorId(7L)).thenReturn(usuario(7L, "Beto Moderador", "beto@catolicasc.edu.br", "ALUNO"));
 
         Response response = resource.porId(7L);
 
@@ -76,31 +57,5 @@ class UsuarioResourceTest {
         UsuarioResponse corpo = (UsuarioResponse) response.getEntity();
         assertEquals(7L, corpo.id());
         assertEquals("Beto Moderador", corpo.nome());
-    }
-
-    @Test
-    void moderadorConsultandoIdInexistenteRetorna404() {
-        when(usuarioAutenticado.possuiPerfil("MODERADOR")).thenReturn(true);
-        when(usuarioRepository.findById(404L)).thenReturn(null);
-
-        Response response = new ApiExceptionMapper().toResponse(
-                assertThrows(ApiException.class, () -> resource.porId(404L)));
-
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
-        ErroResponse corpo = (ErroResponse) response.getEntity();
-        assertNotNull(corpo.error());
-        assertEquals("RECURSO_NAO_ENCONTRADO", corpo.error().code());
-    }
-
-    @Test
-    void mapperTraduzAcessoNegadoParaEnvelope403() {
-        ApiExceptionMapper mapper = new ApiExceptionMapper();
-
-        Response response = mapper.toResponse(new AcessoNegadoException());
-
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
-        ErroResponse corpo = (ErroResponse) response.getEntity();
-        assertNotNull(corpo.error());
-        assertEquals("ACESSO_NEGADO", corpo.error().code());
     }
 }
