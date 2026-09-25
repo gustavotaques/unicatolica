@@ -39,9 +39,7 @@ class ArquiteturaTest {
 
     private record Excecao(String regra, String origem, String alvo, String removidaNo) {}
 
-    private static final List<Excecao> EXCECOES_TEMPORARIAS = List.of(
-            new Excecao("identidade-e-folha", "identidade.aplicacao.CadastroService",
-                    "comunidades.AutoJoinCursoService", "PR 5b"));
+    private static final List<Excecao> EXCECOES_TEMPORARIAS = List.of();
 
     private static JavaClasses classes;
 

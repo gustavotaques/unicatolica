@@ -88,7 +88,7 @@ Todo módulo segue o mesmo formato (**Alvo**; hoje só `identidade/` está perto
 
 ## 4. As regras que mantêm os módulos separados
 
-1. **A raiz do módulo é a API pública.** Outro módulo só importa o que está na raiz. Exemplo: `identidade` cadastra o aluno e chama `comunidades.AutoJoinCursoService` para colocá-lo na comunidade do curso. Nunca `ComunidadeRepository`.
+1. **A raiz do módulo é a API pública.** Outro módulo só importa o que está na raiz. Exemplo: `comunidades` escuta o evento `identidade.UsuarioCadastrado` (`@Observes`) para colocar o aluno na comunidade do curso; nunca importa `identidade.dominio.Usuario`. `identidade` é módulo folha: não importa nenhum outro módulo, e avisa por evento CDI quando algo que interessa aos outros acontece. O observer síncrono roda na mesma transação de quem dispara.
 2. **O Resource só chama o Service**, nunca o Repository.
 3. **Erro tem um só caminho:** lançar `ApiException` (fábricas `validacao`, `naoAutenticado`, `semPermissao`, `naoEncontrado`, `conflito`) ou uma subclasse dela. O `Resource` nunca monta `ErroResponse` à mão.
    - Exceção de domínio com nome próprio (ex.: `CredenciaisInvalidasException`) estende `ApiException` e passa status, código e mensagem no construtor.

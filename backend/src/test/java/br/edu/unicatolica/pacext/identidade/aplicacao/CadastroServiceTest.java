@@ -14,7 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import br.edu.unicatolica.pacext.comunidades.AutoJoinCursoService;
+import br.edu.unicatolica.pacext.identidade.UsuarioCadastrado;
 import br.edu.unicatolica.pacext.identidade.dominio.GeradorTokenConfirmacao;
 import br.edu.unicatolica.pacext.identidade.dominio.PasswordHasher;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
@@ -22,6 +22,7 @@ import br.edu.unicatolica.pacext.identidade.dominio.UsuarioRepository;
 import br.edu.unicatolica.pacext.compartilhado.auditoria.AuditoriaService;
 import br.edu.unicatolica.pacext.compartilhado.email.EmailService;
 import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
+import jakarta.enterprise.event.Event;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ class CadastroServiceTest {
 
     private CadastroService service;
     private UsuarioRepository usuarioRepository;
-    private AutoJoinCursoService autoJoinCursoService;
+    private Event<UsuarioCadastrado> usuarioCadastrado;
     private EmailService emailService;
     private AuditoriaService auditoriaService;
 
@@ -48,14 +49,14 @@ class CadastroServiceTest {
     void setUp() {
         service = new CadastroService();
         usuarioRepository = mock(UsuarioRepository.class);
-        autoJoinCursoService = mock(AutoJoinCursoService.class);
+        usuarioCadastrado = mockEvent();
         emailService = mock(EmailService.class);
         auditoriaService = mock(AuditoriaService.class);
 
         service.usuarioRepository = usuarioRepository;
         service.passwordHasher = new PasswordHasher();
         service.geradorTokenConfirmacao = new GeradorTokenConfirmacao();
-        service.autoJoinCursoService = autoJoinCursoService;
+        service.usuarioCadastrado = usuarioCadastrado;
         service.emailService = emailService;
         service.auditoriaService = auditoriaService;
         service.dominioInstitucional = "catolicasc.edu.br";
@@ -82,7 +83,7 @@ class CadastroServiceTest {
         assertEquals("ALUNO", usuario.perfil);
         assertNotNull(usuario.tokenConfirmacaoEmail);
 
-        verify(autoJoinCursoService).sincronizarCursoDoAluno(eq(42L), isNull(), eq("Engenharia de Software"));
+        verify(usuarioCadastrado).fire(new UsuarioCadastrado(42L, "Engenharia de Software"));
         verify(emailService).enviarConfirmacaoCadastro(eq(EMAIL_INSTITUCIONAL), anyString(), anyString());
         verify(auditoriaService).registrar(eq(42L), eq("identidade"), eq("CADASTRO_REALIZADO"), eq("Usuario"),
                 eq(42L), isNull());
@@ -131,5 +132,10 @@ class CadastroServiceTest {
         assertEquals(422, erro.getStatus());
         assertEquals("IDADE_MINIMA_NAO_ATENDIDA", erro.getCode());
         verify(usuarioRepository, never()).persist(any(Usuario.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Event<UsuarioCadastrado> mockEvent() {
+        return mock(Event.class);
     }
 }
