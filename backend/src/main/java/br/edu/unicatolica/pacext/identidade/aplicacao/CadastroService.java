@@ -1,6 +1,6 @@
 package br.edu.unicatolica.pacext.identidade.aplicacao;
 
-import br.edu.unicatolica.pacext.comunidades.AutoJoinCursoService;
+import br.edu.unicatolica.pacext.identidade.UsuarioCadastrado;
 import br.edu.unicatolica.pacext.identidade.dominio.GeradorTokenConfirmacao;
 import br.edu.unicatolica.pacext.identidade.dominio.PasswordHasher;
 import br.edu.unicatolica.pacext.identidade.dominio.Usuario;
@@ -9,6 +9,7 @@ import br.edu.unicatolica.pacext.compartilhado.auditoria.AuditoriaService;
 import br.edu.unicatolica.pacext.compartilhado.email.EmailService;
 import br.edu.unicatolica.pacext.compartilhado.erro.ApiException;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
@@ -40,7 +41,7 @@ public class CadastroService {
     GeradorTokenConfirmacao geradorTokenConfirmacao;
 
     @Inject
-    AutoJoinCursoService autoJoinCursoService;
+    Event<UsuarioCadastrado> usuarioCadastrado;
 
     @Inject
     EmailService emailService;
@@ -89,8 +90,9 @@ public class CadastroService {
 
         usuarioRepository.persist(usuario);
 
-        // RF24.1 — nenhuma sessão é gerada aqui (RF01.2); o auto-join só associa à comunidade.
-        autoJoinCursoService.sincronizarCursoDoAluno(usuario.id, null, usuario.curso);
+        // RF24.1 — Comunidades escuta e faz o auto-join na mesma transação. Nenhuma sessão é
+        // gerada aqui (RF01.2).
+        usuarioCadastrado.fire(new UsuarioCadastrado(usuario.id, usuario.curso));
 
         String linkConfirmacao = frontendUrl + "/confirmar-email?token=" + usuario.tokenConfirmacaoEmail;
         emailService.enviarConfirmacaoCadastro(usuario.email, usuario.nome, linkConfirmacao);

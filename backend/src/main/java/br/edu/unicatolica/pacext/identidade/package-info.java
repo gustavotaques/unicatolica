@@ -12,9 +12,11 @@
  * e {@link br.edu.unicatolica.pacext.identidade.UsuarioResumo}. Também implementa
  * {@code compartilhado.seguranca.SessaoConsulta}, usada pelo filtro de logout.</p>
  *
+ * <p><b>Eventos que dispara</b> (CDI, síncronos, na transação de quem dispara):
+ * {@link br.edu.unicatolica.pacext.identidade.UsuarioCadastrado} ao fim do cadastro.</p>
+ *
  * <p><b>Dependências:</b> só {@code compartilhado} (módulo folha, verificado por
- * {@code ArquiteturaTest}; a chamada a {@code comunidades.AutoJoinCursoService} no
- * cadastro sai no PR 5b da reestruturação).</p>
+ * {@code ArquiteturaTest}).</p>
  *
  * <p>Implementa Story 1.2 (cadastro), Story 1.3 (confirmação de e-mail), Story 1.4
  * (login/emissão de JWT), Story 1.5 (bloqueio de acesso/restrição por perfil, via
